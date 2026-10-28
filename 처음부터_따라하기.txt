@@ -1,0 +1,18 @@
+삼국지 백팩 배틀즈 PWA - 초보자 설치 안내
+
+1. 이 ZIP을 윈도우에서 압축 해제합니다.
+2. GitHub에 로그인 후 새 Public 저장소를 만듭니다. (중요: 게임 코드가 인터넷에 공개됩니다.)
+3. 저장소의 Add file > Upload files 로 압축 해제한 내용물을 전부 올립니다.
+   index.html, manifest.webmanifest, service-worker.js, icons 폴더, faces 폴더를 업로드합니다.
+   ZIP 파일 자체를 업로드하는 게 아닙니다. 폴더를 열었을 때 보이는 내용물을 올리세요.
+4. Settings > Pages > Build and deployment > Source: Deploy from a branch
+   Branch: main, Folder: /(root), Save.
+5. 생성된 https://사용자명.github.io/저장소명/ 주소를 아이폰 Safari로 엽니다.
+6. 공유 > 홈 화면에 추가 > 웹 앱으로 열기 > 추가.
+7. 처음 온라인 상태에서 한번 실행한 뒤 오프라인 실행을 시험합니다.
+
+주의: GitHub Pages로 게시하면 누구나 링크에 접근할 수 있고, HTML 소스도 공개됩니다.
+게임 내 사용자별 자동 저장은 이번 PWA 준비에 추가하지 않았습니다.
+MAIN.png 및 FIGHT.png 배경 이미지는 이전에 제공되지 않아 포함되지 않았습니다.
+소지한 경우 index.html과 같은 폴더에 두고 업로드하세요.
+버전 업데이트 시 service-worker.js의 CACHE_NAME을 변경해야 오프라인 캐시가 새로 바뀝니다.

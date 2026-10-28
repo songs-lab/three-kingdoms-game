@@ -1,0 +1,674 @@
+{
+  "tileSize": 128,
+  "sheets": {
+    "shu": {
+      "file": "shu.webp",
+      "columns": 9,
+      "rows": 4,
+      "count": 33,
+      "width": 1152,
+      "height": 512,
+      "bytes": 177912
+    },
+    "wei": {
+      "file": "wei.webp",
+      "columns": 8,
+      "rows": 4,
+      "count": 32,
+      "width": 1024,
+      "height": 512,
+      "bytes": 178022
+    },
+    "wu": {
+      "file": "wu.webp",
+      "columns": 8,
+      "rows": 4,
+      "count": 32,
+      "width": 1024,
+      "height": 512,
+      "bytes": 181708
+    },
+    "other": {
+      "file": "other.webp",
+      "columns": 4,
+      "rows": 2,
+      "count": 8,
+      "width": 512,
+      "height": 256,
+      "bytes": 49994
+    }
+  },
+  "portraits": {
+    "유비": {
+      "sheet": "shu.webp",
+      "x": 0,
+      "y": 0,
+      "index": 0
+    },
+    "관우": {
+      "sheet": "shu.webp",
+      "x": 1,
+      "y": 0,
+      "index": 1
+    },
+    "장비": {
+      "sheet": "shu.webp",
+      "x": 2,
+      "y": 0,
+      "index": 2
+    },
+    "조운": {
+      "sheet": "shu.webp",
+      "x": 3,
+      "y": 0,
+      "index": 3
+    },
+    "마초": {
+      "sheet": "shu.webp",
+      "x": 4,
+      "y": 0,
+      "index": 4
+    },
+    "황충": {
+      "sheet": "shu.webp",
+      "x": 5,
+      "y": 0,
+      "index": 5
+    },
+    "제갈량": {
+      "sheet": "shu.webp",
+      "x": 6,
+      "y": 0,
+      "index": 6
+    },
+    "방통": {
+      "sheet": "shu.webp",
+      "x": 7,
+      "y": 0,
+      "index": 7
+    },
+    "법정": {
+      "sheet": "shu.webp",
+      "x": 8,
+      "y": 0,
+      "index": 8
+    },
+    "강유": {
+      "sheet": "shu.webp",
+      "x": 0,
+      "y": 1,
+      "index": 9
+    },
+    "위연": {
+      "sheet": "shu.webp",
+      "x": 1,
+      "y": 1,
+      "index": 10
+    },
+    "황권": {
+      "sheet": "shu.webp",
+      "x": 2,
+      "y": 1,
+      "index": 11
+    },
+    "엄안": {
+      "sheet": "shu.webp",
+      "x": 3,
+      "y": 1,
+      "index": 12
+    },
+    "왕평": {
+      "sheet": "shu.webp",
+      "x": 4,
+      "y": 1,
+      "index": 13
+    },
+    "마대": {
+      "sheet": "shu.webp",
+      "x": 5,
+      "y": 1,
+      "index": 14
+    },
+    "관평": {
+      "sheet": "shu.webp",
+      "x": 6,
+      "y": 1,
+      "index": 15
+    },
+    "관흥": {
+      "sheet": "shu.webp",
+      "x": 7,
+      "y": 1,
+      "index": 16
+    },
+    "장포": {
+      "sheet": "shu.webp",
+      "x": 8,
+      "y": 1,
+      "index": 17
+    },
+    "부첨": {
+      "sheet": "shu.webp",
+      "x": 0,
+      "y": 2,
+      "index": 18
+    },
+    "요화": {
+      "sheet": "shu.webp",
+      "x": 1,
+      "y": 2,
+      "index": 19
+    },
+    "오의": {
+      "sheet": "shu.webp",
+      "x": 2,
+      "y": 2,
+      "index": 20
+    },
+    "오란": {
+      "sheet": "shu.webp",
+      "x": 3,
+      "y": 2,
+      "index": 21
+    },
+    "장익": {
+      "sheet": "shu.webp",
+      "x": 4,
+      "y": 2,
+      "index": 22
+    },
+    "장억": {
+      "sheet": "shu.webp",
+      "x": 5,
+      "y": 2,
+      "index": 23
+    },
+    "이엄": {
+      "sheet": "shu.webp",
+      "x": 6,
+      "y": 2,
+      "index": 24
+    },
+    "이회": {
+      "sheet": "shu.webp",
+      "x": 7,
+      "y": 2,
+      "index": 25
+    },
+    "비의": {
+      "sheet": "shu.webp",
+      "x": 8,
+      "y": 2,
+      "index": 26
+    },
+    "동윤": {
+      "sheet": "shu.webp",
+      "x": 0,
+      "y": 3,
+      "index": 27
+    },
+    "맹획": {
+      "sheet": "shu.webp",
+      "x": 1,
+      "y": 3,
+      "index": 28
+    },
+    "왕련": {
+      "sheet": "shu.webp",
+      "x": 2,
+      "y": 3,
+      "index": 29
+    },
+    "공손찬": {
+      "sheet": "shu.webp",
+      "x": 3,
+      "y": 3,
+      "index": 30
+    },
+    "미축": {
+      "sheet": "shu.webp",
+      "x": 4,
+      "y": 3,
+      "index": 31
+    },
+    "마속": {
+      "sheet": "shu.webp",
+      "x": 5,
+      "y": 3,
+      "index": 32
+    },
+    "조조": {
+      "sheet": "wei.webp",
+      "x": 0,
+      "y": 0,
+      "index": 0
+    },
+    "하후돈": {
+      "sheet": "wei.webp",
+      "x": 1,
+      "y": 0,
+      "index": 1
+    },
+    "하후연": {
+      "sheet": "wei.webp",
+      "x": 2,
+      "y": 0,
+      "index": 2
+    },
+    "장료": {
+      "sheet": "wei.webp",
+      "x": 3,
+      "y": 0,
+      "index": 3
+    },
+    "허저": {
+      "sheet": "wei.webp",
+      "x": 4,
+      "y": 0,
+      "index": 4
+    },
+    "전위": {
+      "sheet": "wei.webp",
+      "x": 5,
+      "y": 0,
+      "index": 5
+    },
+    "서황": {
+      "sheet": "wei.webp",
+      "x": 6,
+      "y": 0,
+      "index": 6
+    },
+    "장합": {
+      "sheet": "wei.webp",
+      "x": 7,
+      "y": 0,
+      "index": 7
+    },
+    "악진": {
+      "sheet": "wei.webp",
+      "x": 0,
+      "y": 1,
+      "index": 8
+    },
+    "우금": {
+      "sheet": "wei.webp",
+      "x": 1,
+      "y": 1,
+      "index": 9
+    },
+    "조인": {
+      "sheet": "wei.webp",
+      "x": 2,
+      "y": 1,
+      "index": 10
+    },
+    "조홍": {
+      "sheet": "wei.webp",
+      "x": 3,
+      "y": 1,
+      "index": 11
+    },
+    "조휴": {
+      "sheet": "wei.webp",
+      "x": 4,
+      "y": 1,
+      "index": 12
+    },
+    "조진": {
+      "sheet": "wei.webp",
+      "x": 5,
+      "y": 1,
+      "index": 13
+    },
+    "사마의": {
+      "sheet": "wei.webp",
+      "x": 6,
+      "y": 1,
+      "index": 14
+    },
+    "곽가": {
+      "sheet": "wei.webp",
+      "x": 7,
+      "y": 1,
+      "index": 15
+    },
+    "순욱": {
+      "sheet": "wei.webp",
+      "x": 0,
+      "y": 2,
+      "index": 16
+    },
+    "순유": {
+      "sheet": "wei.webp",
+      "x": 1,
+      "y": 2,
+      "index": 17
+    },
+    "가후": {
+      "sheet": "wei.webp",
+      "x": 2,
+      "y": 2,
+      "index": 18
+    },
+    "정욱": {
+      "sheet": "wei.webp",
+      "x": 3,
+      "y": 2,
+      "index": 19
+    },
+    "곽회": {
+      "sheet": "wei.webp",
+      "x": 4,
+      "y": 2,
+      "index": 20
+    },
+    "왕쌍": {
+      "sheet": "wei.webp",
+      "x": 5,
+      "y": 2,
+      "index": 21
+    },
+    "문빙": {
+      "sheet": "wei.webp",
+      "x": 6,
+      "y": 2,
+      "index": 22
+    },
+    "만총": {
+      "sheet": "wei.webp",
+      "x": 7,
+      "y": 2,
+      "index": 23
+    },
+    "학소": {
+      "sheet": "wei.webp",
+      "x": 0,
+      "y": 3,
+      "index": 24
+    },
+    "왕릉": {
+      "sheet": "wei.webp",
+      "x": 1,
+      "y": 3,
+      "index": 25
+    },
+    "진태": {
+      "sheet": "wei.webp",
+      "x": 2,
+      "y": 3,
+      "index": 26
+    },
+    "등애": {
+      "sheet": "wei.webp",
+      "x": 3,
+      "y": 3,
+      "index": 27
+    },
+    "종회": {
+      "sheet": "wei.webp",
+      "x": 4,
+      "y": 3,
+      "index": 28
+    },
+    "하후상": {
+      "sheet": "wei.webp",
+      "x": 5,
+      "y": 3,
+      "index": 29
+    },
+    "고순": {
+      "sheet": "wei.webp",
+      "x": 6,
+      "y": 3,
+      "index": 30
+    },
+    "진궁": {
+      "sheet": "wei.webp",
+      "x": 7,
+      "y": 3,
+      "index": 31
+    },
+    "손견": {
+      "sheet": "wu.webp",
+      "x": 0,
+      "y": 0,
+      "index": 0
+    },
+    "손권": {
+      "sheet": "wu.webp",
+      "x": 1,
+      "y": 0,
+      "index": 1
+    },
+    "손책": {
+      "sheet": "wu.webp",
+      "x": 2,
+      "y": 0,
+      "index": 2
+    },
+    "주유": {
+      "sheet": "wu.webp",
+      "x": 3,
+      "y": 0,
+      "index": 3
+    },
+    "노숙": {
+      "sheet": "wu.webp",
+      "x": 4,
+      "y": 0,
+      "index": 4
+    },
+    "여몽": {
+      "sheet": "wu.webp",
+      "x": 5,
+      "y": 0,
+      "index": 5
+    },
+    "육손": {
+      "sheet": "wu.webp",
+      "x": 6,
+      "y": 0,
+      "index": 6
+    },
+    "감녕": {
+      "sheet": "wu.webp",
+      "x": 7,
+      "y": 0,
+      "index": 7
+    },
+    "태사자": {
+      "sheet": "wu.webp",
+      "x": 0,
+      "y": 1,
+      "index": 8
+    },
+    "황개": {
+      "sheet": "wu.webp",
+      "x": 1,
+      "y": 1,
+      "index": 9
+    },
+    "한당": {
+      "sheet": "wu.webp",
+      "x": 2,
+      "y": 1,
+      "index": 10
+    },
+    "정보": {
+      "sheet": "wu.webp",
+      "x": 3,
+      "y": 1,
+      "index": 11
+    },
+    "능통": {
+      "sheet": "wu.webp",
+      "x": 4,
+      "y": 1,
+      "index": 12
+    },
+    "서성": {
+      "sheet": "wu.webp",
+      "x": 5,
+      "y": 1,
+      "index": 13
+    },
+    "정봉": {
+      "sheet": "wu.webp",
+      "x": 6,
+      "y": 1,
+      "index": 14
+    },
+    "반장": {
+      "sheet": "wu.webp",
+      "x": 7,
+      "y": 1,
+      "index": 15
+    },
+    "주태": {
+      "sheet": "wu.webp",
+      "x": 0,
+      "y": 2,
+      "index": 16
+    },
+    "장흠": {
+      "sheet": "wu.webp",
+      "x": 1,
+      "y": 2,
+      "index": 17
+    },
+    "주환": {
+      "sheet": "wu.webp",
+      "x": 2,
+      "y": 2,
+      "index": 18
+    },
+    "전종": {
+      "sheet": "wu.webp",
+      "x": 3,
+      "y": 2,
+      "index": 19
+    },
+    "여범": {
+      "sheet": "wu.webp",
+      "x": 4,
+      "y": 2,
+      "index": 20
+    },
+    "고옹": {
+      "sheet": "wu.webp",
+      "x": 5,
+      "y": 2,
+      "index": 21
+    },
+    "장소": {
+      "sheet": "wu.webp",
+      "x": 6,
+      "y": 2,
+      "index": 22
+    },
+    "장굉": {
+      "sheet": "wu.webp",
+      "x": 7,
+      "y": 2,
+      "index": 23
+    },
+    "육항": {
+      "sheet": "wu.webp",
+      "x": 0,
+      "y": 3,
+      "index": 24
+    },
+    "제갈각": {
+      "sheet": "wu.webp",
+      "x": 1,
+      "y": 3,
+      "index": 25
+    },
+    "주거": {
+      "sheet": "wu.webp",
+      "x": 2,
+      "y": 3,
+      "index": 26
+    },
+    "주방": {
+      "sheet": "wu.webp",
+      "x": 3,
+      "y": 3,
+      "index": 27
+    },
+    "보즐": {
+      "sheet": "wu.webp",
+      "x": 4,
+      "y": 3,
+      "index": 28
+    },
+    "감택": {
+      "sheet": "wu.webp",
+      "x": 5,
+      "y": 3,
+      "index": 29
+    },
+    "여대": {
+      "sheet": "wu.webp",
+      "x": 6,
+      "y": 3,
+      "index": 30
+    },
+    "원술": {
+      "sheet": "wu.webp",
+      "x": 7,
+      "y": 3,
+      "index": 31
+    },
+    "여포": {
+      "sheet": "other.webp",
+      "x": 0,
+      "y": 0,
+      "index": 0
+    },
+    "원소": {
+      "sheet": "other.webp",
+      "x": 1,
+      "y": 0,
+      "index": 1
+    },
+    "문추": {
+      "sheet": "other.webp",
+      "x": 2,
+      "y": 0,
+      "index": 2
+    },
+    "안량": {
+      "sheet": "other.webp",
+      "x": 3,
+      "y": 0,
+      "index": 3
+    },
+    "한수": {
+      "sheet": "other.webp",
+      "x": 0,
+      "y": 1,
+      "index": 4
+    },
+    "화웅": {
+      "sheet": "other.webp",
+      "x": 1,
+      "y": 1,
+      "index": 5
+    },
+    "동탁": {
+      "sheet": "other.webp",
+      "x": 2,
+      "y": 1,
+      "index": 6
+    },
+    "저수": {
+      "sheet": "other.webp",
+      "x": 3,
+      "y": 1,
+      "index": 7
+    }
+  },
+  "mappingRule": "Each name follows the user-approved roster order (left to right, top to bottom). Portraits have no baked-in labels."
+}
