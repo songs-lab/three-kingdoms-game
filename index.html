@@ -1861,27 +1861,39 @@ if (isElite) {
     currentTotal++;
 }
 
-let enemies = []; 
-    let usedNames = new Set(); 
-    for (let tier in tierCounts) { 
-        let count = tierCounts[tier];
-        for (let i = 0; i < count; i++) { 
-            let candidates = allGenerals.filter(g => g.tier === tier && !usedNames.has(g.name)); 
-            if (candidates.length === 0) candidates = allGenerals.filter(g => !usedNames.has(g.name)); 
-            if (candidates.length === 0) candidates = allGenerals; 
-            let selected = candidates[Math.floor(Math.random() * candidates.length)]; 
-            usedNames.add(selected.name); 
-            
-            let bountyVal = tier === 'C' ? 1 : tier === 'B' ? 2 : tier === 'A' ? 4 : tier === 'S' ? 6 : tier === 'SS' ? 8 : 0; 
-            enemies.push({ 
-                ...selected, 
+let enemies = [];
+    const usedNames = new Set();
+    // 적군은 선택한 나라에 속하지 않는 장수만 사용한다.
+    // 복수 소속인 장수도 플레이어 진영에 속한다면 적 후보에서 제외한다.
+    const factionName = document.getElementById('faction-title').textContent.trim();
+    const playerFaction = factionName === '촉나라' ? 'shu' : factionName === '오나라' ? 'wu' : 'wei';
+    const enemyPool = allGenerals.filter(g =>
+        !String(g.faction || '').split(',').map(f => f.trim()).includes(playerFaction)
+    );
+    for (const tier in tierCounts) {
+        const count = tierCounts[tier];
+        for (let i = 0; i < count; i++) {
+            // 기존 라운드별 등급을 먼저 맞추고, 부족한 경우에만 타 등급으로 대체한다.
+            // 어느 경우에도 같은 전투에서 동일한 이름을 다시 뽑지 않는다.
+            const available = enemyPool.filter(g => !usedNames.has(g.name));
+            if (available.length === 0) break;
+            const matchingTier = available.filter(g => g.tier === tier);
+            const candidates = matchingTier.length ? matchingTier : available;
+            const selected = candidates[Math.floor(Math.random() * candidates.length)];
+            usedNames.add(selected.name);
+
+            // 대체된 경우 표시 등급·현상금은 실제 선택된 무장 기준으로 계산한다.
+            const actualTier = selected.tier;
+            const bountyVal = actualTier === 'C' ? 1 : actualTier === 'B' ? 2 : actualTier === 'A' ? 4 : actualTier === 'S' ? 6 : actualTier === 'SS' ? 8 : 0;
+            enemies.push({
+                ...selected,
                 skills: generateSkillsForGeneral(selected.name, selected.tier, selected.force, selected.intel),
-                maxHp: selected.hp, 
-                bounty: bountyVal, 
-                isBossSSS: (tier === 'SSS') 
-            }); 
-        } 
-    } 
+                maxHp: selected.hp,
+                bounty: bountyVal,
+                isBossSSS: actualTier === 'SSS'
+            });
+        }
+    }
     return { team: enemies, listStr: enemies.map(e => `[${e.tier}] ${e.name}`).join(", ") }; 
 }
 
