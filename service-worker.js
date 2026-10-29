@@ -1,4 +1,4 @@
-const CACHE_NAME = "three-kingdoms-v20261028-pwa1";
+const CACHE_NAME = "tk-battle-events-20261029";
 const CORE_ASSETS = [
   "./",
   "./index.html",
