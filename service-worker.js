@@ -1,4 +1,4 @@
-const CACHE_NAME = "tk-battle-board9-20261029-v1";
+const CACHE_NAME = "tk-battle-formation-easteregg-20261029-v1";
 const CORE_ASSETS = [
   "./",
   "./index.html",

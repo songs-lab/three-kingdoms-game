@@ -796,6 +796,10 @@ button { cursor: pointer; }
  #inventory-container.inventory-grid { --board-cell:29px; --board-gap:2px; }
 }
 /* 회전/배치 후 화면 폭에 맞추어 장수 카드를 다시 그릴 수 있도록 한다. */
+
+#formation-toast {position:fixed;top:18%;left:50%;transform:translate(-50%,-12px);width:max-content;max-width:calc(100vw - 32px);box-sizing:border-box;padding:10px 16px;border:1px solid #c9b16b;border-radius:10px;background:rgba(19,40,32,.95);color:#f9e5ab;text-align:center;font-size:13px;font-weight:900;z-index:950;pointer-events:none;opacity:0;transition:opacity .22s, transform .22s;}
+#formation-toast.visible {opacity:1;transform:translate(-50%,0);}
+
 </style>
 </head>
 <body>
@@ -819,6 +823,8 @@ button { cursor: pointer; }
 <div id="info-panel"><div class="info-img" id="info-face">👤</div><div class="info-details"><div id="info-name">무장을 선택하세요</div><div id="info-stats">아이템이나 무장을 터치하면 상세 스탯이 표시됩니다.</div><div id="info-skills"></div></div></div>
 <div id="barracks-heal-panel"><span>배낭/보관함의 장수를 선택한 뒤 8금화로 체력을 최대로 회복할 수 있습니다.</span><button type="button" onclick="healSelectedGeneralForGold()">선택 장수 회복 🪙8</button></div>
 <div id="bond-display">활성화된 인연이 없습니다.</div>
+<div id="formation-display" style="display:none;text-align:center;padding:5px 8px;background:rgba(34,82,69,.88);border-bottom:1px solid #92cda7;color:#d5ffcb;font-weight:bold;font-size:11px;"></div>
+<div id="formation-toast" role="status" aria-live="polite"></div>
 <div id="treasure-display"><span style="color:#bdc3c7;">보유 보물 없음</span></div>
 <div style="background:#263b4a;padding:4px 8px;text-align:center;font-size:11px;">💾 진행 상황 자동 저장 · <button onclick="saveRun();alert('현재 상태를 저장했습니다.');" style="padding:3px 8px;">지금 저장</button> <button onclick="redeemPendingRecruit()" style="padding:3px 8px;">대기 등용 장수 받기</button></div>
 <div id="shop-section"><div class="shop-header"><h3>상점 (6칸)</h3><button id="reroll-btn" onclick="rerollShop()">리롤 🪙1</button></div><div class="shop-grid" id="shop-container"></div></div>
@@ -1528,7 +1534,74 @@ function healSelectedGeneralForGold() {
     alert(`${data.name}의 체력을 최대로 회복했습니다. (🪙-8)`);
 }
 
+
+// 진형 이스터에그: 구매한 가방으로 열린 칸의 실루엣만 검사. 전투 로직 및 세이브 구조와 독립.
+// 1 = 반드시 개방, 0 = 반드시 잠김. 탐색된 진형 중 하나만 발동.
+const FORMATION_PATTERNS = [
+ {id:'eorin',name:'어린진',effect:'전군 최종 피해 +10%',rows:['00100','01110','11111']},
+ {id:'hakik',name:'학익진',effect:'전군 회피 +5',rows:['10001','01010','00100']},
+ {id:'jangsa',name:'장사진',effect:'전군 통솔 +15',rows:['1111111']},
+ {id:'bangwon',name:'방원진',effect:'전군 받는 최종 피해 -10%',rows:['111','111','111']},
+ {id:'anhaeng',name:'안행진',effect:'전군 정치 +15',rows:['11','11','11','11']}
+];
+let activeFormation = null;
+let battleFormationId = null;
+let lastFormationAnnouncement = null;
+function formationVariants(rows, id) {
+ const variants=[rows];
+ if(id==='jangsa' || id==='anhaeng') variants.push(rows[0].split('').map((_,i)=>rows.map(row=>row[i]).join('')));
+ return variants;
+}
+function detectFormation() {
+ const slots=document.querySelectorAll('#inventory-container .slot');
+ if(slots.length !== BOARD_SIZE*BOARD_SIZE) return null;
+ const grid=Array.from({length:BOARD_SIZE},()=>Array(BOARD_SIZE).fill(false));
+ const purchased=Array.from({length:BOARD_SIZE},()=>Array(BOARD_SIZE).fill(false));
+ let hasPurchasedBag=false;
+ slots.forEach(el=>{
+  const r=Number(el.dataset.r),c=Number(el.dataset.c);
+  if(!Number.isInteger(r)||!Number.isInteger(c)||r<0||c<0||r>=BOARD_SIZE||c>=BOARD_SIZE)return;
+  grid[r][c]=el.classList.contains('unlocked');
+  purchased[r][c]=Boolean(grid[r][c] && el.dataset.bagId && !String(el.dataset.bagData||'').includes('기본배낭'));
+  if(purchased[r][c])hasPurchasedBag=true;
+ });
+ if(!hasPurchasedBag) return null; // 시작 3x3 기본 가방만으로는 발동하지 않음
+ for(const formation of FORMATION_PATTERNS) {
+  for(const shape of formationVariants(formation.rows,formation.id)) {
+   const height=shape.length,width=shape[0].length;
+   for(let r=0;r<=BOARD_SIZE-height;r++)for(let c=0;c<=BOARD_SIZE-width;c++){
+    let valid=true,hasExpansion=false;
+    for(let i=0;i<height&&valid;i++)for(let j=0;j<width;j++){
+     const expected=shape[i][j]==='1';
+     if(grid[r+i][c+j]!==expected){valid=false;break;}
+     if(expected&&purchased[r+i][c+j])hasExpansion=true;
+    }
+    if(valid&&hasExpansion)return formation;
+   }
+  }
+ }
+ return null;
+}
+function updateFormationUI(announce=false) {
+ const found=detectFormation(), previous=activeFormation&&activeFormation.id;
+ activeFormation=found;
+ const el=document.getElementById('formation-display');
+ if(el){
+  el.style.display=found?'block':'none';
+  el.textContent=found?`⚔ 숨겨진 진형 발견: ${found.name} · ${found.effect}`:'';
+ }
+ if(announce && found && previous!==found.id && lastFormationAnnouncement!==found.id){
+  lastFormationAnnouncement=found.id;
+  // 화면을 가리지 않는 알림; 자동 소멸, 중첩 없음
+  const toast=document.getElementById('formation-toast');
+  if(toast){toast.textContent=`⚔ ${found.name} 발견! ${found.effect}`;toast.classList.add('visible');clearTimeout(toast._hide);toast._hide=setTimeout(()=>toast.classList.remove('visible'),2400);}
+ }
+ if(!found)lastFormationAnnouncement=null;
+ return found;
+}
+
 function updateBondUI() {
+    updateFormationUI(!restoringRun);
     let bondDiv = document.getElementById('bond-display');
     if (!bondDiv) return;
     
@@ -1705,7 +1778,7 @@ function handleSlotClick(slot, isStorage, r, c) {
             for (let i = 0; i < itemData.h; i++) { for (let j = 0; j < itemData.w; j++) { let t = getInvSlot(r + i, c + j); if (!t || !t.classList.contains('locked')) { alert("확장할 빈 공간(어두운 곳)을 선택하세요."); return; } targetSlots.push(t); } } 
             if (isShopItem) { if (playerGold < itemData.price) return; playerGold -= itemData.price; updateRoundDisplay(); } bagCounter++; targetSlots.forEach(t => { t.classList.remove('locked'); t.classList.add('unlocked', 'bag-slot'); t.dataset.bagId = bagCounter; t.dataset.bagData = JSON.stringify(itemData); }); 
             if (activeSelection.element && activeSelection.element.parentNode) activeSelection.element.parentNode.removeChild(activeSelection.element); if (isShopItem && activeSelection.element) activeSelection.element.style.display = 'none'; 
-            clearSelection(); return; 
+            clearSelection(); updateBondUI(); saveRun(); return; 
         } 
         if (itemData.type === 'type-general') { 
             if (!isStorage) { 
@@ -2005,6 +2078,14 @@ battleSpeedMulti = 1;
         e.huaXiongHitEnemies = new Set();
     });
     
+    // 진형은 전투 시작 시 배낭 개방 칸으로 재판정하며 적군에게는 적용하지 않는다.
+    const battleFormation = updateFormationUI(false);
+    battleFormationId = battleFormation ? battleFormation.id : null;
+    playerTeam.forEach(u => {
+        if(battleFormationId==='hakik')u.dodge+=5;
+        if(battleFormationId==='jangsa')u.cmd+=15;
+        if(battleFormationId==='anhaeng')u.pol+=15;
+    });
     lastPlayerTeam = playerTeam; 
     
     [playerTeam, currentEnemyTeam].forEach(team => {
@@ -2776,6 +2857,7 @@ if (enemies.length === 0) break;
                                     dmgTakenMult *= 0.95;
                                 }
 
+                                if (battleFormationId==='bangwon' && playerTeam.includes(defender)) dmgTakenMult *= 0.90;
                                 finalDamage *= dmgTakenMult;
                                 
                                 let dmgDealtDown = 0; unit.buffs.forEach(b => { if(b.stat === 'dmg_dealt_down') dmgDealtDown += b.amount; }); finalDamage *= (1 - dmgDealtDown / 100);
@@ -2911,6 +2993,7 @@ if (enemies.length === 0) break;
                                     }
                                 }
 
+                                if (battleFormationId==='eorin' && playerTeam.includes(unit) && !playerTeam.includes(defender)) finalDamage *= 1.10;
                                 finalDamage = Math.floor(Math.max(0, Math.min(300, finalDamage))); 
                                 if(finalDamage > 0) logMsg += `${isCrit ? `<span style="color:#f1c40f;font-weight:bold;">[크리티컬!]</span>` : ""}[${defender.name}]에게 ${finalDamage} 피해! `;
 
