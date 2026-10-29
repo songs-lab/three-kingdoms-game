@@ -18,7 +18,7 @@ button { cursor: pointer; }
 .faction-btn:active { transform: scale(0.95); }
 #btn-shu { background-color: #27ae60; } #btn-wu { background-color: #c0392b; } #btn-wei { background-color: #2980b9; }
 
-#game-screen { display: none; flex-direction: column; overflow: hidden; height: 100dvh; min-height: 100%; background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('./MAIN.png'); background-size: cover; background-position: center; background-repeat: no-repeat; }
+#game-screen { display: none; flex-direction: column; overflow: hidden; height: 100dvh; min-height: 100%; background-image: linear-gradient(rgba(9, 15, 20, 0.64), rgba(9, 15, 20, 0.76)), url('./MAIN.png'); background-size: cover; background-position: center; background-repeat: no-repeat; }
 
 #top-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; background-color: rgba(44, 62, 80, 0.9); border-bottom: 2px solid #f1c40f; }
 #faction-title { font-size: 16px; font-weight: bold; }
@@ -74,7 +74,7 @@ button { cursor: pointer; }
 #play-area { display: flex; justify-content: center; gap: 10px; padding: 5px; margin-top: 5px; }
 #inventory-section { display: flex; flex-direction: column; align-items: center; }
 .section-title { font-size: 12px; margin-bottom: 5px; font-weight: bold; color: #bdc3c7; text-shadow: 1px 1px 2px #000; }
-.inventory-grid { display: grid; grid-template-columns: repeat(8, 40px); grid-template-rows: repeat(8, 40px); gap: 3px; background-color: rgba(44, 62, 80, 0.8); padding: 5px; border-radius: 8px; border: 2px solid #7f8c8d; position: relative; }
+.inventory-grid { display: grid; grid-template-columns: repeat(9, var(--board-cell)); grid-template-rows: repeat(9, var(--board-cell)); gap: 3px; background-color: rgba(44, 62, 80, 0.8); padding: 5px; border-radius: 8px; border: 2px solid #7f8c8d; position: relative; }
 #storage-section { display: flex; flex-direction: column; align-items: center; }
 .storage-grid { display: grid; grid-template-columns: repeat(5, 40px); grid-template-rows: 40px; gap: 3px; background-color: rgba(44, 62, 80, 0.84); padding: 5px; border-radius: 8px; border: 2px solid #7f8c8d; width: max-content; margin: 0 auto; }
 .slot { width: 40px; height: 40px; border-radius: 4px; display: flex; justify-content: center; align-items: center; position: relative; }
@@ -785,6 +785,17 @@ button { cursor: pointer; }
 /* 지도 배경은 화면 크기에 무관하게 적용한다. 경로/노드 시인성 확보 */
 #map-screen { background-color:#2c3e50; background-image:linear-gradient(rgba(8,13,18,.45),rgba(8,13,18,.70)),url('./MAP_BG.png'); background-position:center; background-size:cover; background-repeat:no-repeat; }
 
+
+/* 9×9 확장: 휴대폰 크기에 맞춰 배낭 칸만 조절. 보관함 5칸은 기존 크기 유지 */
+#inventory-container.inventory-grid { --board-cell: 35px; --board-gap: 3px; gap:var(--board-gap); }
+#inventory-container > .slot { width:var(--board-cell); height:var(--board-cell); min-width:0; min-height:0; }
+@media screen and (max-width: 390px) {
+ #inventory-container.inventory-grid { --board-cell:32px; }
+}
+@media screen and (max-width: 350px) {
+ #inventory-container.inventory-grid { --board-cell:29px; --board-gap:2px; }
+}
+/* 회전/배치 후 화면 폭에 맞추어 장수 카드를 다시 그릴 수 있도록 한다. */
 </style>
 </head>
 <body>
@@ -885,20 +896,44 @@ function portraitMarkup(name, label = true) {
 function generalItemMarkup(item) {
     return `<div class="tier-tag">${item.tier}</div>${portraitMarkup(item.name)}`;
 }
+
+function boardCellMetrics() {
+    const grid = document.getElementById('inventory-container');
+    const slot = grid && grid.querySelector('.slot');
+    if (!grid || !slot) return {cell:35, gap:3};
+    const computed = getComputedStyle(grid);
+    return {cell:slot.getBoundingClientRect().width || 35, gap:parseFloat(computed.columnGap) || 0};
+}
+function boardItemPixels(count) {
+    const {cell,gap}=boardCellMetrics();
+    return cell*Number(count) + gap*(Number(count)-1);
+}
+function sizeDeployedCard(el, data) {
+    if (!el || !data) return;
+    el.style.position='absolute'; el.style.top='0'; el.style.left='0';
+    el.style.width=boardItemPixels(data.w)+'px'; el.style.height=boardItemPixels(data.h)+'px';
+    el.style.zIndex='5'; el.style.fontSize=(data.w>=3?'18px':'12px');
+    if (data.w>data.h) el.innerHTML=generalPlacedMarkup(data);
+}
+function resizeDeployedCards() {
+    document.querySelectorAll('#inventory-container .placed-item.type-general').forEach(el=>sizeDeployedCard(el,el.itemData));
+}
+window.addEventListener('resize', resizeDeployedCards);
+
 function generalPlacedMarkup(item) {
     const w = Number(item.w || (item.stats && item.stats.w) || 1);
     const h = Number(item.h || (item.stats && item.stats.h) || 1);
     if (!(w > h)) {
         return generalItemMarkup(item);
     }
-    const widthPx = 40 * w + 3 * (w - 1);
-    const heightPx = 40 * h + 3 * (h - 1);
+    const widthPx = boardItemPixels(w);
+    const heightPx = boardItemPixels(h);
     const faceSize = Math.max(24, Math.min(heightPx - 6, Math.floor(widthPx * 0.34), 52));
     const cooldown = item.stats && item.stats.cooldown ? item.stats.cooldown : item.cooldown;
     return `<div class="tier-tag">${item.tier}</div><div class="general-card" style="--face-size:${faceSize}px"><div class="general-card-face">${portraitMarkup(item.name, false)}</div><div class="general-card-info"><div class="general-card-name">${item.name}</div><div class="general-card-meta">크기 ${w}×${h} · 쿨 ${cooldown}초</div></div></div>`;
 }
 
-const BOARD_SIZE = 8; let playerGold = 10; 
+const BOARD_SIZE = 9; let playerGold = 10; 
 let currentFactionGenerals = []; let activeSelection = { source: null, element: null, data: null }; let currentEnemyTeam = []; let bagCounter = 0; let isInitialRound1 = true; let hasJadeSeal = false;
 
 const MAP_LANES = 3; const MAP_STAGES = 20;
@@ -1678,7 +1713,7 @@ function handleSlotClick(slot, isStorage, r, c) {
                 for (let i = 0; i < itemData.h; i++) { for (let j = 0; j < itemData.w; j++) { let t = getInvSlot(r + i, c + j); if (!t || t.classList.contains('locked') || (t.children.length > 0 && t.children[0] !== activeSelection.element) || (t.dataset.occupiedBy && t.dataset.occupiedBy !== oldUid)) { alert(`크기가 ${itemData.w}x${itemData.h} 입니다. 놓을 배낭 공간이 부족합니다!`); return; } targetSlots.push(t); } } 
                 if (isShopItem) { if (playerGold < itemData.price) { alert("금화가 부족합니다."); return; } playerGold -= itemData.price; updateRoundDisplay(); } clearOccupied(oldUid); 
                 let newItem; if (isShopItem) { newItem = document.createElement('div'); newItem.className = `placed-item type-general tier-${itemData.tier}${itemData.w > itemData.h ? ' is-wide' : ''}`; newItem.innerHTML = `${generalPlacedMarkup(itemData)}`; newItem.itemData = itemData; newItem.dataset.uid = 'uid_' + Math.random().toString(36).substr(2, 9); if (activeSelection.element) activeSelection.element.style.display = 'none'; } else { newItem = activeSelection.element; } 
-                newItem.style.position = 'absolute'; newItem.style.top = '0'; newItem.style.left = '0'; newItem.style.width = `calc(${40 * itemData.w}px + ${3 * (itemData.w - 1)}px)`; newItem.style.height = `calc(${40 * itemData.h}px + ${3 * (itemData.h - 1)}px)`; newItem.style.zIndex = '5'; newItem.style.fontSize = (itemData.w >= 3) ? '18px' : '12px'; slot.appendChild(newItem); let newUid = newItem.dataset.uid; targetSlots.forEach(t => t.dataset.occupiedBy = newUid); 
+                sizeDeployedCard(newItem, itemData); slot.appendChild(newItem); let newUid = newItem.dataset.uid; targetSlots.forEach(t => t.dataset.occupiedBy = newUid); 
             } else { 
                 if (isShopItem) { if (playerGold < itemData.price) return; playerGold -= itemData.price; updateRoundDisplay(); } clearOccupied(oldUid); 
                 let newItem; if (isShopItem) { newItem = document.createElement('div'); newItem.className = `placed-item type-general tier-${itemData.tier}${itemData.w > itemData.h ? ' is-wide' : ''}`; newItem.innerHTML = `${generalPlacedMarkup(itemData)}`; newItem.itemData = itemData; newItem.dataset.uid = 'uid_' + Math.random().toString(36).substr(2, 9); if (activeSelection.element) activeSelection.element.style.display = 'none'; } else { newItem = activeSelection.element; } 
@@ -3862,8 +3897,8 @@ function placeSavedGeneral(slot,data,uid,isInventory=false,styleStr=''){
  const el=document.createElement('div');
  el.className=`placed-item type-general tier-${data.tier}${data.w>data.h?' is-wide':''}`;
  el.innerHTML=generalPlacedMarkup(data);el.itemData=data;el.dataset.uid=uid||('uid_load_'+Math.random().toString(36).slice(2));
- if(styleStr) el.setAttribute('style',styleStr);
- else if(isInventory){el.style.position='absolute';el.style.top='0';el.style.left='0';el.style.width=`${40*data.w+3*(data.w-1)}px`;el.style.height=`${40*data.h+3*(data.h-1)}px`;el.style.zIndex='5';}
+ if(isInventory){sizeDeployedCard(el,data);}
+ else if(styleStr) el.setAttribute('style',styleStr);
  else {el.style.position='relative';el.style.width='100%';el.style.height='100%';}
  slot.appendChild(el);return el;
 }
@@ -3890,9 +3925,12 @@ function loadRun(){
   storyHutProgress=data.storyHutProgress||0;pendingStoryEventNodeId=data.pendingStoryEventNodeId||null;
   const restore=(id,arr)=>{
    const slots=Array.from(document.querySelectorAll(`#${id} .slot`));
-   if(!Array.isArray(arr)||arr.length!==slots.length)throw new Error('저장 슬롯 개수 불일치');
+   if(!Array.isArray(arr))throw new Error('저장 슬롯 없음');
+   const inventory=id==='inventory-container';
+   if(!(arr.length===slots.length || (inventory && arr.length===64 && slots.length===81)))throw new Error('저장 슬롯 개수 불일치');
    arr.forEach((x,i)=>{
-    const slot=slots[i];slot.className=x.className||'slot locked';slot.innerHTML='';
+    const targetIndex=(inventory && arr.length===64)?(Math.floor(i/8)*9+i%8):i;
+    const slot=slots[targetIndex];slot.className=x.className||'slot locked';slot.innerHTML='';
     for(const key of ['bagId','bagData','occupiedBy']){if(x[key]!=null)slot.dataset[key]=x[key];else delete slot.dataset[key];}
     if(x.item&&x.item.data){const d=x.item.data;
      if(d.type==='type-general')placeSavedGeneral(slot,d,x.item.uid,id==='inventory-container',x.item.style);
@@ -3901,6 +3939,7 @@ function loadRun(){
    });
   };
   restore('inventory-container',data.inventory);restore('storage-container',data.storage);
+  resizeDeployedCards();
   document.getElementById('shop-container').innerHTML='';
   (data.shop||[]).forEach(renderSavedShopItem);
   updateRoundDisplay();renderOwnedTreasures();refreshDeploymentLimitUI();refreshGeneralHpBadges();updateBondUI();refreshRerollButton();
