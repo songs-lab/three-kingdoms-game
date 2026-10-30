@@ -1,4 +1,4 @@
-const CACHE_NAME = "tk-battle-enemy-factions-20261029-v1";
+const CACHE_NAME = "three-kingdoms-chapter45-v1";
 const CORE_ASSETS = [
   "./",
   "./index.html",

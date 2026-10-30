@@ -844,7 +844,7 @@ button { cursor: pointer; }
 <div id="battle-modal" class="modal-overlay"><div class="modal-content"><h2 id="modal-round-title" style="color:#e74c3c;">⚔️ 1 단계 적군 ⚔️</h2><div class="enemy-box"><span id="enemy-list">탐색 중...</span><br><span class="enemy-tag" id="enemy-desc" style="font-size:11px; font-weight:normal;"></span></div><div class="modal-btns"><button class="btn-enter" onclick="startBattleScene()">전투 시작!</button><button class="btn-cancel" onclick="cancelBattleModal()">돌아가기</button></div></div></div>
 
 <div id="map-screen" style="display:none; flex-direction: column; overflow:hidden; height:100dvh;">
-    <div style="padding:15px; background:#e74c3c; text-align:center; font-weight:bold; font-size: 16px; border-bottom: 2px solid #f1c40f; z-index: 10;">진행 지도 (현재 단계: <span id="map-stage-display">0</span>)</div>
+    <div style="padding:15px; background:#e74c3c; text-align:center; font-weight:bold; font-size: 16px; border-bottom: 2px solid #f1c40f; z-index: 10;">진행 지도 (<span id="map-stage-display">제1장 · 0/45</span>)</div>
     <div id="map-container" style="flex-grow:1; position:relative; overflow-y:auto; padding:30px 20px; display:flex; flex-direction:column-reverse; gap:50px;">
         <svg id="map-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 1;"></svg>
     </div>
@@ -942,7 +942,33 @@ function generalPlacedMarkup(item) {
 const BOARD_SIZE = 9; let playerGold = 10; 
 let currentFactionGenerals = []; let activeSelection = { source: null, element: null, data: null }; let currentEnemyTeam = []; let bagCounter = 0; let isInitialRound1 = true; let hasJadeSeal = false;
 
-const MAP_LANES = 3; const MAP_STAGES = 20;
+const MAP_LANES = 3;
+const CHAPTERS = [
+    {id:1, start:1, end:20, length:20, name:'황건의 난 ~ 관도대전'},
+    {id:2, start:21, end:40, length:20, name:'삼고초려 ~ 삼국공방기'},
+    {id:3, start:41, end:45, length:5, name:'천하귀일 ~ 최종'}
+];
+const EPISODES = [
+    {start:1,end:5,name:'황건의 난'},
+    {start:6,end:10,name:'반동탁 연합'},
+    {start:11,end:15,name:'군웅할거'},
+    {start:16,end:20,name:'관도대전'},
+    {start:21,end:25,name:'삼고초려'},
+    {start:26,end:30,name:'적벽대전'},
+    {start:31,end:35,name:'천하삼분'},
+    {start:36,end:40,name:'삼국공방기'},
+    {start:41,end:44,name:'천하귀일'},
+    {start:45,end:45,name:'최종'}
+];
+let currentChapter = 1;
+function chapterDef() { return CHAPTERS[currentChapter-1] || CHAPTERS[0]; }
+function chapterOffset() { return chapterDef().start - 1; }
+function globalStage(localStage) { return chapterOffset() + localStage; }
+function episodeForStage(global) { return EPISODES.find(e=>global>=e.start && global<=e.end) || EPISODES[0]; }
+function mapStageLabel() { return `제${currentChapter}장 · ${episodeForStage(globalStage(Math.max(1,currentMapStage))).name} · ${globalStage(currentMapStage)}/45`; }
+function updateMapStageLabel() { const el=document.getElementById('map-stage-display'); if(el)el.textContent=mapStageLabel(); }
+const MAP_STAGES = 20; // 호환 상수: 실제 생성 층수는 챕터별 length를 사용한다.
+
 let mapData = { nodes: [], edges: [] }; let currentMapStage = 0; let currentMapNodeId = 'start';
 let pendingMapNodeId = null;
 
@@ -1397,7 +1423,7 @@ function confirmTreasure(index) {
     
     if (typeof updateRoundDisplay === 'function') updateRoundDisplay();
     let mapStageDisplay = document.getElementById('map-stage-display');
-    if (mapStageDisplay) mapStageDisplay.innerText = currentMapStage;
+    if (mapStageDisplay) updateMapStageLabel();
     if (typeof scheduleMapLines === 'function') scheduleMapLines();
     renderOwnedTreasures();
     refreshDeploymentLimitUI();
@@ -1428,6 +1454,7 @@ function startGame(factionName) {
         g => g.faction === 'other' || g.faction.split(',').includes(key)
     );
 
+    currentChapter = 1;
     currentMapStage = 0;
     currentMapNodeId = 'start';
     isInitialRound1 = true;
@@ -1626,7 +1653,7 @@ function updateRoundDisplay() {
         : currentMapStage;
 
     document.getElementById('round-display').innerText =
-        `라운드: ${currentBattleRound} (단계: ${stageText}/20)`;
+        `제${currentChapter}장 · ${episodeForStage(globalStage(Math.max(1,currentMapStage))).name} | ${globalStage(currentMapStage)}/45` ;
 
     document.getElementById('gold-display').innerText =
         `🪙 ${playerGold}`;
@@ -1951,16 +1978,13 @@ function showBattleModal(nodeType, targetNode) {
 
     let diffStage = battleRound;
 
-    if (nodeType === '정예 전투') {
-        diffStage = Math.min(20, diffStage + 2);
-    }
-
-    if (nodeType === '보스') {
-        diffStage = Math.min(20, diffStage + 4);
-    }
+    // 기존 1~20 단계 난이도표를 안전하게 활용하며, 다음 챕터는 상위 난이도로 이어진다.
+    diffStage = Math.min(20, Math.max(1, globalStage(targetNode.stage)));
+    if (nodeType === '정예 전투') diffStage = Math.min(20, diffStage + 2);
+    if (nodeType === '보스') diffStage = Math.min(20, diffStage + 4);
 
     document.getElementById('modal-round-title').innerText =
-        `⚔️ ${battleRound} 라운드 : ${nodeType} ⚔️`;
+        `⚔️ ${globalStage(targetNode.stage)} 라운드 · ${episodeForStage(globalStage(targetNode.stage)).name} : ${nodeType} ⚔️`;
 
     if (!targetNode.enemyTeam) {
         const isElite = nodeType === '정예 전투';
@@ -2030,7 +2054,7 @@ async function startBattleScene() {
         currentMapStage = targetNode.stage;
         currentMapNodeId = targetNode.id;
         updateRoundDisplay();
-        document.getElementById('map-stage-display').innerText = currentMapStage;
+        updateMapStageLabel();
         scheduleMapLines();
         pendingMapNodeId = null;
     }
@@ -3486,7 +3510,7 @@ function returnToGame(isWin) {
             16: 9, 17: 10, 18: 10, 19: 10, 20: 15
         };
 
-        const baseGold = baseGoldTable[currentMapStage] || 0;
+        const baseGold = baseGoldTable[Math.min(20,globalStage(currentMapStage))] || 10;
 
         playerGold += baseGold + earnedBounty;
 
@@ -3517,15 +3541,25 @@ function returnToGame(isWin) {
             currNode.state = 'completed';
         }
 
+        // 20/40단계를 승리하면 보상 선택 후 새 챕터의 맵으로 진입한다.
+        if (currNode && currentMapStage === chapterDef().length && currentChapter < 3) {
+            currentChapter++;
+            currentMapStage = 0;
+            currentMapNodeId = 'start';
+            pendingMapNodeId = null;
+            pendingStoryEventNodeId = null;
+            generateMap();
+            alert(`📜 제${currentChapter}장 개막! ${chapterDef().name}`);
+        }
         updateRoundDisplay();
 
         // 기존 최종 승리 처리 유지
-        if (currentMapStage >= 20 || hasJadeSeal) {
+        if (currentChapter === 3 && currentMapStage >= 5) {
             clearRunSave();
             document.body.innerHTML = `
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background-color:#2c3e50; color:#f1c40f; text-align:center;">
                     <h1>🏆 천하 통일!</h1>
-                    <p style="color:white; margin-bottom:20px;">20단계 보스를 격파하고 천하를 평정했습니다!</p>
+                    <p style="color:white; margin-bottom:20px;">45라운드 최종 보스를 격파하고 천하를 평정했습니다!</p>
                     <button onclick="location.reload()" style="padding:15px 30px; font-size:18px; background-color:#f1c40f; color:#2c3e50; border:none; border-radius:8px; cursor:pointer;">다시 하기</button>
                 </div>
             `;
@@ -3576,94 +3610,73 @@ function returnToGame(isWin) {
 }
 
 function generateMap() {
-    mapData = { nodes: [], edges: [] };
-    mapData.nodes.push({ id: 'start', stage: 0, lane: 1, type: '시작', state: 'completed' });
-
-    // 정예 전투는 보물 고정 층(9, 19)과 첫 층을 제외한 서로 다른 3개 층에만 배치한다.
-    const eliteEligibleStages = [];
-    for (let stage = 2; stage <= 18; stage++) {
-        if (![5, 9, 14, 19].includes(stage)) eliteEligibleStages.push(stage);
+    const length = chapterDef().length;
+    mapData = { nodes: [], edges: [], chapter: currentChapter };
+    mapData.nodes.push({id:'start',stage:0,lane:1,type:'시작',state:'completed'});
+    // 각 5단계 구간에서 마지막 단계로 향하는 길목(앞의 2~4단계)에 정예 하나만 만든다.
+    // 정예가 배치된 층도 다른 두 갈림길은 정상적으로 유지한다.
+    const eliteByStage = new Map();
+    const localEpisodeStarts = currentChapter===3 ? [1] : [1,6,11,16];
+    for (const first of localEpisodeStarts) {
+        const last = Math.min(length, first+4);
+        const candidates = [];
+        for(let t=first+1;t<last;t++) if(![5,9,14,19].includes(t))candidates.push(t);
+        if(candidates.length){
+            const eliteStage=candidates[Math.floor(Math.random()*candidates.length)];
+            eliteByStage.set(eliteStage,Math.floor(Math.random()*MAP_LANES));
+        }
     }
-    for (let i = eliteEligibleStages.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [eliteEligibleStages[i], eliteEligibleStages[j]] = [eliteEligibleStages[j], eliteEligibleStages[i]];
-    }
-    const eliteStages = new Set(eliteEligibleStages.slice(0, 3));
-
-    for (let s = 1; s <= MAP_STAGES; s++) {
-        if (s === 20) {
-            mapData.nodes.push({ id: `s${s}_l1`, stage: s, lane: 1, type: '보스', state: 'unvisited' });
+    const treasures = currentChapter===3 ? new Set() : new Set([5,9,14,19]);
+    for(let stage=1;stage<=length;stage++){
+        const global=globalStage(stage);
+        if(global===45 || stage===length){
+            mapData.nodes.push({id:`s${stage}_l1`,stage,lane:1,type:global===45?'보스':'일반 전투',state:'unvisited'});
             continue;
         }
-
-        // 기존 지도 구조의 10단계 단일 중앙 노드는 유지하되, 정예 층으로 뽑혔을 때만 정예가 된다.
-        if (s === 10) {
-            const type = eliteStages.has(10) ? '정예 전투' : '일반 전투';
-            mapData.nodes.push({ id: `s${s}_l1`, stage: s, lane: 1, type, state: 'unvisited' });
+        if(treasures.has(stage)){
+            for(let lane=0;lane<MAP_LANES;lane++)mapData.nodes.push({id:`s${stage}_l${lane}`,stage,lane,type:'보물',state:'unvisited'});
             continue;
         }
-
-        if ([5, 9, 14, 19].includes(s)) {
-            for (let l = 0; l < MAP_LANES; l++) {
-                mapData.nodes.push({ id: `s${s}_l${l}`, stage: s, lane: l, type: '보물', state: 'unvisited' });
-            }
-            continue;
-        }
-
-        const normalTypePool = s === 1
-            ? ['일반 전투']
-            : ['일반 전투', '일반 전투', '의원', '사건'];
-        const eliteLane = eliteStages.has(s) ? Math.floor(Math.random() * MAP_LANES) : -1;
-
-        for (let l = 0; l < MAP_LANES; l++) {
-            const type = l === eliteLane
-                ? '정예 전투'
-                : normalTypePool[Math.floor(Math.random() * normalTypePool.length)];
-            mapData.nodes.push({ id: `s${s}_l${l}`, stage: s, lane: l, type, state: 'unvisited' });
+        for(let lane=0;lane<MAP_LANES;lane++){
+            const elite=eliteByStage.get(stage)===lane;
+            const pool=stage===1?['일반 전투']:['일반 전투','일반 전투','의원','사건'];
+            const type=elite?'정예 전투':pool[Math.floor(Math.random()*pool.length)];
+            mapData.nodes.push({id:`s${stage}_l${lane}`,stage,lane,type,state:'unvisited'});
         }
     }
-
-    // 기존 랜덤 분기 연결 방식을 유지한다.
-    let prevNodes = [mapData.nodes.find(n => n.id === 'start')];
-    for (let s = 1; s <= MAP_STAGES; s++) {
-        const currNodes = mapData.nodes.filter(n => n.stage === s);
-        if (currNodes.length === 1) {
-            prevNodes.forEach(p => mapData.edges.push({ from: p.id, to: currNodes[0].id }));
-        } else if (prevNodes.length === 1) {
-            currNodes.forEach(c => mapData.edges.push({ from: prevNodes[0].id, to: c.id }));
-        } else {
-            currNodes.forEach((c, idx) => {
-                if (prevNodes[idx]) mapData.edges.push({ from: prevNodes[idx].id, to: c.id });
-                if (idx > 0 && Math.random() < 0.3 && prevNodes[idx - 1]) {
-                    mapData.edges.push({ from: prevNodes[idx - 1].id, to: c.id });
-                }
-                if (idx < 2 && Math.random() < 0.3 && prevNodes[idx + 1]) {
-                    mapData.edges.push({ from: prevNodes[idx + 1].id, to: c.id });
-                }
-            });
-        }
-        prevNodes = currNodes;
+    // 원본의 랜덤 경로 연결 방식을 유지한다.
+    let prevNodes=[mapData.nodes[0]];
+    for(let stage=1;stage<=length;stage++){
+        const currNodes=mapData.nodes.filter(n=>n.stage===stage);
+        if(currNodes.length===1)prevNodes.forEach(p=>mapData.edges.push({from:p.id,to:currNodes[0].id}));
+        else if(prevNodes.length===1)currNodes.forEach(c=>mapData.edges.push({from:prevNodes[0].id,to:c.id}));
+        else currNodes.forEach((c,idx)=>{
+            if(prevNodes[idx])mapData.edges.push({from:prevNodes[idx].id,to:c.id});
+            if(idx>0 && Math.random()<.3 && prevNodes[idx-1])mapData.edges.push({from:prevNodes[idx-1].id,to:c.id});
+            if(idx<2 && Math.random()<.3 && prevNodes[idx+1])mapData.edges.push({from:prevNodes[idx+1].id,to:c.id});
+        });
+        prevNodes=currNodes;
     }
-
-    // 실제 연결된 경로에서 의원-의원 또는 보물-보물이 연속되지 않도록 조정한다.
-    const fixedTreasureStages = new Set([5, 9, 14, 19]);
-    const nodesById = new Map(mapData.nodes.map(node => [node.id, node]));
-    for (const edge of mapData.edges) {
-        const fromNode = nodesById.get(edge.from);
-        const toNode = nodesById.get(edge.to);
-        if (!fromNode || !toNode) continue;
-        if (fromNode.type !== toNode.type) continue;
-        if (!['의원', '보물'].includes(fromNode.type)) continue;
-
-        if (fixedTreasureStages.has(toNode.stage) && !fixedTreasureStages.has(fromNode.stage)) {
-            fromNode.type = '일반 전투';
-        } else if (fixedTreasureStages.has(fromNode.stage) && !fixedTreasureStages.has(toNode.stage)) {
-            toNode.type = '일반 전투';
-        } else if (!fixedTreasureStages.has(toNode.stage)) {
-            toNode.type = '일반 전투';
-        } else {
-            fromNode.type = '일반 전투';
-        }
+    const byId=new Map(mapData.nodes.map(n=>[n.id,n]));
+    // 연결 경로를 따라 의원·보물이 연속되지 않도록 하는 기존 규칙.
+    for(const edge of mapData.edges){
+        const from=byId.get(edge.from),to=byId.get(edge.to);
+        if(!from||!to||from.type!==to.type||!['의원','보물'].includes(from.type))continue;
+        if(treasures.has(to.stage)&&!treasures.has(from.stage))from.type='일반 전투';
+        else if(treasures.has(from.stage)&&!treasures.has(to.stage))to.type='일반 전투';
+        else if(!treasures.has(to.stage))to.type='일반 전투';
+        else from.type='일반 전투';
+    }
+    // 실제 이동 가능한 모든 경로에서 사건이 세 번 연속 나오는 것을 차단한다.
+    // 앞선 두 노드가 사건인 경로가 하나라도 연결되면 현재 사건을 일반 전투로 대체.
+    const incoming=new Map();
+    for(const e of mapData.edges){if(!incoming.has(e.to))incoming.set(e.to,[]);incoming.get(e.to).push(e.from);}
+    for(let stage=1;stage<=length;stage++)for(const n of mapData.nodes.filter(x=>x.stage===stage&&x.type==='사건')){
+        const previous=incoming.get(n.id)||[];
+        if(previous.some(pid=>{
+            const p=byId.get(pid);
+            return p&&p.type==='사건'&&(incoming.get(pid)||[]).some(ppid=>byId.get(ppid)?.type==='사건');
+        }))n.type='일반 전투';
     }
 }
 
@@ -3678,7 +3691,7 @@ function goToMap() {
     document.getElementById('game-screen').style.display = 'none'; 
     document.getElementById('clinic-screen').style.display = 'none'; 
     document.getElementById('map-screen').style.display = 'flex'; 
-    document.getElementById('map-stage-display').innerText = currentMapStage; 
+    updateMapStageLabel(); 
     renderMapNodes(); 
 }
 
@@ -3689,7 +3702,7 @@ function renderMapNodes() {
         if (c.tagName.toLowerCase() !== 'svg') c.remove();
     });
 
-    for (let s = MAP_STAGES; s >= 1; s--) {
+    for (let s = chapterDef().length; s >= 1; s--) {
         let rowNodes = mapData.nodes.filter(n => n.stage === s);
         let rowDiv = document.createElement('div');
         rowDiv.className = 'map-row';
@@ -3889,7 +3902,7 @@ function clickMapNode(id) {
     currentMapStage = targetNode.stage;
     currentMapNodeId = targetNode.id;
     updateRoundDisplay();
-    document.getElementById('map-stage-display').innerText = currentMapStage;
+    updateMapStageLabel();
     scheduleMapLines();
 }
         document.getElementById('map-screen').style.display = 'none'; 
@@ -3981,7 +3994,7 @@ function saveRun(){
     style:slot.firstElementChild.getAttribute('style')||'',className:slot.firstElementChild.className}:null
   }));
   const data={version:1,faction:document.getElementById('faction-title').textContent,
-   playerGold,currentMapStage,currentMapNodeId,currentBattleRound,isInitialRound1,bagCounter,freeRerolls,
+   playerGold,currentChapter,currentMapStage,currentMapNodeId,currentBattleRound,isInitialRound1,bagCounter,freeRerolls,
    mapData,ownedTreasures,pendingRecruits,pendingRewardChoices,pendingRewardResolved,storyHutProgress,pendingStoryEventNodeId,
    inventory:readSlots('inventory-container'),storage:readSlots('storage-container'),
    shop:Array.from(document.querySelectorAll('#shop-container .item')).map(el=>({data:el.shopData,hidden:el.style.display==='none'}))};
@@ -4012,7 +4025,7 @@ function loadRun(){
  restoringRun=true;
  try{
   startGame(data.faction); // 기본 UI 슬롯/맵 핸들러를 먼저 구성
-  playerGold=data.playerGold;currentMapStage=data.currentMapStage;currentMapNodeId=data.currentMapNodeId;
+  playerGold=data.playerGold;currentChapter=data.currentChapter||1;currentMapStage=data.currentMapStage;currentMapNodeId=data.currentMapNodeId;
   currentBattleRound=data.currentBattleRound;isInitialRound1=data.isInitialRound1;bagCounter=data.bagCounter;
   freeRerolls=data.freeRerolls||0;mapData=data.mapData;ownedTreasures=data.ownedTreasures||[];
   pendingRecruits=data.pendingRecruits||[];pendingRewardChoices=data.pendingRewardChoices||null;
