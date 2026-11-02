@@ -2048,12 +2048,21 @@ function showBattleModal(nodeType, targetNode) {
     document.getElementById('modal-round-title').innerText =
         `⚔️ ${globalStage(targetNode.stage)} 라운드 · ${episodeForStage(globalStage(targetNode.stage)).name} : ${nodeType} ⚔️`;
 
-    // 구 버전 저장 지도에 남은 무작위 적군 편성은 새 스토리 라운드 편성으로 마이그레이션.
-    if (nodeType !== '정예 전투' && globalStage(targetNode.stage) <= 20 &&
-        Array.isArray(targetNode.enemyTeam) && targetNode.enemyTeam.length &&
-        !targetNode.enemyTeam.some(e=>e.enemyId)) {
-        targetNode.enemyTeam = null;
-        targetNode.enemyListStr = null;
+    // Saved-map compatibility: scripted nodes must always match the current scenario roster.
+    // Do not replace optional elite battles. Never trust a stale random roster or old schema.
+    const storyRound = globalStage(targetNode.stage);
+    if (nodeType !== '정예 전투' && storyRound >= 1 && storyRound <= 20) {
+        const storySlots = CUSTOM_ENEMY_DATA.rounds[String(storyRound)];
+        if (storySlots) {
+            const roster = Array.isArray(targetNode.enemyTeam) ? targetNode.enemyTeam : [];
+            const validRoster = roster.length === storySlots.length && roster.every((unit, index) =>
+                storySlots[index].options.some(choice => choice.enemyId === unit.enemyId && choice.name === unit.name)
+            );
+            if (!validRoster) {
+                targetNode.enemyTeam = null;
+                targetNode.enemyListStr = null;
+            }
+        }
     }
     if (!targetNode.enemyTeam) {
         const isElite = nodeType === '정예 전투';
@@ -4175,10 +4184,21 @@ window.addEventListener('load',()=>setTimeout(beginSavedRun,150));
 
 </script>
 <script>
+// 새 서비스워커가 활성화되면 새 HTML로 1회 전환한다. 기존 게임 저장 데이터는 그대로 유지.
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  let reloadedForController = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    if (reloadedForController) return;
+    reloadedForController = true;
+    location.reload();
+  });
+}
 // PWA 실행 환경에서만 오프라인 캐시를 등록한다. 전투 로직과 독립적이다.
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./service-worker.js').catch(function (error) {
+    navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' }).then(function (registration) {
+      registration.update().catch(function(error) { console.warn('PWA 업데이트 확인 실패:',error); });
+    }).catch(function (error) {
       console.warn('오프라인 모드 등록 실패:', error);
     });
   });
