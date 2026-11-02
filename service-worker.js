@@ -1,7 +1,8 @@
-const CACHE_NAME = "three-kingdoms-chapter45-v1";
+const CACHE_NAME = "tk-enemy-portraits-20261102-v1";
 const CORE_ASSETS = [
   "./",
   "./index.html",
+  "./scenario-engine.js",
   "./manifest.webmanifest",
   "./icons/icon-180.png",
   "./icons/icon-192.png",
@@ -20,7 +21,7 @@ self.addEventListener('install', (event) => {
 });
 self.addEventListener('activate', (event) => {
   event.waitUntil(caches.keys().then(keys => Promise.all(
-    keys.filter(key => (key.startsWith('three-kingdoms-') || key.startsWith('tk-battle-')) && key !== CACHE_NAME).map(key => caches.delete(key))
+    keys.filter(key => (key.startsWith('three-kingdoms-') || (key.startsWith('tk-battle-') || key.startsWith('tk-enemy-'))) && key !== CACHE_NAME).map(key => caches.delete(key))
   )));
   self.clients.claim();
 });
