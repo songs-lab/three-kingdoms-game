@@ -970,7 +970,10 @@ function chapterDef() { return CHAPTERS[currentChapter-1] || CHAPTERS[0]; }
 function chapterOffset() { return chapterDef().start - 1; }
 function globalStage(localStage) { return chapterOffset() + localStage; }
 function episodeForStage(global) { return EPISODES.find(e=>global>=e.start && global<=e.end) || EPISODES[0]; }
-function mapStageLabel() { return `제${currentChapter}장 · ${episodeForStage(globalStage(Math.max(1,currentMapStage))).name} · ${globalStage(currentMapStage)}/45`; }
+function mapStageLabel() {
+    const nextRound = Math.min(chapterDef().end, globalStage(currentMapStage+1));
+    return `제${currentChapter}장 · ${episodeForStage(nextRound).name} · 다음 전투 ${nextRound}/45`;
+}
 function updateMapStageLabel() { const el=document.getElementById('map-stage-display'); if(el)el.textContent=mapStageLabel(); }
 const MAP_STAGES = 20; // 호환 상수: 실제 생성 층수는 챕터별 length를 사용한다.
 
@@ -979,7 +982,8 @@ let pendingMapNodeId = null;
 
 // 지도 단계와 별개로 실제 전투 진행 번호를 관리한다.
 let currentBattleRound = 1;
-const BATTLE_NODE_TYPES = ['일반 전투', '정예 전투', '보스'];
+const BATTLE_NODE_TYPES = ['일반 전투', '보스'];
+const MAP_RULES_VERSION = 2; // 각 전투 라운드는 필수. 옆길 사건/의원/보물은 라운드 미소모.
 
 let lastPlayerTeam = [];
 let activeBondsInBattle = [];
@@ -1414,16 +1418,8 @@ function confirmTreasure(index) {
         ownedTreasures.push(selectedTreasure);
     }
 
-    let prevNode = mapData.nodes.find(n => n.id === currentMapNodeId);
-    if (prevNode && prevNode.state === 'in-progress') {
-    advanceBattleRoundForNode(prevNode);
-    prevNode.state = 'completed';
-} else if (prevNode && ['병영', '시작', '의원', '보물'].includes(prevNode.type)) {
-    prevNode.state = 'completed';
-}
-    
+    // 보물은 다음 필수 전투로 가기 전의 선택형 옆길이다.
     targetNode.state = 'completed'; 
-    currentMapStage = targetNode.stage;
     currentMapNodeId = targetNode.id;
     
     if (typeof updateRoundDisplay === 'function') updateRoundDisplay();
@@ -1653,15 +1649,10 @@ function updateBondUI() {
 function openSkillModal(skill) { document.getElementById('skill-modal-name').innerText = skill.name + (skill.isUnique ? " [고유]" : " [공용]"); let typeTag = document.getElementById('skill-modal-type'); typeTag.innerText = skill.type; typeTag.className = "type-tag type-" + (skill.type === "물리" ? "A" : skill.type === "책략" ? "B" : skill.type === "고정피해" ? "C" : "D"); document.getElementById('skill-modal-power').innerText = skill.power > 0 ? "데미지 " + skill.power : "버프/특수"; document.getElementById('skill-modal-acc').innerText = skill.acc === "-" ? "명중률 -" : "명중률 " + skill.acc + "%"; document.getElementById('skill-modal-desc').innerText = skill.desc; document.getElementById('skill-modal').style.display = 'flex'; }
 function closeSkillModal() { document.getElementById('skill-modal').style.display = 'none'; }
 function updateRoundDisplay() {
-    const stageText = currentMapStage === 0
-        ? "캠프"
-        : currentMapStage;
-
-    document.getElementById('round-display').innerText =
-        `제${currentChapter}장 · ${episodeForStage(globalStage(Math.max(1,currentMapStage))).name} | ${globalStage(currentMapStage)}/45` ;
-
-    document.getElementById('gold-display').innerText =
-        `🪙 ${playerGold}`;
+    const nextRound=Math.min(chapterDef().end,globalStage(currentMapStage+1));
+    document.getElementById('round-display').innerText=
+        `제${currentChapter}장 · ${episodeForStage(nextRound).name} | 다음 전투 ${nextRound}/45`;
+    document.getElementById('gold-display').innerText=`🪙 ${playerGold}`;
 }
 let freeRerolls = 0;
 function refreshRerollButton() {
@@ -1886,14 +1877,14 @@ function scenarioOnEnemyDeath(dead,enemyTeam,playerTeam,gameTime){
  return bonus;
 }
 
-function generateEnemiesForRound(round, isElite = false) { 
+function generateEnemiesForRound(round, useScripted = true) { 
     let table = { 
         1: {C:"1~3"}, 2: {C:"2~3"}, 3: {C:"2~3",B:1}, 4: {C:2,B:2}, 5: {B:3}, 
         6: {C:"1~2",B:"2~3"}, 7: {C:"0~2",B:"3~4"}, 8: {B:"2~3",A:"1~2"}, 9: {B:"2~3",A:2}, 10: {A:3}, 
         11: {B:"1~2",A:"2~3"}, 12: {B:"1~2",A:2,S:1}, 13: {B:"2~3",A:2,S:1}, 14: {A:"2~3",S:2}, 15: {A:2,S:3}, 
         16: {S:4}, 17: {S:"2~3",SS:1}, 18: {S:3,SS:2}, 19: {S:2,SS:3}, 20: {SS:3,SSS:1} 
     }; 
-    const scripted = !isElite ? createScenarioEnemies(round) : null;
+    const scripted = useScripted ? createScenarioEnemies(round) : null;
     if (scripted) return scripted;
     let roundConfig = table[round] || { C: 1 }; 
     let tierCounts = {};
@@ -1943,13 +1934,6 @@ function generateEnemiesForRound(round, isElite = false) {
             currentTotal--;
         }
     }
-// 정예 전투의 추가 적은 인원 보정 이후에 추가한다.
-if (isElite) {
-    let selectedTier = availableTiers[Math.floor(Math.random() * availableTiers.length)];
-    tierCounts[selectedTier] = (tierCounts[selectedTier] || 0) + 1;
-    currentTotal++;
-}
-
 let enemies = [];
     const usedNames = new Set();
     // 적군은 선택한 나라에 속하지 않는 장수만 사용한다.
@@ -1987,41 +1971,17 @@ let enemies = [];
 }
 
 function advanceBattleRoundForNode(node) {
-    if (
-        !node ||
-        !BATTLE_NODE_TYPES.includes(node.type) ||
-        node.roundAdvanced
-    ) {
-        return false;
-    }
-
-    // 같은 전투 노드의 라운드 증가가 중복 실행되지 않게 한다.
+    // Only winning a mandatory round advances the round counter.
+    if (!node || !BATTLE_NODE_TYPES.includes(node.type) || node.eventForcedBattle ||
+        node.roundAdvanced || node.state === 'completed' || node.stage !== currentMapStage + 1) return false;
     node.roundAdvanced = true;
-    currentBattleRound++;
-
+    currentMapStage = node.stage;
+    currentBattleRound = Math.min(46, globalStage(currentMapStage) + 1);
     return true;
 }
 
 function getBattleRoundForNode(targetNode) {
-    if (!targetNode || targetNode.id === currentMapNodeId) {
-        return currentBattleRound;
-    }
-
-    const previousNode = mapData.nodes.find(
-        n => n.id === currentMapNodeId
-    );
-
-    // 패배한 전투에서 다른 전투로 이동할 때 다음 번호를 미리 표시한다.
-    if (
-        previousNode &&
-        previousNode.state === 'in-progress' &&
-        BATTLE_NODE_TYPES.includes(previousNode.type) &&
-        !previousNode.roundAdvanced
-    ) {
-        return currentBattleRound + 1;
-    }
-
-    return currentBattleRound;
+    return targetNode && !targetNode.eventForcedBattle ? globalStage(targetNode.stage) : globalStage(currentMapStage + 1);
 }
 
 function showBattleModal(nodeType, targetNode) {
@@ -2038,20 +1998,17 @@ function showBattleModal(nodeType, targetNode) {
 
     const battleRound = getBattleRoundForNode(targetNode);
 
-    let diffStage = battleRound;
-
-    // 기존 1~20 단계 난이도표를 안전하게 활용하며, 다음 챕터는 상위 난이도로 이어진다.
-    diffStage = Math.min(20, Math.max(1, globalStage(targetNode.stage)));
-    if (nodeType === '정예 전투') diffStage = Math.min(20, diffStage + 2);
+    const storyRound = globalStage(targetNode.stage);
+    const isBonusBattle = !!targetNode.eventForcedBattle;
+    let diffStage = Math.min(20, Math.max(1, storyRound));
     if (nodeType === '보스') diffStage = Math.min(20, diffStage + 4);
 
-    document.getElementById('modal-round-title').innerText =
-        `⚔️ ${globalStage(targetNode.stage)} 라운드 · ${episodeForStage(globalStage(targetNode.stage)).name} : ${nodeType} ⚔️`;
+    document.getElementById('modal-round-title').innerText = isBonusBattle
+        ? `⚔️ 사건 추가 전투 · 라운드 미소모 ⚔️`
+        : `⚔️ ${storyRound} 라운드 · ${episodeForStage(storyRound).name} ⚔️`;
 
-    // Saved-map compatibility: scripted nodes must always match the current scenario roster.
-    // Do not replace optional elite battles. Never trust a stale random roster or old schema.
-    const storyRound = globalStage(targetNode.stage);
-    if (nodeType !== '정예 전투' && storyRound >= 1 && storyRound <= 20) {
+    // 기존 저장 파일의 무작위 적 편성을 쓰지 않고, 1~20라운드 지정 적을 우선한다.
+    if (!isBonusBattle && storyRound >= 1 && storyRound <= 20) {
         const storySlots = CUSTOM_ENEMY_DATA.rounds[String(storyRound)];
         if (storySlots) {
             const roster = Array.isArray(targetNode.enemyTeam) ? targetNode.enemyTeam : [];
@@ -2065,19 +2022,13 @@ function showBattleModal(nodeType, targetNode) {
         }
     }
     if (!targetNode.enemyTeam) {
-        const isElite = nodeType === '정예 전투';
-
-        const generated = generateEnemiesForRound(
-            isElite ? diffStage : globalStage(targetNode.stage),
-            isElite
-        );
-
+        const generated = generateEnemiesForRound(diffStage, !isBonusBattle);
         targetNode.enemyTeam = generated.team;
         targetNode.enemyListStr = generated.listStr;
     }
 
     currentEnemyTeam = targetNode.enemyTeam;
-    scenarioHydrateSavedEnemies(currentEnemyTeam,globalStage(targetNode.stage));
+    if (!isBonusBattle) scenarioHydrateSavedEnemies(currentEnemyTeam, storyRound);
 
     document.getElementById('enemy-list').innerText =
         targetNode.enemyListStr;
@@ -2122,15 +2073,8 @@ async function startBattleScene() {
         let targetNode = mapData.nodes.find(n => n.id === pendingMapNodeId);
         let prevNode = mapData.nodes.find(n => n.id === currentMapNodeId);
 
-        if (prevNode && prevNode.id !== targetNode.id && prevNode.state === 'in-progress') {
-            advanceBattleRoundForNode(prevNode);
-            prevNode.state = 'completed';
-        } else if (prevNode && ['시작', '의원', '보물'].includes(prevNode.type)) {
-            prevNode.state = 'completed';
-        }
-
+        // Entering a battle only selects the encounter; it does not finish a round.
         targetNode.state = 'in-progress';
-        currentMapStage = targetNode.stage;
         currentMapNodeId = targetNode.id;
         updateRoundDisplay();
         updateMapStageLabel();
@@ -2145,7 +2089,7 @@ async function startBattleScene() {
     document.getElementById('battle-result-btn').style.display = 'none'; 
     document.getElementById('battle-log-area').innerHTML = ""; 
     
-    activeCustomRound = currentEnemyTeam.some(e=>e.enemyId) ? globalStage(currentMapStage) : 0;
+    activeCustomRound = currentEnemyTeam.some(e=>e.enemyId) ? globalStage(mapData.nodes.find(n=>n.id===currentMapNodeId)?.stage || currentMapStage + 1) : 0;
     forcedScenarioVictory = false;
     scenarioTriggered = new Set();
     resetBattleFX();
@@ -3614,14 +3558,11 @@ function returnToGame(isWin) {
             16: 9, 17: 10, 18: 10, 19: 10, 20: 15
         };
 
-        const baseGold = CUSTOM_ENEMY_DATA.rewards[String(globalStage(currentMapStage))] ?? (baseGoldTable[Math.min(20,globalStage(currentMapStage))] || 10);
+        const finishedRound = currNode ? globalStage(currNode.stage) : globalStage(currentMapStage + 1);
+        const baseGold = currNode?.eventForcedBattle ? 0 :
+            (CUSTOM_ENEMY_DATA.rewards[String(finishedRound)] ?? (baseGoldTable[Math.min(20,finishedRound)] || 10));
 
         playerGold += baseGold + earnedBounty;
-
-        if (currNode && currNode.type === '정예 전투') {
-            playerGold += 20;
-            setTimeout(() => alert("👹 정예 전투 격파 보너스! 금화 +20 획득!"), 150);
-        }
 
         if (lastPlayerTeam.some(u => u.name === "미축")) {
             playerGold += 3;
@@ -3646,7 +3587,7 @@ function returnToGame(isWin) {
         }
 
         // 20/40단계를 승리하면 보상 선택 후 새 챕터의 맵으로 진입한다.
-        if (currNode && currentMapStage === chapterDef().length && currentChapter < 3) {
+        if (currNode && !currNode.eventForcedBattle && currentMapStage === chapterDef().length && currentChapter < 3) {
             currentChapter++;
             currentMapStage = 0;
             currentMapNodeId = 'start';
@@ -3658,7 +3599,7 @@ function returnToGame(isWin) {
         updateRoundDisplay();
 
         // 기존 최종 승리 처리 유지
-        if (currentChapter === 3 && currentMapStage >= 5) {
+        if (currNode && !currNode.eventForcedBattle && currentChapter === 3 && currentMapStage >= 5) {
             clearRunSave();
             document.body.innerHTML = `
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background-color:#2c3e50; color:#f1c40f; text-align:center;">
@@ -3715,73 +3656,83 @@ function returnToGame(isWin) {
 
 function generateMap() {
     const length = chapterDef().length;
-    mapData = { nodes: [], edges: [], chapter: currentChapter };
+    mapData = {nodes:[], edges:[], chapter:currentChapter, rulesVersion:MAP_RULES_VERSION};
     mapData.nodes.push({id:'start',stage:0,lane:1,type:'시작',state:'completed'});
-    // 각 5단계 구간에서 마지막 단계로 향하는 길목(앞의 2~4단계)에 정예 하나만 만든다.
-    // 정예가 배치된 층도 다른 두 갈림길은 정상적으로 유지한다.
-    const eliteByStage = new Map();
-    const localEpisodeStarts = currentChapter===3 ? [1] : [1,6,11,16];
-    for (const first of localEpisodeStarts) {
-        const last = Math.min(length, first+4);
-        const candidates = [];
-        for(let t=first+1;t<last;t++) if(![5,9,14,19].includes(t))candidates.push(t);
-        if(candidates.length){
-            const eliteStage=candidates[Math.floor(Math.random()*candidates.length)];
-            eliteByStage.set(eliteStage,Math.floor(Math.random()*MAP_LANES));
+    const treasureStages = currentChapter===3 ? new Set() : new Set([5,9,14,19]);
+    let previousBattleId='start';
+    let consecutiveEvents=0;
+    for(let stage=1;stage<=length;stage++) {
+        const global = globalStage(stage);
+        const battleId = `s${stage}_l1`;
+        // Exactly one compulsory battle for each round, including multiples of five.
+        mapData.nodes.push({id:battleId,stage,lane:1,type:global===45?'보스':'일반 전투',state:'unvisited',requiredBattle:true});
+        mapData.edges.push({from:previousBattleId,to:battleId});
+
+        // Optional side event before the same battle: does not consume the round.
+        let supportType=null;
+        if (treasureStages.has(stage)) supportType='보물';
+        else if(stage>1) {
+            if(stage%5===2) supportType='의원';
+            else if(stage%5===3) supportType='사건';
+            else if(Math.random()<0.34) supportType=Math.random()<0.5?'의원':'사건';
+        }
+        if(supportType==='사건' && consecutiveEvents>=2) supportType='의원';
+        consecutiveEvents = supportType==='사건' ? consecutiveEvents+1 : 0;
+        if(supportType) {
+            const sideLane=stage%2===0?0:2;
+            const sideId=`s${stage}_l${sideLane}`;
+            mapData.nodes.push({id:sideId,stage,lane:sideLane,type:supportType,state:'unvisited',optional:true});
+            mapData.edges.push({from:previousBattleId,to:sideId});
+            mapData.edges.push({from:sideId,to:battleId});
+        }
+        previousBattleId=battleId;
+    }
+}
+
+// Old maps used clinic/treasure/event rows as round numbers. Rebuild their map safely.
+function migrateMapToMandatoryBattles() {
+    if (mapData?.rulesVersion===MAP_RULES_VERSION && mapData.chapter===currentChapter) return false;
+    const oldMap=mapData || {nodes:[]};
+    const oldNodes=Array.isArray(oldMap.nodes)?oldMap.nodes:[];
+    const oldProgress=currentMapStage;
+    // Only consecutively completed actual battle stages count as cleared rounds.
+    // If an old event occupied stage 2, that stage must be fought in the new map.
+    let completed=0;
+    for(let stage=1;stage<=chapterDef().length;stage++) {
+        const passed=oldNodes.some(n=>n.stage===stage && BATTLE_NODE_TYPES.includes(n.type) &&
+            !n.eventForcedBattle && (n.roundAdvanced || n.state==='completed'));
+        if(!passed)break;
+        completed=stage;
+    }
+    const oldNextBattle=oldNodes.find(n=>n.id===currentMapNodeId &&
+        BATTLE_NODE_TYPES.includes(n.type) && !n.eventForcedBattle && n.state==='in-progress');
+    generateMap();
+    for(const node of mapData.nodes) {
+        if(node.stage>0 && node.stage<=completed) {
+            node.state='completed';
+            if(node.requiredBattle)node.roundAdvanced=true;
+        } else if(node.optional && node.stage<=oldProgress) {
+            // Old optional visits could already have granted gold, healing or treasure.
+            // Avoid granting those rewards again when reconstructing the map.
+            node.state='completed';
         }
     }
-    const treasures = currentChapter===3 ? new Set() : new Set([5,9,14,19]);
-    for(let stage=1;stage<=length;stage++){
-        const global=globalStage(stage);
-        if(global===45 || stage===length){
-            mapData.nodes.push({id:`s${stage}_l1`,stage,lane:1,type:global===45?'보스':'일반 전투',state:'unvisited'});
-            continue;
-        }
-        if(treasures.has(stage)){
-            for(let lane=0;lane<MAP_LANES;lane++)mapData.nodes.push({id:`s${stage}_l${lane}`,stage,lane,type:'보물',state:'unvisited'});
-            continue;
-        }
-        for(let lane=0;lane<MAP_LANES;lane++){
-            const elite=eliteByStage.get(stage)===lane;
-            const pool=stage===1?['일반 전투']:['일반 전투','일반 전투','의원','사건'];
-            const type=elite?'정예 전투':pool[Math.floor(Math.random()*pool.length)];
-            mapData.nodes.push({id:`s${stage}_l${lane}`,stage,lane,type,state:'unvisited'});
+    currentMapStage=completed;
+    currentBattleRound=Math.min(46,globalStage(completed+1));
+    currentMapNodeId=completed?`s${completed}_l1`:'start';
+    pendingMapNodeId=null;
+    // Legacy battle which was started but not won remains available to replay.
+    if(oldNextBattle && oldNextBattle.stage===completed+1) {
+        const pending=mapData.nodes.find(n=>n.id===`s${oldNextBattle.stage}_l1`);
+        if(pending) {
+            pending.state='in-progress';
+            currentMapNodeId=pending.id;
         }
     }
-    // 원본의 랜덤 경로 연결 방식을 유지한다.
-    let prevNodes=[mapData.nodes[0]];
-    for(let stage=1;stage<=length;stage++){
-        const currNodes=mapData.nodes.filter(n=>n.stage===stage);
-        if(currNodes.length===1)prevNodes.forEach(p=>mapData.edges.push({from:p.id,to:currNodes[0].id}));
-        else if(prevNodes.length===1)currNodes.forEach(c=>mapData.edges.push({from:prevNodes[0].id,to:c.id}));
-        else currNodes.forEach((c,idx)=>{
-            if(prevNodes[idx])mapData.edges.push({from:prevNodes[idx].id,to:c.id});
-            if(idx>0 && Math.random()<.3 && prevNodes[idx-1])mapData.edges.push({from:prevNodes[idx-1].id,to:c.id});
-            if(idx<2 && Math.random()<.3 && prevNodes[idx+1])mapData.edges.push({from:prevNodes[idx+1].id,to:c.id});
-        });
-        prevNodes=currNodes;
+    if(oldProgress>completed) {
+        console.info(`[맵 마이그레이션] 이전 지도 ${oldProgress}층 → 완료 전투 ${completed}회. 빠진 라운드를 다시 진행합니다.`);
     }
-    const byId=new Map(mapData.nodes.map(n=>[n.id,n]));
-    // 연결 경로를 따라 의원·보물이 연속되지 않도록 하는 기존 규칙.
-    for(const edge of mapData.edges){
-        const from=byId.get(edge.from),to=byId.get(edge.to);
-        if(!from||!to||from.type!==to.type||!['의원','보물'].includes(from.type))continue;
-        if(treasures.has(to.stage)&&!treasures.has(from.stage))from.type='일반 전투';
-        else if(treasures.has(from.stage)&&!treasures.has(to.stage))to.type='일반 전투';
-        else if(!treasures.has(to.stage))to.type='일반 전투';
-        else from.type='일반 전투';
-    }
-    // 실제 이동 가능한 모든 경로에서 사건이 세 번 연속 나오는 것을 차단한다.
-    // 앞선 두 노드가 사건인 경로가 하나라도 연결되면 현재 사건을 일반 전투로 대체.
-    const incoming=new Map();
-    for(const e of mapData.edges){if(!incoming.has(e.to))incoming.set(e.to,[]);incoming.get(e.to).push(e.from);}
-    for(let stage=1;stage<=length;stage++)for(const n of mapData.nodes.filter(x=>x.stage===stage&&x.type==='사건')){
-        const previous=incoming.get(n.id)||[];
-        if(previous.some(pid=>{
-            const p=byId.get(pid);
-            return p&&p.type==='사건'&&(incoming.get(pid)||[]).some(ppid=>byId.get(ppid)?.type==='사건');
-        }))n.type='일반 전투';
-    }
+    return true;
 }
 
 function goToMap() { 
@@ -3811,10 +3762,20 @@ function renderMapNodes() {
         let rowDiv = document.createElement('div');
         rowDiv.className = 'map-row';
 
-        rowNodes.forEach(node => {
+        // Keep the same three-lane positions, even when a lane has no node.
+        rowNodes.sort((a,b)=>a.lane-b.lane);
+        for (let lane=0;lane<MAP_LANES;lane++) {
+            const node = rowNodes.find(n=>n.lane===lane);
+            if(!node) {
+                const blank=document.createElement('div');
+                blank.className='map-node map-node-placeholder';
+                blank.style.cssText='visibility:hidden;pointer-events:none;';
+                rowDiv.appendChild(blank);
+                continue;
+            }
             let isReachable =
                 mapData.edges.some(e => e.from === currentMapNodeId && e.to === node.id) &&
-                node.stage === currentMapStage + 1;
+                node.stage === currentMapStage + 1 && node.state === 'unvisited';
 
             let isCompleted = node.state === 'completed';
             let isInProgress = node.state === 'in-progress';
@@ -3825,12 +3786,12 @@ function renderMapNodes() {
             nodeDiv.id = `node-${node.id}`;
 
             let icon =
-                node.type === '일반 전투' ? '⚔️<br>일반' :
-                node.type === '정예 전투' ? '👹<br>정예' :
+                node.eventForcedBattle ? '❓<br>추가전' :
+                node.type === '일반 전투' ? `⚔️<br>${globalStage(node.stage)}R` :
                 node.type === '보물' ? '🎁<br>보물' :
                 node.type === '의원' ? '🏥<br>의원' :
                 node.type === '사건' ? '❓<br>사건' :
-                '👑<br>보스';
+                `👑<br>${globalStage(node.stage)}R`;
 
             nodeDiv.innerHTML = icon;
 
@@ -3839,7 +3800,7 @@ function renderMapNodes() {
             }
 
             rowDiv.appendChild(nodeDiv);
-        });
+        }
 
         container.appendChild(rowDiv);
     }
@@ -3961,56 +3922,31 @@ if (mapContainerForLines) {
 window.addEventListener('resize', scheduleMapLines);
 
 function clickMapNode(id) {
-    let targetNode = mapData.nodes.find(n => n.id === id); 
-    let prevNode = mapData.nodes.find(n => n.id === currentMapNodeId);
-    
-    let isReachable = mapData.edges.some(e => e.from === currentMapNodeId && e.to === id) && targetNode.stage === currentMapStage + 1; 
-    let isCurrentCampOrClinic = (id === currentMapNodeId && ['시작', '의원'].includes(targetNode.type));
-    let isCurrentBattleResume = (id === currentMapNodeId && targetNode.state === 'in-progress' && ['일반 전투', '정예 전투', '보스'].includes(targetNode.type));
-    let isCurrentTreasureResume = (id === currentMapNodeId && targetNode.state === 'unvisited' && targetNode.type === '보물');
+    const targetNode = mapData.nodes.find(n => n.id === id);
+    if(!targetNode)return;
+    const isReachable = mapData.edges.some(e => e.from===currentMapNodeId && e.to===id) &&
+        targetNode.stage===currentMapStage+1 && targetNode.state==='unvisited';
+    const isBattleResume = id===currentMapNodeId && targetNode.state==='in-progress' &&
+        BATTLE_NODE_TYPES.includes(targetNode.type);
+    if(!isReachable && !isBattleResume)return;
 
-    if (!isReachable && !isCurrentCampOrClinic && !isCurrentBattleResume && !isCurrentTreasureResume) return;
-
-    if (['일반 전투', '정예 전투', '보스'].includes(targetNode.type)) { 
-        if (isReachable) pendingMapNodeId = id; 
-        else pendingMapNodeId = null; 
-        showBattleModal(targetNode.type, targetNode); 
-    } 
-    else if (targetNode.type === '보물') {
-        if (isReachable) pendingMapNodeId = id; 
-        else pendingMapNodeId = null; 
-        
-        if (!targetNode.treasureChoices) {
-            targetNode.treasureChoices = generateTreasureChoices(); 
-        }
+    if(BATTLE_NODE_TYPES.includes(targetNode.type)) {
+        pendingMapNodeId=isReachable?id:null;
+        showBattleModal(targetNode.type,targetNode);
+    } else if(targetNode.type==='보물') {
+        pendingMapNodeId=id;
+        if(!targetNode.treasureChoices)targetNode.treasureChoices=generateTreasureChoices();
         renderTreasureModal(targetNode);
-        document.getElementById('treasure-modal').style.display = 'flex';
-        return; 
-    }
-    else if (targetNode.type === '사건') {
-        if (isReachable && !targetNode.storyResolved) openStoryEvent(targetNode);
-        return;
-    }
-    else if (['시작'].includes(targetNode.type)) { 
-    } 
-    else if (targetNode.type === '의원') { 
-        if (isReachable) {
-    if (prevNode && prevNode.state === 'in-progress') {
-        advanceBattleRoundForNode(prevNode);
-        prevNode.state = 'completed';
-    } else if (prevNode && ['시작', '의원', '보물'].includes(prevNode.type)) {
-        prevNode.state = 'completed';
-    }
-
-    targetNode.state = 'in-progress';
-    currentMapStage = targetNode.stage;
-    currentMapNodeId = targetNode.id;
-    updateRoundDisplay();
-    updateMapStageLabel();
-    scheduleMapLines();
-}
-        document.getElementById('map-screen').style.display = 'none'; 
-        document.getElementById('clinic-screen').style.display = 'flex'; 
+        document.getElementById('treasure-modal').style.display='flex';
+    } else if(targetNode.type==='사건') {
+        if(!targetNode.storyResolved)openStoryEvent(targetNode);
+    } else if(targetNode.type==='의원') {
+        targetNode.state='in-progress';
+        currentMapNodeId=targetNode.id;
+        // currentMapStage intentionally unchanged: visiting a clinic costs no round.
+        updateRoundDisplay();updateMapStageLabel();scheduleMapLines();
+        document.getElementById('map-screen').style.display='none';
+        document.getElementById('clinic-screen').style.display='flex';
     }
 }
 
@@ -4073,9 +4009,9 @@ function resolveStoryEvent(action){const node=mapData.nodes.find(n=>n.id===pendi
  default:break;
  }
  node.storyResolved=true;
- const previous=mapData.nodes.find(n=>n.id===currentMapNodeId);if(previous&&previous.state==='in-progress'){advanceBattleRoundForNode(previous);previous.state='completed';}
- else if(previous&&previous.state!=='completed')previous.state='completed';
- currentMapNodeId=node.id;currentMapStage=node.stage;node.state=forceBattle?'in-progress':'completed';
+ currentMapNodeId=node.id;
+ // Event visits do not finish or advance the current numbered combat round.
+ node.state=forceBattle?'in-progress':'completed';
  pendingStoryEventNodeId=null;document.getElementById('story-event-modal').style.display='none';
  updateRoundDisplay();refreshGeneralHpBadges();renderOwnedTreasures();refreshDeploymentLimitUI();updateBondUI();saveRun();alert(result);
  if(forceBattle){node.type='일반 전투';node.eventForcedBattle=true;showBattleModal('일반 전투',node);document.getElementById('map-screen').style.display='flex';}
@@ -4131,10 +4067,11 @@ function loadRun(){
   startGame(data.faction); // 기본 UI 슬롯/맵 핸들러를 먼저 구성
   playerGold=data.playerGold;currentChapter=data.currentChapter||1;currentMapStage=data.currentMapStage;currentMapNodeId=data.currentMapNodeId;
   currentBattleRound=data.currentBattleRound;isInitialRound1=data.isInitialRound1;bagCounter=data.bagCounter;
-  freeRerolls=data.freeRerolls||0;mapData=data.mapData;ownedTreasures=data.ownedTreasures||[];
+   freeRerolls=data.freeRerolls||0;mapData=data.mapData;ownedTreasures=data.ownedTreasures||[];
+   const mapWasMigrated=migrateMapToMandatoryBattles();
   pendingRecruits=data.pendingRecruits||[];pendingRewardChoices=data.pendingRewardChoices||null;
   pendingRewardResolved=data.pendingRewardResolved!==false;
-  storyHutProgress=data.storyHutProgress||0;pendingStoryEventNodeId=data.pendingStoryEventNodeId||null;
+  storyHutProgress=data.storyHutProgress||0;pendingStoryEventNodeId=mapWasMigrated?null:(data.pendingStoryEventNodeId||null);
   const restore=(id,arr)=>{
    const slots=Array.from(document.querySelectorAll(`#${id} .slot`));
    if(!Array.isArray(arr))throw new Error('저장 슬롯 없음');
