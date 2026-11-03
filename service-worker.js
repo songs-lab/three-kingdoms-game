@@ -1,5 +1,5 @@
 // Game PWA cache version. Online navigation and executable data use network-first.
-const CACHE_NAME = "tk-enemy-match-20261103-v1";
+const CACHE_NAME = "tk-map-ratio-20261103-v1";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -13,6 +13,7 @@ const CORE_ASSETS = [
   "./faces/wei.webp",
   "./faces/wu.webp",
   "./faces/other.webp",
+  "./faces/enemy.webp",
   "./faces/portraits.json",
   "./MAIN.png",
   "./MAP_BG.png",

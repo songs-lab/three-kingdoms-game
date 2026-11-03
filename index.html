@@ -3630,31 +3630,33 @@ function returnToGame(isWin) {
     openRewardSelection();
 }
 
+// 지도 노드 등장 비율: 전투 50%, 사건 20%, 보물 10%, 의원 20%.
+// 맵 한 장의 확정 개수가 아니라 각 노드의 무작위 등장 확률이다.
+const MAP_NODE_DISTRIBUTION_VERSION = 2;
+function rollMapNodeType() {
+ const roll = Math.random();
+ return roll < 0.50 ? '일반 전투' :
+        roll < 0.70 ? '사건' :
+        roll < 0.80 ? '보물' : '의원';
+}
 function generateMap() {
  const length=MAP_STAGES;
- mapData={nodes:[{id:'start',stage:0,lane:1,type:'시작',state:'completed'}],edges:[],mapNumber:currentChapter,rulesVersion:MAP_RULES_VERSION};
- // 지도는 20층. 각 층에서 1~3개 경로 중 하나를 선택한다.
- // 의원/보물/사건은 전투 횟수를 올리지 않는다.
- let previous=[{id:'start',lane:1}], eventStreak=0, treasures=0;
- const treasureRows=new Set();
- while(treasureRows.size<4) treasureRows.add(2+Math.floor(Math.random()*17));
+ mapData={nodes:[{id:'start',stage:0,lane:1,type:'시작',state:'completed'}],edges:[],mapNumber:currentChapter,rulesVersion:MAP_RULES_VERSION,distributionVersion:MAP_NODE_DISTRIBUTION_VERSION};
+ // 지도 20층의 랜덤 분기: 방문한 노드 하나당 한 층 이동한다.
+ // 전투를 제외한 사건/보물/의원은 전투 라운드 숫자를 소모하지 않는다.
+ let previous=[{id:'start',lane:1}], eventStreak=0;
  for(let stage=1;stage<=length;stage++){
    const lanes=stage===length?[1]:(Math.random()<0.35?[0,1,2]:Math.random()<0.5?[0,1]:[1,2]);
    const current=[];
    for(const lane of lanes){
-     let type;
-     if(stage===length)type='일반 전투';
-     else if(treasureRows.has(stage)&&treasures<4&&lane===lanes[0]){type='보물';treasures++;}
-     else {
-       const roll=Math.random();
-       type=roll<0.57?'일반 전투':roll<0.73?'사건':roll<0.88?'의원':'보물';
-       if(type==='사건'&&eventStreak>=2)type='일반 전투';
-     }
+     // 마지막 층은 전투를 보장하되 중간 층은 요청 비율로 무작위 생성한다.
+     let type=stage===length?'일반 전투':rollMapNodeType();
+     if(type==='사건' && eventStreak>=2)type='일반 전투';
      const id=`s${stage}_l${lane}`;
      mapData.nodes.push({id,stage,lane,type,state:'unvisited'});
      current.push({id,lane,type});
    }
-   // Every node in the new row must have a path from the preceding row.
+   // All nodes are reachable from the previous row.
    for(const n of current){
      const ordered=[...previous].sort((a,b)=>Math.abs(a.lane-n.lane)-Math.abs(b.lane-n.lane));
      mapData.edges.push({from:ordered[0].id,to:n.id});
@@ -3669,6 +3671,25 @@ function generateMap() {
    eventStreak=current.every(n=>n.type==='사건')?eventStreak+1:0;
    previous=current;
  }
+}
+// 기존 세이브를 계속 사용하되, 업데이트 전 생성됐던 남은 맵 노드만
+// 새로운 비율로 다시 배치한다. 이미 방문했거나 진행 중인 노드는 유지한다.
+function refreshSavedMapNodeDistribution() {
+ if (!mapData || !Array.isArray(mapData.nodes))return false;
+ if (mapData.distributionVersion === MAP_NODE_DISTRIBUTION_VERSION)return false;
+ let eventStreak=0;
+ const maxStage=Math.max(0,...mapData.nodes.map(n=>Number(n.stage)||0));
+ for(let stage=1;stage<=maxStage;stage++){
+   const row=mapData.nodes.filter(n=>n.stage===stage);
+   for(const node of row){
+     if(node.state!=='unvisited')continue;
+     node.type=stage===MAP_STAGES?'일반 전투':rollMapNodeType();
+     if(node.type==='사건'&&eventStreak>=2)node.type='일반 전투';
+   }
+   eventStreak=row.length && row.every(n=>n.type==='사건')?eventStreak+1:0;
+ }
+ mapData.distributionVersion=MAP_NODE_DISTRIBUTION_VERSION;
+ return true;
 }
 function migrateMapToMandatoryBattles() {
  if(mapData?.rulesVersion===MAP_RULES_VERSION && mapData.mapNumber===currentChapter)return false;
@@ -4041,6 +4062,7 @@ function loadRun(){
   currentBattleRound=data.currentBattleRound;isInitialRound1=data.isInitialRound1;bagCounter=data.bagCounter;
    freeRerolls=data.freeRerolls||0;mapData=data.mapData;ownedTreasures=data.ownedTreasures||[];
    const mapWasMigrated=migrateMapToMandatoryBattles();
+   refreshSavedMapNodeDistribution();
   pendingRecruits=data.pendingRecruits||[];pendingRewardChoices=data.pendingRewardChoices||null;
   pendingRewardResolved=data.pendingRewardResolved!==false;
   storyHutProgress=data.storyHutProgress||0;pendingStoryEventNodeId=mapWasMigrated?null:(data.pendingStoryEventNodeId||null);
