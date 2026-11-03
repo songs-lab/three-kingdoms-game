@@ -889,8 +889,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 // 초상화 좌표는 승인된 105명 명단 순서에 맞춰 지정. 파일이 없으면 이름 표시 유지.
-const portraitAtlas = {"유비":{"file":"shu.webp","x":0,"y":0},"관우":{"file":"shu.webp","x":1,"y":0},"장비":{"file":"shu.webp","x":2,"y":0},"조운":{"file":"shu.webp","x":3,"y":0},"마초":{"file":"shu.webp","x":4,"y":0},"황충":{"file":"shu.webp","x":5,"y":0},"제갈량":{"file":"shu.webp","x":6,"y":0},"방통":{"file":"shu.webp","x":7,"y":0},"법정":{"file":"shu.webp","x":8,"y":0},"강유":{"file":"shu.webp","x":0,"y":1},"위연":{"file":"shu.webp","x":1,"y":1},"황권":{"file":"shu.webp","x":2,"y":1},"엄안":{"file":"shu.webp","x":3,"y":1},"왕평":{"file":"shu.webp","x":4,"y":1},"마대":{"file":"shu.webp","x":5,"y":1},"관평":{"file":"shu.webp","x":6,"y":1},"관흥":{"file":"shu.webp","x":7,"y":1},"장포":{"file":"shu.webp","x":8,"y":1},"부첨":{"file":"shu.webp","x":0,"y":2},"요화":{"file":"shu.webp","x":1,"y":2},"오의":{"file":"shu.webp","x":2,"y":2},"오란":{"file":"shu.webp","x":3,"y":2},"장익":{"file":"shu.webp","x":4,"y":2},"장억":{"file":"shu.webp","x":5,"y":2},"이엄":{"file":"shu.webp","x":6,"y":2},"이회":{"file":"shu.webp","x":7,"y":2},"비의":{"file":"shu.webp","x":8,"y":2},"동윤":{"file":"shu.webp","x":0,"y":3},"맹획":{"file":"shu.webp","x":1,"y":3},"왕련":{"file":"shu.webp","x":2,"y":3},"공손찬":{"file":"shu.webp","x":3,"y":3},"미축":{"file":"shu.webp","x":4,"y":3},"마속":{"file":"shu.webp","x":5,"y":3},"조조":{"file":"wei.webp","x":0,"y":0},"하후돈":{"file":"wei.webp","x":1,"y":0},"하후연":{"file":"wei.webp","x":2,"y":0},"장료":{"file":"wei.webp","x":3,"y":0},"허저":{"file":"wei.webp","x":4,"y":0},"전위":{"file":"wei.webp","x":5,"y":0},"서황":{"file":"wei.webp","x":6,"y":0},"장합":{"file":"wei.webp","x":7,"y":0},"악진":{"file":"wei.webp","x":0,"y":1},"우금":{"file":"wei.webp","x":1,"y":1},"조인":{"file":"wei.webp","x":2,"y":1},"조홍":{"file":"wei.webp","x":3,"y":1},"조휴":{"file":"wei.webp","x":4,"y":1},"조진":{"file":"wei.webp","x":5,"y":1},"사마의":{"file":"wei.webp","x":6,"y":1},"곽가":{"file":"wei.webp","x":7,"y":1},"순욱":{"file":"wei.webp","x":0,"y":2},"순유":{"file":"wei.webp","x":1,"y":2},"가후":{"file":"wei.webp","x":2,"y":2},"정욱":{"file":"wei.webp","x":3,"y":2},"곽회":{"file":"wei.webp","x":4,"y":2},"왕쌍":{"file":"wei.webp","x":5,"y":2},"문빙":{"file":"wei.webp","x":6,"y":2},"만총":{"file":"wei.webp","x":7,"y":2},"학소":{"file":"wei.webp","x":0,"y":3},"왕릉":{"file":"wei.webp","x":1,"y":3},"진태":{"file":"wei.webp","x":2,"y":3},"등애":{"file":"wei.webp","x":3,"y":3},"종회":{"file":"wei.webp","x":4,"y":3},"하후상":{"file":"wei.webp","x":5,"y":3},"고순":{"file":"wei.webp","x":6,"y":3},"진궁":{"file":"wei.webp","x":7,"y":3},"손견":{"file":"wu.webp","x":0,"y":0},"손권":{"file":"wu.webp","x":1,"y":0},"손책":{"file":"wu.webp","x":2,"y":0},"주유":{"file":"wu.webp","x":3,"y":0},"노숙":{"file":"wu.webp","x":4,"y":0},"여몽":{"file":"wu.webp","x":5,"y":0},"육손":{"file":"wu.webp","x":6,"y":0},"감녕":{"file":"wu.webp","x":7,"y":0},"태사자":{"file":"wu.webp","x":0,"y":1},"황개":{"file":"wu.webp","x":1,"y":1},"한당":{"file":"wu.webp","x":2,"y":1},"정보":{"file":"wu.webp","x":3,"y":1},"능통":{"file":"wu.webp","x":4,"y":1},"서성":{"file":"wu.webp","x":5,"y":1},"정봉":{"file":"wu.webp","x":6,"y":1},"반장":{"file":"wu.webp","x":7,"y":1},"주태":{"file":"wu.webp","x":0,"y":2},"장흠":{"file":"wu.webp","x":1,"y":2},"주환":{"file":"wu.webp","x":2,"y":2},"전종":{"file":"wu.webp","x":3,"y":2},"여범":{"file":"wu.webp","x":4,"y":2},"고옹":{"file":"wu.webp","x":5,"y":2},"장소":{"file":"wu.webp","x":6,"y":2},"장굉":{"file":"wu.webp","x":7,"y":2},"육항":{"file":"wu.webp","x":0,"y":3},"제갈각":{"file":"wu.webp","x":1,"y":3},"주거":{"file":"wu.webp","x":2,"y":3},"주방":{"file":"wu.webp","x":3,"y":3},"보즐":{"file":"wu.webp","x":4,"y":3},"감택":{"file":"wu.webp","x":5,"y":3},"여대":{"file":"wu.webp","x":6,"y":3},"원술":{"file":"wu.webp","x":7,"y":3},"여포":{"file":"other.webp","x":0,"y":0},"원소":{"file":"other.webp","x":1,"y":0},"문추":{"file":"other.webp","x":2,"y":0},"안량":{"file":"other.webp","x":3,"y":0},"한수":{"file":"other.webp","x":0,"y":1},"화웅":{"file":"other.webp","x":1,"y":1},"동탁":{"file":"other.webp","x":2,"y":1},"저수":{"file":"other.webp","x":3,"y":1},"황건적 졸개":{"file":"enemy/황건적_졸개.webp","single":true},"관해":{"file":"enemy/관해.webp","single":true},"유벽":{"file":"enemy/유벽.webp","single":true},"장각":{"file":"enemy/장각.webp","single":true},"공도":{"file":"enemy/공도.webp","single":true},"장보":{"file":"enemy/장보.webp","single":true},"장개":{"file":"enemy/장개.webp","single":true},"장량":{"file":"enemy/장량.webp","single":true},"서영":{"file":"enemy/서영.webp","single":true},"장제":{"file":"enemy/장제.webp","single":true},"호진":{"file":"enemy/호진.webp","single":true},"곽사(동탁)":{"file":"enemy/곽사동탁.webp","single":true},"이각(동탁)":{"file":"enemy/이각동탁.webp","single":true},"우보":{"file":"enemy/우보.webp","single":true},"주준":{"file":"enemy/주준.webp","single":true},"이유":{"file":"enemy/이유.webp","single":true},"왕윤":{"file":"enemy/왕윤.webp","single":true},"장료(동탁)":{"file":"enemy/장료동탁.webp","single":true},"고순(동탁)":{"file":"enemy/고순동탁.webp","single":true},"화웅(동탁)":{"file":"enemy/화웅동탁.webp","single":true},"여포(동탁)":{"file":"enemy/여포동탁.webp","single":true},"동탁(동탁)":{"file":"enemy/동탁동탁.webp","single":true},"원술(관도)":{"file":"enemy/원술관도.webp","single":true},"이각(군웅)":{"file":"enemy/이각군웅.webp","single":true},"가후(군웅)":{"file":"enemy/가후군웅.webp","single":true},"곽사(군웅)":{"file":"enemy/곽사군웅.webp","single":true},"원술(군웅)":{"file":"enemy/원술군웅.webp","single":true},"도겸":{"file":"enemy/도겸.webp","single":true},"태사자(군웅)":{"file":"enemy/태사자군웅.webp","single":true},"우금(군웅)":{"file":"enemy/우금군웅.webp","single":true},"진등":{"file":"enemy/진등.webp","single":true},"유요":{"file":"enemy/유요.webp","single":true},"하후돈(군웅)":{"file":"enemy/하후돈군웅.webp","single":true},"고순(군웅)":{"file":"enemy/고순군웅.webp","single":true},"성렴":{"file":"enemy/성렴.webp","single":true},"위월":{"file":"enemy/위월.webp","single":true},"장료(군웅)":{"file":"enemy/장료군웅.webp","single":true},"진궁(군웅)":{"file":"enemy/진궁군웅.webp","single":true},"여포(군웅)":{"file":"enemy/여포군웅.webp","single":true},"송헌":{"file":"enemy/송헌.webp","single":true},"위속":{"file":"enemy/위속.webp","single":true},"장수":{"file":"enemy/장수.webp","single":true},"황조":{"file":"enemy/황조.webp","single":true},"가후(관도)":{"file":"enemy/가후관도.webp","single":true},"유훈":{"file":"enemy/유훈.webp","single":true},"공손찬(관도)":{"file":"enemy/공손찬관도.webp","single":true},"허공":{"file":"enemy/허공.webp","single":true},"유비(관도)":{"file":"enemy/유비관도.webp","single":true},"조조(관도)":{"file":"enemy/조조관도.webp","single":true},"관우(관도)":{"file":"enemy/관우관도.webp","single":true},"전위(관도)":{"file":"enemy/전위관도.webp","single":true},"장비(관도)":{"file":"enemy/장비관도.webp","single":true},"하후연(관도)":{"file":"enemy/하후연관도.webp","single":true},"미축(관도)":{"file":"enemy/미축관도.webp","single":true},"곽가(관도)":{"file":"enemy/곽가관도.webp","single":true},"장합(관도)":{"file":"enemy/장합관도.webp","single":true},"고람":{"file":"enemy/고람.webp","single":true},"심배":{"file":"enemy/심배.webp","single":true},"견초":{"file":"enemy/견초.webp","single":true},"문추(관도)":{"file":"enemy/문추관도.webp","single":true},"순우경":{"file":"enemy/순우경.webp","single":true},"원담":{"file":"enemy/원담.webp","single":true},"국의":{"file":"enemy/국의.webp","single":true},"원상":{"file":"enemy/원상.webp","single":true},"원소(관도)":{"file":"enemy/원소관도.webp","single":true},"안량(관도)":{"file":"enemy/안량관도.webp","single":true},"전풍":{"file":"enemy/전풍.webp","single":true},"저수(관도)":{"file":"enemy/저수관도.webp","single":true},"허유":{"file":"enemy/허유.webp","single":true}};
-const portraitSheets = {"shu.webp":[9,4],"wei.webp":[8,4],"wu.webp":[8,4],"other.webp":[4,2]};
+const portraitAtlas = {"유비":{"file":"shu.webp","x":0,"y":0},"관우":{"file":"shu.webp","x":1,"y":0},"장비":{"file":"shu.webp","x":2,"y":0},"조운":{"file":"shu.webp","x":3,"y":0},"마초":{"file":"shu.webp","x":4,"y":0},"황충":{"file":"shu.webp","x":5,"y":0},"제갈량":{"file":"shu.webp","x":6,"y":0},"방통":{"file":"shu.webp","x":7,"y":0},"법정":{"file":"shu.webp","x":8,"y":0},"강유":{"file":"shu.webp","x":0,"y":1},"위연":{"file":"shu.webp","x":1,"y":1},"황권":{"file":"shu.webp","x":2,"y":1},"엄안":{"file":"shu.webp","x":3,"y":1},"왕평":{"file":"shu.webp","x":4,"y":1},"마대":{"file":"shu.webp","x":5,"y":1},"관평":{"file":"shu.webp","x":6,"y":1},"관흥":{"file":"shu.webp","x":7,"y":1},"장포":{"file":"shu.webp","x":8,"y":1},"부첨":{"file":"shu.webp","x":0,"y":2},"요화":{"file":"shu.webp","x":1,"y":2},"오의":{"file":"shu.webp","x":2,"y":2},"오란":{"file":"shu.webp","x":3,"y":2},"장익":{"file":"shu.webp","x":4,"y":2},"장억":{"file":"shu.webp","x":5,"y":2},"이엄":{"file":"shu.webp","x":6,"y":2},"이회":{"file":"shu.webp","x":7,"y":2},"비의":{"file":"shu.webp","x":8,"y":2},"동윤":{"file":"shu.webp","x":0,"y":3},"맹획":{"file":"shu.webp","x":1,"y":3},"왕련":{"file":"shu.webp","x":2,"y":3},"공손찬":{"file":"shu.webp","x":3,"y":3},"미축":{"file":"shu.webp","x":4,"y":3},"마속":{"file":"shu.webp","x":5,"y":3},"조조":{"file":"wei.webp","x":0,"y":0},"하후돈":{"file":"wei.webp","x":1,"y":0},"하후연":{"file":"wei.webp","x":2,"y":0},"장료":{"file":"wei.webp","x":3,"y":0},"허저":{"file":"wei.webp","x":4,"y":0},"전위":{"file":"wei.webp","x":5,"y":0},"서황":{"file":"wei.webp","x":6,"y":0},"장합":{"file":"wei.webp","x":7,"y":0},"악진":{"file":"wei.webp","x":0,"y":1},"우금":{"file":"wei.webp","x":1,"y":1},"조인":{"file":"wei.webp","x":2,"y":1},"조홍":{"file":"wei.webp","x":3,"y":1},"조휴":{"file":"wei.webp","x":4,"y":1},"조진":{"file":"wei.webp","x":5,"y":1},"사마의":{"file":"wei.webp","x":6,"y":1},"곽가":{"file":"wei.webp","x":7,"y":1},"순욱":{"file":"wei.webp","x":0,"y":2},"순유":{"file":"wei.webp","x":1,"y":2},"가후":{"file":"wei.webp","x":2,"y":2},"정욱":{"file":"wei.webp","x":3,"y":2},"곽회":{"file":"wei.webp","x":4,"y":2},"왕쌍":{"file":"wei.webp","x":5,"y":2},"문빙":{"file":"wei.webp","x":6,"y":2},"만총":{"file":"wei.webp","x":7,"y":2},"학소":{"file":"wei.webp","x":0,"y":3},"왕릉":{"file":"wei.webp","x":1,"y":3},"진태":{"file":"wei.webp","x":2,"y":3},"등애":{"file":"wei.webp","x":3,"y":3},"종회":{"file":"wei.webp","x":4,"y":3},"하후상":{"file":"wei.webp","x":5,"y":3},"고순":{"file":"wei.webp","x":6,"y":3},"진궁":{"file":"wei.webp","x":7,"y":3},"손견":{"file":"wu.webp","x":0,"y":0},"손권":{"file":"wu.webp","x":1,"y":0},"손책":{"file":"wu.webp","x":2,"y":0},"주유":{"file":"wu.webp","x":3,"y":0},"노숙":{"file":"wu.webp","x":4,"y":0},"여몽":{"file":"wu.webp","x":5,"y":0},"육손":{"file":"wu.webp","x":6,"y":0},"감녕":{"file":"wu.webp","x":7,"y":0},"태사자":{"file":"wu.webp","x":0,"y":1},"황개":{"file":"wu.webp","x":1,"y":1},"한당":{"file":"wu.webp","x":2,"y":1},"정보":{"file":"wu.webp","x":3,"y":1},"능통":{"file":"wu.webp","x":4,"y":1},"서성":{"file":"wu.webp","x":5,"y":1},"정봉":{"file":"wu.webp","x":6,"y":1},"반장":{"file":"wu.webp","x":7,"y":1},"주태":{"file":"wu.webp","x":0,"y":2},"장흠":{"file":"wu.webp","x":1,"y":2},"주환":{"file":"wu.webp","x":2,"y":2},"전종":{"file":"wu.webp","x":3,"y":2},"여범":{"file":"wu.webp","x":4,"y":2},"고옹":{"file":"wu.webp","x":5,"y":2},"장소":{"file":"wu.webp","x":6,"y":2},"장굉":{"file":"wu.webp","x":7,"y":2},"육항":{"file":"wu.webp","x":0,"y":3},"제갈각":{"file":"wu.webp","x":1,"y":3},"주거":{"file":"wu.webp","x":2,"y":3},"주방":{"file":"wu.webp","x":3,"y":3},"보즐":{"file":"wu.webp","x":4,"y":3},"감택":{"file":"wu.webp","x":5,"y":3},"여대":{"file":"wu.webp","x":6,"y":3},"원술":{"file":"wu.webp","x":7,"y":3},"여포":{"file":"other.webp","x":0,"y":0},"원소":{"file":"other.webp","x":1,"y":0},"문추":{"file":"other.webp","x":2,"y":0},"안량":{"file":"other.webp","x":3,"y":0},"한수":{"file":"other.webp","x":0,"y":1},"화웅":{"file":"other.webp","x":1,"y":1},"동탁":{"file":"other.webp","x":2,"y":1},"저수":{"file":"other.webp","x":3,"y":1},"황건적 졸개":{"file":"enemy.webp","x":0,"y":0},"관해":{"file":"enemy.webp","x":2,"y":0},"장보":{"file":"enemy.webp","x":3,"y":0},"유벽":{"file":"enemy.webp","x":4,"y":0},"장량":{"file":"enemy.webp","x":5,"y":0},"공도":{"file":"enemy.webp","x":6,"y":0},"장각":{"file":"enemy.webp","x":7,"y":0},"곽가(관도)":{"file":"enemy.webp","x":8,"y":0},"서영":{"file":"enemy.webp","x":0,"y":1},"장제":{"file":"enemy.webp","x":1,"y":1},"이유":{"file":"enemy.webp","x":2,"y":1},"곽사(동탁)":{"file":"enemy.webp","x":3,"y":1},"이각(동탁)":{"file":"enemy.webp","x":4,"y":1},"우보":{"file":"enemy.webp","x":5,"y":1},"호진":{"file":"enemy.webp","x":6,"y":1},"장개":{"file":"enemy.webp","x":7,"y":1},"장료(동탁)":{"file":"enemy.webp","x":8,"y":1},"원담":{"file":"enemy.webp","x":0,"y":2},"화웅(동탁)":{"file":"enemy.webp","x":1,"y":2},"주준":{"file":"enemy.webp","x":2,"y":2},"가후(군웅)":{"file":"enemy.webp","x":3,"y":2},"왕윤":{"file":"enemy.webp","x":4,"y":2},"송헌":{"file":"enemy.webp","x":5,"y":2},"심배":{"file":"enemy.webp","x":6,"y":2},"순우경":{"file":"enemy.webp","x":7,"y":2},"원술(군웅)":{"file":"enemy.webp","x":8,"y":2},"황조":{"file":"enemy.webp","x":0,"y":3},"진등":{"file":"enemy.webp","x":3,"y":3},"유요":{"file":"enemy.webp","x":4,"y":3},"고람":{"file":"enemy.webp","x":6,"y":3},"국의":{"file":"enemy.webp","x":7,"y":3},"견초":{"file":"enemy.webp","x":8,"y":3},"하후연(관도)":{"file":"enemy.webp","x":0,"y":4},"허공":{"file":"enemy.webp","x":1,"y":4},"여포(군웅)":{"file":"enemy.webp","x":2,"y":4},"공손찬(관도)":{"file":"enemy.webp","x":3,"y":4},"장수":{"file":"enemy.webp","x":4,"y":4},"원술(관도)":{"file":"enemy.webp","x":5,"y":4},"유훈":{"file":"enemy.webp","x":6,"y":4},"도겸":{"file":"enemy.webp","x":7,"y":4},"진궁(군웅)":{"file":"enemy.webp","x":8,"y":4},"전풍":{"file":"enemy.webp","x":2,"y":5},"유비(관도)":{"file":"enemy.webp","x":3,"y":5},"조조(관도)":{"file":"enemy.webp","x":4,"y":5},"관우(관도)":{"file":"enemy.webp","x":5,"y":5},"장비(관도)":{"file":"enemy.webp","x":7,"y":5},"하후돈(군웅)":{"file":"enemy.webp","x":8,"y":5},"위속":{"file":"enemy.webp","x":0,"y":6},"위월":{"file":"enemy.webp","x":1,"y":6},"원상":{"file":"enemy.webp","x":2,"y":6},"고순(동탁)":{"file":"enemy.webp","x":3,"y":6},"동탁(동탁)":{"file":"enemy.webp","x":4,"y":6},"고순(군웅)":{"file":"enemy.webp","x":5,"y":6},"성렴":{"file":"enemy.webp","x":6,"y":6},"미축(관도)":{"file":"enemy.webp","x":7,"y":6},"허유":{"file":"enemy.webp","x":8,"y":6},"저수(관도)":{"file":"enemy.webp","x":0,"y":7},"이각(군웅)":{"file":"enemy.webp","x":2,"y":7},"곽사(군웅)":{"file":"enemy.webp","x":3,"y":7},"여포(동탁)":{"file":"enemy.webp","x":4,"y":7},"전위(관도)":{"file":"wei.webp","x":5,"y":0},"가후(관도)":{"file":"wei.webp","x":2,"y":2},"장합(관도)":{"file":"wei.webp","x":7,"y":0},"우금(군웅)":{"file":"wei.webp","x":1,"y":1},"문추(관도)":{"file":"other.webp","x":2,"y":0},"안량(관도)":{"file":"other.webp","x":3,"y":0},"원소(관도)":{"file":"other.webp","x":1,"y":0},"장료(군웅)":{"file":"wei.webp","x":3,"y":0},"태사자(군웅)":{"file":"wu.webp","x":0,"y":1}};
+const portraitSheets = {"shu.webp":[9,4],"wei.webp":[8,4],"wu.webp":[8,4],"other.webp":[4,2],"enemy.webp":[9,8]};
 function portraitMarkup(name, label = true) {
     const entry = portraitAtlas[name];
     if (!entry) return `<span class="portrait-fallback">${name}</span>`;
@@ -967,12 +967,12 @@ const EPISODES = [
 ];
 let currentChapter = 1;
 function chapterDef() { return CHAPTERS[currentChapter-1] || CHAPTERS[0]; }
-function chapterOffset() { return chapterDef().start - 1; }
-function globalStage(localStage) { return chapterOffset() + localStage; }
+function chapterOffset() { return 0; }
+function globalStage(localStage) { return currentBattleRound; }
 function episodeForStage(global) { return EPISODES.find(e=>global>=e.start && global<=e.end) || EPISODES[0]; }
 function mapStageLabel() {
-    const nextRound = Math.min(chapterDef().end, globalStage(currentMapStage+1));
-    return `제${currentChapter}장 · ${episodeForStage(nextRound).name} · 다음 전투 ${nextRound}/45`;
+ const round=Math.min(45,currentBattleRound);
+ return `지도 ${currentChapter} · ${episodeForStage(round).name} · 다음 전투 ${round}/45`;
 }
 function updateMapStageLabel() { const el=document.getElementById('map-stage-display'); if(el)el.textContent=mapStageLabel(); }
 const MAP_STAGES = 20; // 호환 상수: 실제 생성 층수는 챕터별 length를 사용한다.
@@ -983,7 +983,7 @@ let pendingMapNodeId = null;
 // 지도 단계와 별개로 실제 전투 진행 번호를 관리한다.
 let currentBattleRound = 1;
 const BATTLE_NODE_TYPES = ['일반 전투', '보스'];
-const MAP_RULES_VERSION = 2; // 각 전투 라운드는 필수. 옆길 사건/의원/보물은 라운드 미소모.
+const MAP_RULES_VERSION = 3; // 20층 랜덤 지도, 전투 승리 횟수만 라운드로 계산.
 
 let lastPlayerTeam = [];
 let activeBondsInBattle = [];
@@ -1649,9 +1649,9 @@ function updateBondUI() {
 function openSkillModal(skill) { document.getElementById('skill-modal-name').innerText = skill.name + (skill.isUnique ? " [고유]" : " [공용]"); let typeTag = document.getElementById('skill-modal-type'); typeTag.innerText = skill.type; typeTag.className = "type-tag type-" + (skill.type === "물리" ? "A" : skill.type === "책략" ? "B" : skill.type === "고정피해" ? "C" : "D"); document.getElementById('skill-modal-power').innerText = skill.power > 0 ? "데미지 " + skill.power : "버프/특수"; document.getElementById('skill-modal-acc').innerText = skill.acc === "-" ? "명중률 -" : "명중률 " + skill.acc + "%"; document.getElementById('skill-modal-desc').innerText = skill.desc; document.getElementById('skill-modal').style.display = 'flex'; }
 function closeSkillModal() { document.getElementById('skill-modal').style.display = 'none'; }
 function updateRoundDisplay() {
-    const nextRound=Math.min(chapterDef().end,globalStage(currentMapStage+1));
+    const nextRound=Math.min(45,currentBattleRound);
     document.getElementById('round-display').innerText=
-        `제${currentChapter}장 · ${episodeForStage(nextRound).name} | 다음 전투 ${nextRound}/45`;
+        `지도 ${currentChapter} · ${episodeForStage(nextRound).name} | 다음 전투 ${nextRound}/45`;
     document.getElementById('gold-display').innerText=`🪙 ${playerGold}`;
 }
 let freeRerolls = 0;
@@ -1971,18 +1971,12 @@ let enemies = [];
 }
 
 function advanceBattleRoundForNode(node) {
-    // Only winning a mandatory round advances the round counter.
-    if (!node || !BATTLE_NODE_TYPES.includes(node.type) || node.eventForcedBattle ||
-        node.roundAdvanced || node.state === 'completed' || node.stage !== currentMapStage + 1) return false;
-    node.roundAdvanced = true;
-    currentMapStage = node.stage;
-    currentBattleRound = Math.min(46, globalStage(currentMapStage) + 1);
-    return true;
+ if(!node || node.eventForcedBattle || node.roundAdvanced || node.state==='completed' || !BATTLE_NODE_TYPES.includes(node.type))return false;
+ node.roundAdvanced=true;
+ currentBattleRound=Math.min(46,currentBattleRound+1);
+ return true;
 }
-
-function getBattleRoundForNode(targetNode) {
-    return targetNode && !targetNode.eventForcedBattle ? globalStage(targetNode.stage) : globalStage(currentMapStage + 1);
-}
+function getBattleRoundForNode(node) {return Math.min(45,currentBattleRound);}
 
 function showBattleModal(nodeType, targetNode) {
     if (!targetNode) return;
@@ -1998,7 +1992,7 @@ function showBattleModal(nodeType, targetNode) {
 
     const battleRound = getBattleRoundForNode(targetNode);
 
-    const storyRound = globalStage(targetNode.stage);
+    const storyRound = getBattleRoundForNode(targetNode);
     const isBonusBattle = !!targetNode.eventForcedBattle;
     let diffStage = Math.min(20, Math.max(1, storyRound));
     if (nodeType === '보스') diffStage = Math.min(20, diffStage + 4);
@@ -2089,7 +2083,7 @@ async function startBattleScene() {
     document.getElementById('battle-result-btn').style.display = 'none'; 
     document.getElementById('battle-log-area').innerHTML = ""; 
     
-    activeCustomRound = currentEnemyTeam.some(e=>e.enemyId) ? globalStage(mapData.nodes.find(n=>n.id===currentMapNodeId)?.stage || currentMapStage + 1) : 0;
+    activeCustomRound = currentEnemyTeam.some(e=>e.enemyId) ? getBattleRoundForNode(mapData.nodes.find(n=>n.id===currentMapNodeId)) : 0;
     forcedScenarioVictory = false;
     scenarioTriggered = new Set();
     resetBattleFX();
@@ -3558,7 +3552,7 @@ function returnToGame(isWin) {
             16: 9, 17: 10, 18: 10, 19: 10, 20: 15
         };
 
-        const finishedRound = currNode ? globalStage(currNode.stage) : globalStage(currentMapStage + 1);
+        const finishedRound = getBattleRoundForNode(currNode);
         const baseGold = currNode?.eventForcedBattle ? 0 :
             (CUSTOM_ENEMY_DATA.rewards[String(finishedRound)] ?? (baseGoldTable[Math.min(20,finishedRound)] || 10));
 
@@ -3586,29 +3580,11 @@ function returnToGame(isWin) {
             currNode.state = 'completed';
         }
 
-        // 20/40단계를 승리하면 보상 선택 후 새 챕터의 맵으로 진입한다.
-        if (currNode && !currNode.eventForcedBattle && currentMapStage === chapterDef().length && currentChapter < 3) {
-            currentChapter++;
-            currentMapStage = 0;
-            currentMapNodeId = 'start';
-            pendingMapNodeId = null;
-            pendingStoryEventNodeId = null;
-            generateMap();
-            alert(`📜 제${currentChapter}장 개막! ${chapterDef().name}`);
-        }
         updateRoundDisplay();
-
-        // 기존 최종 승리 처리 유지
-        if (currNode && !currNode.eventForcedBattle && currentChapter === 3 && currentMapStage >= 5) {
+        // 45번째 전투 승리로만 게임 종료 (지도 번호와 무관).
+        if(currNode && !currNode.eventForcedBattle && currNode.roundAdvanced && finishedRound===45) {
             clearRunSave();
-            document.body.innerHTML = `
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background-color:#2c3e50; color:#f1c40f; text-align:center;">
-                    <h1>🏆 천하 통일!</h1>
-                    <p style="color:white; margin-bottom:20px;">45라운드 최종 보스를 격파하고 천하를 평정했습니다!</p>
-                    <button onclick="location.reload()" style="padding:15px 30px; font-size:18px; background-color:#f1c40f; color:#2c3e50; border:none; border-radius:8px; cursor:pointer;">다시 하기</button>
-                </div>
-            `;
-
+            document.body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#2c3e50;color:#f1c40f;text-align:center"><h1>🏆 천하 통일!</h1><p style="color:white">45번째 전투에서 승리하고 천하를 평정했습니다!</p><button onclick="location.reload()" style="padding:15px">다시 하기</button></div>`;
             return;
         }
     } else {
@@ -3655,87 +3631,81 @@ function returnToGame(isWin) {
 }
 
 function generateMap() {
-    const length = chapterDef().length;
-    mapData = {nodes:[], edges:[], chapter:currentChapter, rulesVersion:MAP_RULES_VERSION};
-    mapData.nodes.push({id:'start',stage:0,lane:1,type:'시작',state:'completed'});
-    const treasureStages = currentChapter===3 ? new Set() : new Set([5,9,14,19]);
-    let previousBattleId='start';
-    let consecutiveEvents=0;
-    for(let stage=1;stage<=length;stage++) {
-        const global = globalStage(stage);
-        const battleId = `s${stage}_l1`;
-        // Exactly one compulsory battle for each round, including multiples of five.
-        mapData.nodes.push({id:battleId,stage,lane:1,type:global===45?'보스':'일반 전투',state:'unvisited',requiredBattle:true});
-        mapData.edges.push({from:previousBattleId,to:battleId});
-
-        // Optional side event before the same battle: does not consume the round.
-        let supportType=null;
-        if (treasureStages.has(stage)) supportType='보물';
-        else if(stage>1) {
-            if(stage%5===2) supportType='의원';
-            else if(stage%5===3) supportType='사건';
-            else if(Math.random()<0.34) supportType=Math.random()<0.5?'의원':'사건';
-        }
-        if(supportType==='사건' && consecutiveEvents>=2) supportType='의원';
-        consecutiveEvents = supportType==='사건' ? consecutiveEvents+1 : 0;
-        if(supportType) {
-            const sideLane=stage%2===0?0:2;
-            const sideId=`s${stage}_l${sideLane}`;
-            mapData.nodes.push({id:sideId,stage,lane:sideLane,type:supportType,state:'unvisited',optional:true});
-            mapData.edges.push({from:previousBattleId,to:sideId});
-            mapData.edges.push({from:sideId,to:battleId});
-        }
-        previousBattleId=battleId;
-    }
+ const length=MAP_STAGES;
+ mapData={nodes:[{id:'start',stage:0,lane:1,type:'시작',state:'completed'}],edges:[],mapNumber:currentChapter,rulesVersion:MAP_RULES_VERSION};
+ // 지도는 20층. 각 층에서 1~3개 경로 중 하나를 선택한다.
+ // 의원/보물/사건은 전투 횟수를 올리지 않는다.
+ let previous=[{id:'start',lane:1}], eventStreak=0, treasures=0;
+ const treasureRows=new Set();
+ while(treasureRows.size<4) treasureRows.add(2+Math.floor(Math.random()*17));
+ for(let stage=1;stage<=length;stage++){
+   const lanes=stage===length?[1]:(Math.random()<0.35?[0,1,2]:Math.random()<0.5?[0,1]:[1,2]);
+   const current=[];
+   for(const lane of lanes){
+     let type;
+     if(stage===length)type='일반 전투';
+     else if(treasureRows.has(stage)&&treasures<4&&lane===lanes[0]){type='보물';treasures++;}
+     else {
+       const roll=Math.random();
+       type=roll<0.57?'일반 전투':roll<0.73?'사건':roll<0.88?'의원':'보물';
+       if(type==='사건'&&eventStreak>=2)type='일반 전투';
+     }
+     const id=`s${stage}_l${lane}`;
+     mapData.nodes.push({id,stage,lane,type,state:'unvisited'});
+     current.push({id,lane,type});
+   }
+   // Every node in the new row must have a path from the preceding row.
+   for(const n of current){
+     const ordered=[...previous].sort((a,b)=>Math.abs(a.lane-n.lane)-Math.abs(b.lane-n.lane));
+     mapData.edges.push({from:ordered[0].id,to:n.id});
+   }
+   // Avoid stranded paths at a branch split.
+   for(const p of previous){
+     if(!mapData.edges.some(e=>e.from===p.id)){
+       const nearest=[...current].sort((a,b)=>Math.abs(a.lane-p.lane)-Math.abs(b.lane-p.lane))[0];
+       mapData.edges.push({from:p.id,to:nearest.id});
+     }
+   }
+   eventStreak=current.every(n=>n.type==='사건')?eventStreak+1:0;
+   previous=current;
+ }
 }
-
-// Old maps used clinic/treasure/event rows as round numbers. Rebuild their map safely.
 function migrateMapToMandatoryBattles() {
-    if (mapData?.rulesVersion===MAP_RULES_VERSION && mapData.chapter===currentChapter) return false;
-    const oldMap=mapData || {nodes:[]};
-    const oldNodes=Array.isArray(oldMap.nodes)?oldMap.nodes:[];
-    const oldProgress=currentMapStage;
-    // Only consecutively completed actual battle stages count as cleared rounds.
-    // If an old event occupied stage 2, that stage must be fought in the new map.
-    let completed=0;
-    for(let stage=1;stage<=chapterDef().length;stage++) {
-        const passed=oldNodes.some(n=>n.stage===stage && BATTLE_NODE_TYPES.includes(n.type) &&
-            !n.eventForcedBattle && (n.roundAdvanced || n.state==='completed'));
-        if(!passed)break;
-        completed=stage;
-    }
-    const oldNextBattle=oldNodes.find(n=>n.id===currentMapNodeId &&
-        BATTLE_NODE_TYPES.includes(n.type) && !n.eventForcedBattle && n.state==='in-progress');
-    generateMap();
-    for(const node of mapData.nodes) {
-        if(node.stage>0 && node.stage<=completed) {
-            node.state='completed';
-            if(node.requiredBattle)node.roundAdvanced=true;
-        } else if(node.optional && node.stage<=oldProgress) {
-            // Old optional visits could already have granted gold, healing or treasure.
-            // Avoid granting those rewards again when reconstructing the map.
-            node.state='completed';
-        }
-    }
-    currentMapStage=completed;
-    currentBattleRound=Math.min(46,globalStage(completed+1));
-    currentMapNodeId=completed?`s${completed}_l1`:'start';
-    pendingMapNodeId=null;
-    // Legacy battle which was started but not won remains available to replay.
-    if(oldNextBattle && oldNextBattle.stage===completed+1) {
-        const pending=mapData.nodes.find(n=>n.id===`s${oldNextBattle.stage}_l1`);
-        if(pending) {
-            pending.state='in-progress';
-            currentMapNodeId=pending.id;
-        }
-    }
-    if(oldProgress>completed) {
-        console.info(`[맵 마이그레이션] 이전 지도 ${oldProgress}층 → 완료 전투 ${completed}회. 빠진 라운드를 다시 진행합니다.`);
-    }
-    return true;
+ if(mapData?.rulesVersion===MAP_RULES_VERSION && mapData.mapNumber===currentChapter)return false;
+ const old=mapData, oldNodes=Array.isArray(old?.nodes)?old.nodes:[];
+ const oldMapStage=Number(currentMapStage)||0;
+ const oldRound=Number(currentBattleRound)||1;
+ // Preserve the highest grounded completed combat progress. Legacy chapter offsets
+ // were encoded into the round counter; never treat non-combat visits as victories.
+ let completed=0;
+ for(const n of oldNodes){
+   if(BATTLE_NODE_TYPES.includes(n.type)&&!n.eventForcedBattle&&(n.roundAdvanced||n.state==='completed'))completed++;
+ }
+ const previousCompleted=Math.max(0,oldRound-1);
+ const legacyChapter=Number(currentChapter)||1;
+ const minimumChapterOffset=legacyChapter===3?40:legacyChapter===2?20:0;
+ currentBattleRound=Math.min(45,Math.max(1,previousCompleted+1,minimumChapterOffset+completed+1));
+ // Map progress can be carried over only when this is a valid row-by-row map.
+ // Older mandatory-sidepath layouts are rebuilt without re-awarding prior visits.
+ currentMapStage=0;currentMapNodeId='start';pendingMapNodeId=null;
+ generateMap();
+ return true;
 }
 
-function goToMap() { 
+function advanceMapAfterVisit() {
+ const node=mapData.nodes.find(n=>n.id===currentMapNodeId);
+ if(!node || node.stage<=0 || node.state!=='completed' || node.mapAdvanced)return;
+ node.mapAdvanced=true;
+ currentMapStage=Math.max(currentMapStage,node.stage);
+ if(currentMapStage>=MAP_STAGES){
+   currentChapter++;
+   currentMapStage=0;currentMapNodeId='start';pendingMapNodeId=null;
+   generateMap();
+ }
+ updateRoundDisplay();updateMapStageLabel();
+}
+function goToMap() {
+ advanceMapAfterVisit();
     const deployedGeneralsCount = document.querySelectorAll('#inventory-container .placed-item.type-general').length;
     
     if (deployedGeneralsCount === 0) {
@@ -3748,6 +3718,7 @@ function goToMap() {
     document.getElementById('map-screen').style.display = 'flex'; 
     updateMapStageLabel(); 
     renderMapNodes(); 
+    saveRun();
 }
 
 function renderMapNodes() {
@@ -3757,7 +3728,7 @@ function renderMapNodes() {
         if (c.tagName.toLowerCase() !== 'svg') c.remove();
     });
 
-    for (let s = chapterDef().length; s >= 1; s--) {
+    for (let s = MAP_STAGES; s >= 1; s--) {
         let rowNodes = mapData.nodes.filter(n => n.stage === s);
         let rowDiv = document.createElement('div');
         rowDiv.className = 'map-row';
@@ -3787,11 +3758,11 @@ function renderMapNodes() {
 
             let icon =
                 node.eventForcedBattle ? '❓<br>추가전' :
-                node.type === '일반 전투' ? `⚔️<br>${globalStage(node.stage)}R` :
+                node.type === '일반 전투' ? `⚔️<br>${currentBattleRound}R` :
                 node.type === '보물' ? '🎁<br>보물' :
                 node.type === '의원' ? '🏥<br>의원' :
                 node.type === '사건' ? '❓<br>사건' :
-                `👑<br>${globalStage(node.stage)}R`;
+                `👑<br>${currentBattleRound}R`;
 
             nodeDiv.innerHTML = icon;
 
@@ -4024,6 +3995,7 @@ let pendingRecruits=[];
 let restoringRun=false;
 function clearRunSave(){try{localStorage.removeItem(RUN_SAVE_KEY);}catch(e){console.warn('저장 삭제 실패',e);}}
 function saveRun(){
+ if(!isBattleActive && pendingRewardResolved) advanceMapAfterVisit();
  if(restoringRun || isBattleActive || !document.getElementById('game-screen') || !currentFactionGenerals.length) return;
  try {
   const readSlots=id=>Array.from(document.querySelectorAll(`#${id} .slot`)).map(slot=>({

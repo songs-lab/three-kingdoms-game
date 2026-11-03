@@ -670,5 +670,353 @@
       "index": 7
     }
   },
-  "mappingRule": "Each name follows the user-approved roster order (left to right, top to bottom). Portraits have no baked-in labels."
+  "mappingRule": "Each name follows the user-approved roster order (left to right, top to bottom). Portraits have no baked-in labels.",
+  "enemySpriteMapping": "2026-11-03 user corrected",
+  "enemyPortraitAtlas": {
+    "황건적 졸개": {
+      "file": "enemy.webp",
+      "x": 0,
+      "y": 0
+    },
+    "관해": {
+      "file": "enemy.webp",
+      "x": 2,
+      "y": 0
+    },
+    "유벽": {
+      "file": "enemy.webp",
+      "x": 4,
+      "y": 0
+    },
+    "장각": {
+      "file": "enemy.webp",
+      "x": 7,
+      "y": 0
+    },
+    "공도": {
+      "file": "enemy.webp",
+      "x": 6,
+      "y": 0
+    },
+    "장보": {
+      "file": "enemy.webp",
+      "x": 3,
+      "y": 0
+    },
+    "장개": {
+      "file": "enemy.webp",
+      "x": 7,
+      "y": 1
+    },
+    "장량": {
+      "file": "enemy.webp",
+      "x": 5,
+      "y": 0
+    },
+    "서영": {
+      "file": "enemy.webp",
+      "x": 0,
+      "y": 1
+    },
+    "장제": {
+      "file": "enemy.webp",
+      "x": 1,
+      "y": 1
+    },
+    "호진": {
+      "file": "enemy.webp",
+      "x": 6,
+      "y": 1
+    },
+    "곽사(동탁)": {
+      "file": "enemy.webp",
+      "x": 3,
+      "y": 1
+    },
+    "이각(동탁)": {
+      "file": "enemy.webp",
+      "x": 4,
+      "y": 1
+    },
+    "우보": {
+      "file": "enemy.webp",
+      "x": 5,
+      "y": 1
+    },
+    "주준": {
+      "file": "enemy.webp",
+      "x": 2,
+      "y": 2
+    },
+    "이유": {
+      "file": "enemy.webp",
+      "x": 2,
+      "y": 1
+    },
+    "왕윤": {
+      "file": "enemy.webp",
+      "x": 4,
+      "y": 2
+    },
+    "장료(동탁)": {
+      "file": "enemy.webp",
+      "x": 8,
+      "y": 1
+    },
+    "고순(동탁)": {
+      "file": "enemy.webp",
+      "x": 3,
+      "y": 6
+    },
+    "화웅(동탁)": {
+      "file": "enemy.webp",
+      "x": 1,
+      "y": 2
+    },
+    "여포(동탁)": {
+      "file": "enemy.webp",
+      "x": 4,
+      "y": 7
+    },
+    "동탁(동탁)": {
+      "file": "enemy.webp",
+      "x": 4,
+      "y": 6
+    },
+    "이각(군웅)": {
+      "file": "enemy.webp",
+      "x": 2,
+      "y": 7
+    },
+    "가후(군웅)": {
+      "file": "enemy.webp",
+      "x": 3,
+      "y": 2
+    },
+    "곽사(군웅)": {
+      "file": "enemy.webp",
+      "x": 3,
+      "y": 7
+    },
+    "원술(군웅)": {
+      "file": "enemy.webp",
+      "x": 8,
+      "y": 2
+    },
+    "도겸": {
+      "file": "enemy.webp",
+      "x": 7,
+      "y": 4
+    },
+    "태사자(군웅)": {
+      "file": "wu.webp",
+      "x": 0,
+      "y": 1
+    },
+    "우금(군웅)": {
+      "file": "wei.webp",
+      "x": 1,
+      "y": 1
+    },
+    "진등": {
+      "file": "enemy.webp",
+      "x": 3,
+      "y": 3
+    },
+    "유요": {
+      "file": "enemy.webp",
+      "x": 4,
+      "y": 3
+    },
+    "하후돈(군웅)": {
+      "file": "enemy.webp",
+      "x": 8,
+      "y": 5
+    },
+    "고순(군웅)": {
+      "file": "enemy.webp",
+      "x": 5,
+      "y": 6
+    },
+    "성렴": {
+      "file": "enemy.webp",
+      "x": 6,
+      "y": 6
+    },
+    "위월": {
+      "file": "enemy.webp",
+      "x": 1,
+      "y": 6
+    },
+    "장료(군웅)": {
+      "file": "wei.webp",
+      "x": 3,
+      "y": 0
+    },
+    "진궁(군웅)": {
+      "file": "enemy.webp",
+      "x": 8,
+      "y": 4
+    },
+    "여포(군웅)": {
+      "file": "enemy.webp",
+      "x": 2,
+      "y": 4
+    },
+    "송헌": {
+      "file": "enemy.webp",
+      "x": 5,
+      "y": 2
+    },
+    "위속": {
+      "file": "enemy.webp",
+      "x": 0,
+      "y": 6
+    },
+    "원술(관도)": {
+      "file": "enemy.webp",
+      "x": 5,
+      "y": 4
+    },
+    "장수": {
+      "file": "enemy.webp",
+      "x": 4,
+      "y": 4
+    },
+    "황조": {
+      "file": "enemy.webp",
+      "x": 0,
+      "y": 3
+    },
+    "가후(관도)": {
+      "file": "wei.webp",
+      "x": 2,
+      "y": 2
+    },
+    "유훈": {
+      "file": "enemy.webp",
+      "x": 6,
+      "y": 4
+    },
+    "공손찬(관도)": {
+      "file": "enemy.webp",
+      "x": 3,
+      "y": 4
+    },
+    "허공": {
+      "file": "enemy.webp",
+      "x": 1,
+      "y": 4
+    },
+    "유비(관도)": {
+      "file": "enemy.webp",
+      "x": 3,
+      "y": 5
+    },
+    "조조(관도)": {
+      "file": "enemy.webp",
+      "x": 4,
+      "y": 5
+    },
+    "관우(관도)": {
+      "file": "enemy.webp",
+      "x": 5,
+      "y": 5
+    },
+    "전위(관도)": {
+      "file": "wei.webp",
+      "x": 5,
+      "y": 0
+    },
+    "장비(관도)": {
+      "file": "enemy.webp",
+      "x": 7,
+      "y": 5
+    },
+    "하후연(관도)": {
+      "file": "enemy.webp",
+      "x": 0,
+      "y": 4
+    },
+    "미축(관도)": {
+      "file": "enemy.webp",
+      "x": 7,
+      "y": 6
+    },
+    "곽가(관도)": {
+      "file": "enemy.webp",
+      "x": 8,
+      "y": 0
+    },
+    "장합(관도)": {
+      "file": "wei.webp",
+      "x": 7,
+      "y": 0
+    },
+    "고람": {
+      "file": "enemy.webp",
+      "x": 6,
+      "y": 3
+    },
+    "심배": {
+      "file": "enemy.webp",
+      "x": 6,
+      "y": 2
+    },
+    "견초": {
+      "file": "enemy.webp",
+      "x": 8,
+      "y": 3
+    },
+    "문추(관도)": {
+      "file": "other.webp",
+      "x": 2,
+      "y": 0
+    },
+    "순우경": {
+      "file": "enemy.webp",
+      "x": 7,
+      "y": 2
+    },
+    "원담": {
+      "file": "enemy.webp",
+      "x": 0,
+      "y": 2
+    },
+    "국의": {
+      "file": "enemy.webp",
+      "x": 7,
+      "y": 3
+    },
+    "원상": {
+      "file": "enemy.webp",
+      "x": 2,
+      "y": 6
+    },
+    "원소(관도)": {
+      "file": "other.webp",
+      "x": 1,
+      "y": 0
+    },
+    "안량(관도)": {
+      "file": "other.webp",
+      "x": 3,
+      "y": 0
+    },
+    "전풍": {
+      "file": "enemy.webp",
+      "x": 2,
+      "y": 5
+    },
+    "저수(관도)": {
+      "file": "enemy.webp",
+      "x": 0,
+      "y": 7
+    },
+    "허유": {
+      "file": "enemy.webp",
+      "x": 8,
+      "y": 6
+    }
+  }
 }

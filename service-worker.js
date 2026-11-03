@@ -1,5 +1,5 @@
 // Game PWA cache version. Online navigation and executable data use network-first.
-const CACHE_NAME = "tk-20261102-mandatory-battles-v3";
+const CACHE_NAME = "tk-enemy-match-20261103-v1";
 const CORE_ASSETS = [
   "./",
   "./index.html",
