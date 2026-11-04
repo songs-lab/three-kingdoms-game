@@ -163,20 +163,28 @@ function scenarioEffectApply(effect, caster, target, time, sourceSkill, logParts
     } else if(effect.type==='force_diff_damage'){
         const own=getStat(caster,'force',currentEnemyTeam,time),other=getStat(who,'force',lastPlayerTeam,time);
         const extra=Math.max(0,Math.min(100,own-other));
-        if(extra){who.hp=Math.max(0,who.hp-extra);scenarioHealthBar(who);battleFXHit(caster,who,extra,'고정피해');caster.totalDamage+=extra;}
+        if(extra){let actual=immuneToPlayerFixedDamage(who,lastPlayerTeam,'고정피해')?0:extra;
+            if(isPlayableUnit(who)){
+                if(lastPlayerTeam.some(a=>isPlayableUnit(a)&&a.name==='순욱'&&a.hp>0))actual*=.85;
+                if(lastPlayerTeam.some(a=>isPlayableUnit(a)&&a.name==='보즐'&&a.hp>0&&a.currentCooldown>0))actual*=.90;
+                if(who.name==='한당')actual*=1-.08*Math.min(6,lastPlayerTeam.filter(a=>a.hp>0).length);
+            }
+            actual=playableLeathalGuard(who,Math.floor(actual),time);who.hp=Math.max(0,who.hp-actual);scenarioHealthBar(who);if(actual)battleFXHit(caster,who,actual,'고정피해');caster.totalDamage+=actual;}
         logParts.push(`[추가 고정 피해 ${extra}]`);
     }
 }
 function scenarioSkillTargets(caster,skill,allies,enemies){
     const t=skill.target;
+    const singleTargetPool=enemies.filter(e=>!(isPlayableUnit(e)&&e.name==='우금'&&e.hp/e.maxHp<=0.2&&playerOtherAlliesAlive(e,enemies)));
+    const selectable=singleTargetPool.length?singleTargetPool:enemies;
     if(t==='self')return [caster];
     if(t==='ally_all')return [...allies];
     if(t==='ally_lowest_hp_ratio')return [[...allies].sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0]].filter(Boolean);
     if(t==='enemy_all')return [...enemies];
-    if(t==='enemy_two'||t==='enemy_three')return [...enemies].sort(()=>Math.random()-0.5).slice(0,t==='enemy_two'?2:3);
-    if(t==='enemy_lowest_hp_ratio')return [[...enemies].sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0]].filter(Boolean);
-    const taunted=enemies.filter(a=>a.buffs?.some(b=>b.stat==='taunt'));
-    const pool=taunted.length?taunted:enemies;
+    if(t==='enemy_two'||t==='enemy_three')return [...selectable].sort(()=>Math.random()-0.5).slice(0,t==='enemy_two'?2:3);
+    if(t==='enemy_lowest_hp_ratio')return [[...selectable].sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0]].filter(Boolean);
+    const taunted=selectable.filter(a=>a.buffs?.some(b=>b.stat==='taunt'));
+    const pool=taunted.length?taunted:selectable;
     return pool.length?[pool[Math.floor(Math.random()*pool.length)]]:[];
 }
 function scenarioOnHitTrait(caster,target,allies,enemies,skill,time){
@@ -246,7 +254,19 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             const defDodge=getStat(target,'dodge',enemies,time);
             const traitHit=scenarioAttackModifier(unit,target,allies,enemies,kind,time,'accuracy_points');
             const hitRate=Math.min(100,Math.max(20,original.acc+atkHit+traitHit-defDodge));
-            if(Math.random()*100>=hitRate){battleFXHit(unit,target,0,original.type,false,true);continue;}
+            if(Math.random()*100>=hitRate){
+                battleFXHit(unit,target,0,original.type,false,true);
+                if(isPlayableUnit(target)&&target.name==='공손찬'&&unit.hp>0){
+                    const targetTeam=playerTeam.includes(unit)?playerTeam:enemyTeam;
+                    let reflect=immuneToPlayerFixedDamage(unit,targetTeam,'고정피해')?0:20;
+                    reflect=playableLeathalGuard(unit,reflect,time);
+                    unit.hp=Math.max(0,unit.hp-reflect);
+                    target.totalDamage=(target.totalDamage||0)+reflect;
+                    if(reflect>0)addLog(`[특성] 공손찬 회피 반격! [${unit.name}] 고정피해 ${reflect}`,'log-attack');
+                    if(unit.hp<=0)gold+=processKillEvents(target,unit,playerTeam,enemyTeam,time);
+                }
+                continue;
+            }
             let val=original.power;
             const force=getStat(unit,'force',allies,time),intel=getStat(unit,'intel',allies,time);
             const targetCmd=getStat(target,'cmd',enemies,time),targetPol=getStat(target,'pol',enemies,time);
@@ -256,7 +276,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             let critChance=0.05+scenarioAttackModifier(unit,target,allies,enemies,kind,time,'crit_chance_points')/100;
             for(const b of unit.buffs)if(b.stat==='crit_up')critChance+=b.amount/100;
             let crit=kind!=='fixed'&&Math.random()<critChance;
-            if(crit&&(target.buffs.some(b=>b.stat==='anti_crit')||['허저','하후상','고순'].includes(target.name)))crit=false;
+            if(crit&&(target.buffs.some(b=>b.stat==='anti_crit')||['허저','하후상'].includes(target.name)||(target.name==='고순'&&!isPlayableUnit(target))))crit=false;
             if(crit)val*=1.3;
             val*=1+scenarioAttackModifier(unit,target,allies,enemies,kind,time,'final_damage_pct')/100;
             const buffs=unit.buffs;
@@ -286,17 +306,32 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             if(target.name==='왕평'&&kind==='physical'&&target.hp/target.maxHp<=.5)val*=.9;
             if(target.name==='허저'&&kind==='physical'&&target.hp/target.maxHp<=.3)val*=.5;
             if(target.name==='서황'&&kind==='physical'&&target.hp/target.maxHp<=.1)val*=.5;
-            if(target.name==='주태'&&target.hp/target.maxHp<=.3)val*=.9;
-            if(enemies.some(a=>a.name==='순욱'&&a.hp>0))val*=.9;
+            if(target.name==='주태'&&!isPlayableUnit(target)&&target.hp/target.maxHp<=.3)val*=.9;
+            if(enemies.some(a=>a.name==='순욱'&&a.hp>0))val*=enemies.some(a=>a.name==='순욱'&&isPlayableUnit(a)&&a.hp>0)?.85:.90;
+            if(target.id?.startsWith('p_')&&enemies.some(a=>a.name==='보즐'&&isPlayableUnit(a)&&a.hp>0&&a.currentCooldown>0))val*=.90;
+            if(isPlayableUnit(target)&&target.name==='한당')val*=1-.08*Math.min(6,enemies.filter(a=>a.hp>0).length);
+            if(kind==='strategy'&&enemies.some(a=>a.name==='고옹'&&isPlayableUnit(a)&&a.hp>0))val*=.9;
             if(target.id?.startsWith('p_')&&typeof battleFormationId!=='undefined'&&battleFormationId==='bangwon')val*=.9;
             if(target.id?.startsWith('p_')&&typeof hasTreasure==='function'&&hasTreasure('팔진도 진법서')&&scenarioAlive(playerTeam).length>=4)val*=.95;
             if(typeof activeBondsInBattle!=='undefined'){
                 if(target.id?.startsWith('p_')&&activeBondsInBattle.includes('도원결의')&&['유비','관우','장비'].includes(target.name))val*=.9;
                 if(target.id?.startsWith('p_')&&activeBondsInBattle.includes('합비봉쇄')&&['장료','악진','이전'].includes(target.name))val*=.8;
             }
-            const damage=Math.max(0,Math.min(300,Math.floor(val)));
+            let damage=Math.max(0,Math.min(300,Math.floor(val)));
+            if(kind==='fixed'&&immuneToPlayerFixedDamage(target,enemies,'고정피해'))damage=0;
+            damage=playableLeathalGuard(target,damage,time);
             target.hp=Math.max(0,target.hp-damage);
+            if(target.hp>0)triggerGuoHuaiPassive(target,time);
             unit.totalDamage=(unit.totalDamage||0)+damage;
+            if(isPlayableUnit(target)&&target.name==='전위'&&damage>0&&unit.hp>0){
+                let reflected=Math.floor(damage/3);
+                const unitTeam=playerTeam.includes(unit)?playerTeam:enemyTeam;
+                if(immuneToPlayerFixedDamage(unit,unitTeam,'고정피해'))reflected=0;
+                reflected=playableLeathalGuard(unit,reflected,time);
+                unit.hp=Math.max(0,unit.hp-reflected);
+                if(reflected){target.totalDamage=(target.totalDamage||0)+reflected;logs.push(`[전위 반격 ${reflected}]`);}
+                if(unit.hp<=0)gold+=processKillEvents(target,unit,playerTeam,enemyTeam,time);
+            }
             battleFXHit(unit,target,damage,original.type,crit);
             scenarioHealthBar(target);
             logs.push(`[${target.name} ${damage} 피해${crit?' 치명타':''}]`);
@@ -329,10 +364,10 @@ function scenarioHydrateSavedEnemies(team, round){
         if(!d)continue;
         const s=d.stats,k=d.skill;
         Object.assign(unit,{name:d.name,tier:d.tier,force:s.force,intel:s.intel,cmd:s.command,pol:s.politics,
-            maxHp:s.hp,hp:s.hp,dodge:s.dodge,hit:s.accuracy,cooldown:k.cooldownSec,
+            maxHp:s.hp,hp:Number.isFinite(unit.battleRemainingHp)?Math.max(0,Math.min(s.hp,unit.battleRemainingHp)):s.hp,dodge:s.dodge,hit:s.accuracy,cooldown:k.cooldownSec,
             trait:d.trait.description,scenarioTrait:d.trait,scenarioSkill:k,
             skills:[{name:k.name,type:k.type,power:k.power,acc:k.acc,desc:k.desc,
                 target:k.target,attackCount:k.attackCount}],
-            bounty:({D:0,C:1,B:2,A:4,S:6,SS:8})[d.tier]||0});
+            bounty:({D:0,C:0,B:1,A:2,S:3,SS:4})[d.tier]||0});
     }
 }

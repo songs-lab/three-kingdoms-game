@@ -1943,17 +1943,18 @@
               },
               "traits": [
                 {
-                  "name": "사나운 지휘",
-                  "description": "자신이 생존하는 동안 아군 전체 명중 +5.",
+                  "name": "서량군의 기세",
+                  "description": "자신이 생존하는 동안 아군 전체 통솔 +4.",
                   "trigger": {
                     "type": "passive"
                   },
                   "conditions": [],
                   "effects": [
                     {
-                      "type": "accuracy_points",
+                      "type": "stat_delta",
                       "target": "all_allies",
-                      "value": 5
+                      "value": 4,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
@@ -2019,8 +2020,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "자신이 생존하는 동안 아군 전체 명중 +5.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "자신이 생존하는 동안 아군 전체 통솔 +4.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -2158,18 +2159,17 @@
               },
               "traits": [
                 {
-                  "name": "노장의 통솔",
-                  "description": "자신이 생존하는 동안 아군 전체 통솔 +5.",
+                  "name": "노장의 침착",
+                  "description": "자신이 생존하는 동안 아군 전체 명중 +5.",
                   "trigger": {
                     "type": "passive"
                   },
                   "conditions": [],
                   "effects": [
                     {
-                      "type": "stat_delta",
+                      "type": "accuracy_points",
                       "target": "all_allies",
-                      "value": 5,
-                      "stat": "command"
+                      "value": 5
                     }
                   ],
                   "stacking": {
@@ -2225,8 +2225,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "자신이 생존하는 동안 아군 전체 통솔 +5.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "자신이 생존하는 동안 아군 전체 명중 +5.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -2566,8 +2566,8 @@
               },
               "traits": [
                 {
-                  "name": "함진영의 규율",
-                  "description": "체력이 70% 이상이면 받는 최종 피해 12% 감소.",
+                  "name": "함진의 지휘",
+                  "description": "체력이 70% 이상이면 통솔 +8.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -2581,10 +2581,10 @@
                   ],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": -12,
-                      "scope": "all"
+                      "value": 8,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
@@ -2642,8 +2642,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 70% 이상이면 받는 최종 피해 12% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 70% 이상이면 통솔 +8.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -3582,8 +3582,8 @@
               },
               "traits": [
                 {
-                  "name": "엄정한 대열",
-                  "description": "체력이 50% 이상이면 받는 최종 피해 10% 감소.",
+                  "name": "엄정한 군율",
+                  "description": "체력이 50% 이상이면 통솔 +8.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -3597,10 +3597,10 @@
                   ],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": -10,
-                      "scope": "all"
+                      "value": 8,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
@@ -3658,8 +3658,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 50% 이상이면 받는 최종 피해 10% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 50% 이상이면 통솔 +8.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -3992,8 +3992,8 @@
               },
               "traits": [
                 {
-                  "name": "함진영 결사",
-                  "description": "체력이 60% 이상이면 받는 최종 피해 15% 감소.",
+                  "name": "함진의 맹세",
+                  "description": "체력이 60% 이상이면 통솔 +10.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -4007,17 +4007,17 @@
                   ],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": -15,
-                      "scope": "all"
+                      "value": 10,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
                     "maxStacks": 1,
                     "scope": "self"
                   },
-                  "runtimeStatus": "STAGED_NOT_CONNECTED",
+                  "runtimeStatus": "IMPLEMENTED",
                   "id": "enemy_trait:enemy_variant:고순:군웅"
                 }
               ],
@@ -4058,8 +4058,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 60% 이상이면 받는 최종 피해 15% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 60% 이상이면 통솔 +10.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -4484,8 +4484,8 @@
               },
               "traits": [
                 {
-                  "name": "함진영 결사",
-                  "description": "체력이 60% 이상이면 받는 최종 피해 15% 감소.",
+                  "name": "함진의 맹세",
+                  "description": "체력이 60% 이상이면 통솔 +10.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -4499,10 +4499,10 @@
                   ],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": -15,
-                      "scope": "all"
+                      "value": 10,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
@@ -4560,8 +4560,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 60% 이상이면 받는 최종 피해 15% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 60% 이상이면 통솔 +10.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -5148,8 +5148,8 @@
               },
               "traits": [
                 {
-                  "name": "끈질긴 퇴각",
-                  "description": "체력이 50% 이하이면 받는 최종 피해 12% 감소.",
+                  "name": "궁지의 반격",
+                  "description": "체력이 50% 이하이면 무력 +10.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -5163,10 +5163,10 @@
                   ],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": -12,
-                      "scope": "all"
+                      "value": 10,
+                      "stat": "force"
                     }
                   ],
                   "stacking": {
@@ -5224,8 +5224,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 50% 이하이면 받는 최종 피해 12% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 50% 이하이면 무력 +10.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             },
             {
@@ -5246,8 +5246,8 @@
               },
               "traits": [
                 {
-                  "name": "수군 방어선",
-                  "description": "체력이 50% 이상이면 받는 책략 피해 15% 감소.",
+                  "name": "강하의 방벽",
+                  "description": "체력이 50% 이상이면 통솔 +8.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -5261,10 +5261,10 @@
                   ],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": -15,
-                      "scope": "strategy"
+                      "value": 8,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
@@ -5322,8 +5322,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 50% 이상이면 받는 책략 피해 15% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 50% 이상이면 통솔 +8.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -5350,17 +5350,24 @@
               },
               "traits": [
                 {
-                  "name": "귀모의 독",
-                  "description": "책략 기술 적중 시 대상의 남은 쿨타임 +0.5초, 대상별 최대 2회.",
+                  "name": "귀모의 정확성",
+                  "description": "책략 기술 명중 +12.",
                   "trigger": {
-                    "type": "on_strategy_hit"
+                    "type": "passive"
                   },
-                  "conditions": [],
+                  "conditions": [
+                    {
+                      "subject": "action",
+                      "field": "attack_type",
+                      "operator": "==",
+                      "value": "strategy"
+                    }
+                  ],
                   "effects": [
                     {
-                      "type": "remaining_cooldown_seconds",
-                      "target": "hit_enemy",
-                      "value": 0.5
+                      "type": "accuracy_points",
+                      "target": "self",
+                      "value": 12
                     }
                   ],
                   "stacking": {
@@ -5416,8 +5423,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "책략 기술 적중 시 대상의 남은 쿨타임 +0.5초, 대상별 최대 2회.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "책략 기술 명중 +12.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             },
             {
@@ -5745,18 +5752,18 @@
               },
               "traits": [
                 {
-                  "name": "현덕의 인애",
-                  "description": "6초마다 자신을 제외한 체력 비율이 가장 낮은 아군 1명에게 최대 체력의 6% 회복.",
+                  "name": "인덕의 기치",
+                  "description": "자신이 생존하는 동안 아군 전체 통솔 +4.",
                   "trigger": {
-                    "type": "periodic",
-                    "intervalSec": 6
+                    "type": "passive"
                   },
                   "conditions": [],
                   "effects": [
                     {
-                      "type": "heal_max_hp_pct",
-                      "target": "lowest_hp_other_ally",
-                      "value": 6
+                      "type": "stat_delta",
+                      "target": "all_allies",
+                      "value": 4,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
@@ -5827,8 +5834,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "6초마다 자신을 제외한 체력 비율이 가장 낮은 아군 1명에게 최대 체력의 6% 회복.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "자신이 생존하는 동안 아군 전체 통솔 +4.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             },
             {
@@ -5944,24 +5951,25 @@
               },
               "traits": [
                 {
-                  "name": "청룡의 위세",
-                  "description": "물리 기술 사용 시 상대 통솔 25% 무시.",
+                  "name": "청룡의 기백",
+                  "description": "체력이 50% 이상이면 받는 최종 피해 10% 감소.",
                   "trigger": {
                     "type": "passive"
                   },
                   "conditions": [
                     {
-                      "subject": "action",
-                      "field": "attack_type",
-                      "operator": "==",
-                      "value": "physical"
+                      "subject": "self",
+                      "field": "hp_ratio",
+                      "operator": ">=",
+                      "value": 0.5
                     }
                   ],
                   "effects": [
                     {
-                      "type": "ignore_target_command_pct",
+                      "type": "damage_taken_pct",
                       "target": "self",
-                      "value": 25
+                      "value": -10,
+                      "scope": "all"
                     }
                   ],
                   "stacking": {
@@ -6010,8 +6018,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "물리 기술 사용 시 상대 통솔 25% 무시.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 50% 이상이면 받는 최종 피해 10% 감소.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             },
             {
@@ -6032,8 +6040,8 @@
               },
               "traits": [
                 {
-                  "name": "철벽 호위",
-                  "description": "체력이 40% 이하이면 받는 물리 피해 20% 감소.",
+                  "name": "악래의 분노",
+                  "description": "체력이 40% 이하이면 무력 +12.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -6047,10 +6055,10 @@
                   ],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": -20,
-                      "scope": "physical"
+                      "value": 12,
+                      "stat": "force"
                     }
                   ],
                   "stacking": {
@@ -6106,8 +6114,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 40% 이하이면 받는 물리 피해 20% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 40% 이하이면 무력 +12.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -6232,24 +6240,25 @@
               },
               "traits": [
                 {
-                  "name": "질풍의 활",
-                  "description": "전투 첫 물리 기술 명중 +20, 최종 피해 +10%.",
+                  "name": "질풍의 몸놀림",
+                  "description": "체력이 50% 이상이면 회피 +8.",
                   "trigger": {
-                    "type": "first_physical_skill",
-                    "maxActivationsPerBattle": 1
+                    "type": "passive"
                   },
-                  "conditions": [],
+                  "conditions": [
+                    {
+                      "subject": "self",
+                      "field": "hp_ratio",
+                      "operator": ">=",
+                      "value": 0.5
+                    }
+                  ],
                   "effects": [
                     {
-                      "type": "accuracy_points",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": 20
-                    },
-                    {
-                      "type": "final_damage_pct",
-                      "target": "self",
-                      "value": 10,
-                      "scope": "physical"
+                      "value": 8,
+                      "stat": "dodge"
                     }
                   ],
                   "stacking": {
@@ -6307,8 +6316,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "전투 첫 물리 기술 명중 +20, 최종 피해 +10%.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 50% 이상이면 회피 +8.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -6423,8 +6432,8 @@
               },
               "traits": [
                 {
-                  "name": "봉효의 혜안",
-                  "description": "체력이 50% 이상이면 책략 명중 +15, 책략 최종 피해 +10%.",
+                  "name": "봉효의 통찰",
+                  "description": "체력이 50% 이상이면 회피 +10.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -6434,25 +6443,14 @@
                       "field": "hp_ratio",
                       "operator": ">=",
                       "value": 0.5
-                    },
-                    {
-                      "subject": "action",
-                      "field": "attack_type",
-                      "operator": "==",
-                      "value": "strategy"
                     }
                   ],
                   "effects": [
                     {
-                      "type": "accuracy_points",
-                      "target": "self",
-                      "value": 15
-                    },
-                    {
-                      "type": "final_damage_pct",
+                      "type": "stat_delta",
                       "target": "self",
                       "value": 10,
-                      "scope": "strategy"
+                      "stat": "dodge"
                     }
                   ],
                   "stacking": {
@@ -6506,8 +6504,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 50% 이상이면 책략 명중 +15, 책략 최종 피해 +10%.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 50% 이상이면 회피 +10.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -6751,18 +6749,18 @@
               },
               "traits": [
                 {
-                  "name": "하북의 결속",
-                  "description": "자신이 생존하는 동안 아군 전체 받는 책략 피해 8% 감소.",
+                  "name": "업성의 결의",
+                  "description": "자신이 생존하는 동안 아군 전체 통솔 +5.",
                   "trigger": {
                     "type": "passive"
                   },
                   "conditions": [],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "stat_delta",
                       "target": "all_allies",
-                      "value": -8,
-                      "scope": "strategy"
+                      "value": 5,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
@@ -6820,8 +6818,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "자신이 생존하는 동안 아군 전체 받는 책략 피해 8% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "자신이 생존하는 동안 아군 전체 통솔 +5.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -6952,8 +6950,8 @@
               },
               "traits": [
                 {
-                  "name": "백마의 맹위",
-                  "description": "체력이 50% 이상인 동안 물리 최종 피해 +20%.",
+                  "name": "하북맹장의 기세",
+                  "description": "체력이 50% 이상이면 통솔 +10.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -6967,10 +6965,10 @@
                   ],
                   "effects": [
                     {
-                      "type": "final_damage_pct",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": 20,
-                      "scope": "physical"
+                      "value": 10,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
@@ -7019,8 +7017,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 50% 이상인 동안 물리 최종 피해 +20%.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 50% 이상이면 통솔 +10.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -7047,8 +7045,8 @@
               },
               "traits": [
                 {
-                  "name": "오소의 보루",
-                  "description": "체력이 50% 이상이면 받는 최종 피해 12% 감소.",
+                  "name": "오소의 경계",
+                  "description": "체력이 50% 이상이면 통솔 +8.",
                   "trigger": {
                     "type": "passive"
                   },
@@ -7062,10 +7060,10 @@
                   ],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "stat_delta",
                       "target": "self",
-                      "value": -12,
-                      "scope": "all"
+                      "value": 8,
+                      "stat": "command"
                     }
                   ],
                   "stacking": {
@@ -7123,8 +7121,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "체력이 50% 이상이면 받는 최종 피해 12% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "체력이 50% 이상이면 통솔 +8.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
@@ -7760,17 +7758,16 @@
               "traits": [
                 {
                   "name": "하북의 방략",
-                  "description": "자신이 생존하는 동안 아군 전체 받는 최종 피해 8% 감소.",
+                  "description": "자신이 생존하는 동안 아군 전체 명중 +6.",
                   "trigger": {
                     "type": "passive"
                   },
                   "conditions": [],
                   "effects": [
                     {
-                      "type": "damage_taken_pct",
+                      "type": "accuracy_points",
                       "target": "all_allies",
-                      "value": -8,
-                      "scope": "all"
+                      "value": 6
                     }
                   ],
                   "stacking": {
@@ -7836,8 +7833,8 @@
               "bounty": null,
               "portrait": null,
               "statStatus": "provided",
-              "trait": "자신이 생존하는 동안 아군 전체 받는 최종 피해 8% 감소.",
-              "traitStatus": "DESIGNED_NOT_ACTIVE",
+              "trait": "자신이 생존하는 동안 아군 전체 명중 +6.",
+              "traitStatus": "IMPLEMENTED",
               "skillStatus": "DESIGNED_NOT_ACTIVE"
             }
           ]
