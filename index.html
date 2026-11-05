@@ -13,7 +13,21 @@
 <style>
 body { font-family: 'Malgun Gothic', sans-serif; background-color: #1e272e; color: white; margin: 0; padding: 0; user-select: none; }
 button { cursor: pointer; }
-#faction-screen { padding: 20px; text-align: center; margin-top: 50px; }
+#faction-screen { display:none; min-height:100dvh; box-sizing:border-box; padding:calc(45px + env(safe-area-inset-top)) 18px 28px; text-align:center; background:linear-gradient(rgba(8,15,20,.84),rgba(7,15,23,.91)),url('./MAIN.png') center/cover; }
+#title-screen { position:fixed; inset:0; z-index:1400; box-sizing:border-box; min-height:100dvh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:calc(30px + env(safe-area-inset-top)) 24px calc(30px + env(safe-area-inset-bottom)); text-align:center; overflow-y:auto; background:linear-gradient(180deg,rgba(5,12,20,.20),rgba(6,10,17,.88) 68%,rgba(5,9,14,.96)),url('./MAIN.png') center/cover no-repeat; }
+.title-emblem {color:#f4d493;letter-spacing:.30em;font-size:13px;font-weight:800;text-shadow:0 2px 4px #000;}
+.title-main {font-size:clamp(34px,9vw,66px);font-weight:900;line-height:1.12;letter-spacing:-2px;color:#f7e4b9;text-shadow:0 4px 3px #111,0 0 32px #8b5837;margin:18px 0 8px;}
+.title-sub {font-size:13px;color:#e7ddd0;letter-spacing:.24em;text-shadow:0 2px 3px #000;margin-bottom:45px;}
+.title-action {width:min(100%,300px);padding:15px 24px;margin:7px 0;border-radius:9px;border:1px solid #e6b86c;background:linear-gradient(135deg,#c99445,#efd293);color:#252015;font-size:19px;font-weight:900;box-shadow:0 5px 18px rgba(0,0,0,.4);}
+.title-action.secondary {background:rgba(18,34,46,.88);color:#f4d8a0;border-color:#ac915d;}
+.title-action:disabled {opacity:.44;filter:grayscale(1);cursor:default;}
+#title-save-desc {font-size:12px;color:#cbd3d6;line-height:1.6;margin-top:12px;min-height:20px;}
+.faction-back {padding:9px 18px;margin-top:10px;border:1px solid #bda26d;border-radius:7px;background:#263441;color:#fff;}
+.restart-run-btn {background:#56322c;color:#fff2d8;border:1px solid #d39c73;border-radius:5px;padding:4px 8px;font-size:11px;font-weight:bold;}
+.collapse-banner {border-color:#f1a155 !important;background:linear-gradient(100deg,rgba(87,36,20,.97),rgba(47,24,20,.95)) !important;box-shadow:0 4px 25px rgba(238,94,42,.40) !important;}
+.collapse-banner .unique-banner-name{color:#ffce76;font-size:18px;}
+.collapse-banner .collapse-icon{display:flex;align-items:center;justify-content:center;font-size:32px;flex:0 0 52px;height:52px;border:1px solid #c66b40;border-radius:8px;background:rgba(0,0,0,.35);}
+
 .faction-btn { display: block; width: 80%; margin: 15px auto; padding: 15px; font-size: 20px; font-weight: bold; border: none; border-radius: 10px; color: white; transition: transform 0.1s; }
 .faction-btn:active { transform: scale(0.95); }
 #btn-shu { background-color: #27ae60; } #btn-wu { background-color: #c0392b; } #btn-wei { background-color: #2980b9; }
@@ -882,11 +896,20 @@ button { cursor: pointer; }
   <p id="story-event-note" style="color:#e9c178;font-size:11px;line-height:1.45;"></p>
  </div>
 </div>
+<div id="title-screen" aria-label="게임 시작 화면">
+  <div class="title-emblem">三國志 · BACKPACK BATTLES</div>
+  <div class="title-main">삼국지<br>백팩 배틀즈</div>
+  <div class="title-sub">전장을 담은 아홉 칸의 병법</div>
+  <button class="title-action" onclick="showNewGameFactions()">새로하기</button>
+  <button class="title-action secondary" id="title-continue-btn" onclick="continueSavedGame()" disabled>이어하기</button>
+  <div id="title-save-desc" aria-live="polite">저장된 진행 상황을 확인하는 중...</div>
+</div>
 <div id="faction-screen">
     <h1>시작할 진영을 선택하세요</h1>
     <button class="faction-btn" id="btn-shu" onclick="startGame('촉나라')">촉 (蜀)</button>
     <button class="faction-btn" id="btn-wu" onclick="startGame('오나라')">오 (吳)</button>
     <button class="faction-btn" id="btn-wei" onclick="startGame('위나라')">위 (魏)</button>
+    <button class="faction-back" onclick="showTitleScreen()">← 시작 화면으로</button>
 </div>
 <div id="game-screen"><div id="top-bar"><div id="faction-title">진영</div><div class="top-right"><span id="round-display">단계: 캠프 / 20</span><span id="gold-display">🪙 10</span><button id="battle-btn" onclick="goToMap()">🗺️ 지도 보기</button></div></div>
 <div id="info-panel"><div class="info-img" id="info-face">👤</div><div class="info-details"><div id="info-name">무장을 선택하세요</div><div id="info-stats">아이템이나 무장을 터치하면 상세 스탯이 표시됩니다.</div><div id="info-skills"></div></div></div>
@@ -895,7 +918,7 @@ button { cursor: pointer; }
 <div id="formation-display" style="display:none;text-align:center;padding:5px 8px;background:rgba(34,82,69,.88);border-bottom:1px solid #92cda7;color:#d5ffcb;font-weight:bold;font-size:11px;"></div>
 <div id="formation-toast" role="status" aria-live="polite"></div>
 <div id="treasure-display"><span style="color:#bdc3c7;">보유 보물 없음</span></div>
-<div style="background:#263b4a;padding:4px 8px;text-align:center;font-size:11px;">💾 진행 상황 자동 저장 · <button onclick="saveRun();alert('현재 상태를 저장했습니다.');" style="padding:3px 8px;">지금 저장</button> <button onclick="redeemPendingRecruit()" style="padding:3px 8px;">대기 등용 장수 받기</button></div>
+<div style="background:#263b4a;padding:4px 8px;text-align:center;font-size:11px;">💾 진행 상황 자동 저장 · <button onclick="saveRun();alert('현재 상태를 저장했습니다.');" style="padding:3px 8px;">지금 저장</button> <button onclick="redeemPendingRecruit()" style="padding:3px 8px;">대기 등용 장수 받기</button> <button class="restart-run-btn" onclick="restartWholeGame()">↻ 처음부터 다시하기</button></div>
 <div id="shop-section"><div class="shop-header"><h3>상점 (6칸)</h3><button id="reroll-btn" onclick="rerollShop()">리롤 🪙1</button></div><div class="shop-grid" id="shop-container"></div></div>
 <div id="action-section"><div class="action-group"><span class="action-label" style="color:#f1c40f;">조합</span><div class="slot unlocked combine-slot" id="combine-1" onclick="handleActionSlot(this, 'combine')"></div><span class="action-label">+</span><div class="slot unlocked combine-slot" id="combine-2" onclick="handleActionSlot(this, 'combine')"></div><button class="action-btn" onclick="executeCombine()">합치기</button></div><div class="action-group"><button class="action-btn" style="background-color:#9b59b6; margin-right: 5px;" onclick="rotateSelected()">🔄 회전(R)</button><span class="action-label" style="color:#e74c3c;">판매(반값)</span><div class="slot unlocked sell-slot" id="sell-slot" onclick="handleActionSlot(this, 'sell')"></div></div></div>
 <div id="play-area"><div id="inventory-section"><div class="section-title">내 배낭 (전방 5 / 후방 5 · 위쪽이 전방)</div><div class="inventory-grid" id="inventory-container"></div></div><div id="storage-section"><div class="section-title">보관함</div><div class="storage-grid" id="storage-container"></div></div></div></div>
@@ -1411,7 +1434,7 @@ const allGenerals = rawDB.map(d => {
     let t = d[0];
     return {
         tier: t, name: d[1], cmd: d[2], force: d[3], intel: d[4], pol: d[5], hp: d[6], hit: d[7], dodge: d[8], cooldown: d[9], w: d[10], h: d[11], trait: d[12], faction: d[13],
-        price: t==="SSS"?0 : t==="SS"?0 : t==="S"?15 : t==="A"?10 : t==="B"?5 : 2,
+        price: t==="SSS"?0 : t==="SS"?0 : t==="S"?20 : t==="A"?13 : t==="B"?7 : 3,
         weight: t==="SSS"?0.5 : t==="SS"?2 : t==="S"?4 : t==="A"?8 : t==="B"?15 : 20
     };
 });
@@ -1514,7 +1537,12 @@ function cancelTreasureModal() {
     document.getElementById('treasure-modal').style.display = 'none';
 }
 
-function startGame(factionName) {
+let suppressRunSaving=false;
+function startGame(factionName, options={}) {
+    if (!options.restoring && hasValidRunSave() &&
+        !confirm('새로 시작하면 기존 이어하기 저장이 삭제됩니다. 새 게임을 시작할까요?')) return;
+    if (!options.restoring) { suppressRunSaving=true; clearRunSave(); playerGold=10; bagCounter=0; }
+    document.getElementById('title-screen').style.display='none';
     const screen = document.getElementById('faction-screen');
     const game = document.getElementById('game-screen');
 
@@ -1540,7 +1568,6 @@ function startGame(factionName) {
 
     ownedTreasures = [];
     freeRerolls=0;pendingRecruits=[];pendingRewardChoices=null;pendingRewardResolved=true;storyHutProgress=0;pendingStoryEventNodeId=null;
-    clearRunSave();
     renderOwnedTreasures();
     refreshDeploymentLimitUI();
 
@@ -1550,7 +1577,7 @@ function startGame(factionName) {
     rollShopItems();
     updateRoundDisplay();
     updateBondUI();
-    refreshRerollButton();saveRun();
+    refreshRerollButton();suppressRunSaving=false;saveRun();
 }
 
 function clearSelection() { document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected')); activeSelection = { source: null, element: null, data: null }; }
@@ -2278,18 +2305,71 @@ function formationEnemyPreference(unit){
     return {front:Math.round(front*10)/10,rear:Math.round(rear*10)/10,diff:front-rear};
 }
 function formationAssignEnemies(team){
+    // 패배 후 재도전에서는 첫 전투의 배치를 유지한다. 전방 전멸이 후방 재배치로 바뀌지 않도록 한다.
+    if(team.some(u=>u.battleRowLocked)){
+        team.forEach(u=>{if(u.battleRow!=='front'&&u.battleRow!=='rear')u.battleRow='rear';});
+        return;
+    }
     const live=team.filter(u=>u.hp>0);
     const ranking=live.map((u,i)=>({u,i,...formationEnemyPreference(u)})).sort((a,b)=>b.diff-a.diff||a.i-b.i);
     // 총 최대 10인일 때 최대 각 5. 가능한 경우 선호 열 우선, 후방 초과 시 전방 수용.
     const mandatoryFront=Math.max(0,ranking.length-FORMATION_MAX_PER_ROW);
     const preferredFront=ranking.filter(x=>x.diff>0).length;
     const frontCount=Math.min(FORMATION_MAX_PER_ROW,Math.max(mandatoryFront,preferredFront));
-    ranking.forEach((x,i)=>{x.u.battleRow=i<frontCount?'front':'rear';x.u.battleRowScores={front:x.front,rear:x.rear};});
+    ranking.forEach((x,i)=>{x.u.battleRow=i<frontCount?'front':'rear';x.u.battleRowScores={front:x.front,rear:x.rear};x.u.battleRowLocked=true;});
     team.filter(u=>u.hp<=0).forEach(u=>{u.battleRow=u.battleRow||'front';});
 }
 function formationValidateDeployment(row,movingUid){
     const units=Array.from(document.querySelectorAll('#inventory-container .placed-item.type-general'));
     return units.filter(el=>el.dataset.uid!==movingUid&&formationPositionFromElement(el)===row).length<FORMATION_MAX_PER_ROW;
+}
+/* 전열 붕괴는 전투 시작에 양 열이 존재한 진영에서만 발동한다. */
+let battleFrontState=null;
+function setupFrontBreak(player,enemy){
+ const init=team=>{
+   const hadBoth=team.some(u=>u.battleRow==='front'&&(u.hp>0||u.battleRowLocked)) && team.some(u=>u.battleRow==='rear'&&(u.hp>0||u.battleRowLocked));
+   // 재도전 시작부터 적 전방이 모두 사망해 있다면 후방 노출 상태를 그대로 이어간다.
+   return {team,hadBoth,collapsed:hadBoth&&!team.some(u=>u.battleRow==='front'&&u.hp>0)};
+ };
+ battleFrontState={player:init(player),enemy:init(enemy)};
+}
+function frontProtectionActive(u){
+ if(!u||u.battleRow!=='rear'||!battleFrontState)return false;
+ const state=u.id?.startsWith('p_')?battleFrontState.player:battleFrontState.enemy;
+ return !!(state&&state.hadBoth&&!state.collapsed&&state.team.some(f=>f.battleRow==='front'&&f.hp>0));
+}
+function enemyRearVulnerable(u){
+ return !!(u&&u.id?.startsWith('e_')&&u.battleRow==='rear'&&battleFrontState?.enemy?.collapsed&&u.hp>0);
+}
+function showCollapseBanner(){
+ const layer=document.getElementById('unique-skill-banner-layer');
+ if(!layer||document.getElementById('battle-screen').style.display==='none')return;
+ const generation=uniqueBannerGeneration;
+ let stack=layer.querySelector('.unique-banner-stack');
+ if(!stack){stack=document.createElement('div');stack.className='unique-banner-stack';layer.appendChild(stack);}
+ while(stack.children.length>=3)stack.firstElementChild.remove();
+ const banner=document.createElement('div');banner.className='unique-banner collapse-banner e-side';
+ banner.innerHTML='<div class="collapse-icon">⚔️</div><div class="unique-banner-lines"><div class="unique-banner-title">진형 붕괴</div><div class="unique-banner-name">적군 전열 붕괴!</div><div class="unique-banner-actor">후열 회피 +15 해제 · 받는 최종 스킬 피해 +10%</div></div>';
+ stack.appendChild(banner);
+ const ms=battleSpeedMulti>1?2000:3300;
+ setTimeout(()=>{if(generation!==uniqueBannerGeneration||!banner.isConnected)return;banner.classList.add('removing');setTimeout(()=>{if(generation!==uniqueBannerGeneration||!banner.isConnected)return;const parent=banner.parentElement;banner.remove();if(parent&&!parent.children.length)parent.remove();},270);},ms);
+}
+function updateFrontCollapseState(){
+ if(!battleFrontState)return;
+ for(const side of ['enemy','player']){
+  const state=battleFrontState[side];
+  if(!state.hadBoth||state.collapsed)continue;
+  if(state.team.some(u=>u.battleRow==='front'&&u.hp>0))continue;
+  if(!state.team.some(u=>u.battleRow==='rear'&&u.hp>0))continue;
+  state.collapsed=true;
+  const board=document.getElementById(side==='enemy'?'enemy-battle-board':'player-battle-board');
+  const label=board?.querySelector('.formation-battle-row.rear .formation-row-label');
+  if(label)label.textContent=side==='enemy'?'후방 · 노출':'후방 · 보호 해제';
+  if(side==='enemy'){
+   addLog('⚔️ 적군 전열 붕괴! 적 후열 회피 +15 해제, 받는 최종 스킬 피해 +10%.','log-kill');
+   showCollapseBanner();
+  }else addLog('⚠️ 아군 전열 붕괴! 아군 후열의 회피 +15 보호 효과가 사라집니다.','log-kill');
+ }
 }
 /* ── 전후방 전투 끝 ── */
 
@@ -2302,7 +2382,8 @@ function renderBattleUnits(boardId, team, title) {
     for(const row of rows){
         const area=document.createElement('div');
         area.className='formation-battle-row '+row;
-        area.innerHTML=`<div class="formation-row-label">${rowNames[row]}</div><div class="formation-battle-slots"></div>`;
+        const rearNote=row==='rear'?(frontProtectionActive(team.find(u=>u.battleRow==='rear'&&u.hp>0))?' · 회피+15':(enemyRearVulnerable(team.find(u=>u.battleRow==='rear'&&u.hp>0))?' · 노출':' · 보호 해제')):'';
+        area.innerHTML=`<div class="formation-row-label">${rowNames[row]}${rearNote}</div><div class="formation-battle-slots"></div>`;
         const slots=area.querySelector('.formation-battle-slots');
         const units=team.filter(u=>u.battleRow===row).slice(0,FORMATION_MAX_PER_ROW);
         for(let i=0;i<FORMATION_MAX_PER_ROW;i++){
@@ -2437,6 +2518,7 @@ battleSpeedMulti = 1;
     });
     
     formationAssignEnemies(currentEnemyTeam);
+    setupFrontBreak(playerTeam,currentEnemyTeam);
     // 진형은 전투 시작 시 배낭 개방 칸으로 재판정하며 적군에게는 적용하지 않는다.
     const battleFormation = updateFormationUI(false);
     battleFormationId = battleFormation ? battleFormation.id : null;
@@ -2687,6 +2769,8 @@ function getStat(unit, statName, allAliveUnits, gameTime) {
         }
     }
 
+    // 전방이 살아 있는 동안만 후열 전원 회피 +15. 전열 붕괴 후에는 복구되지 않는다.
+    if(statName==='dodge'&&frontProtectionActive(unit))flatUp+=15;
     const scenarioDelta = scenarioStatDelta(unit,statName,allAliveUnits,gameTime);
     if(scenarioDelta >= 0) flatUp += scenarioDelta; else flatDown += -scenarioDelta;
     if (isPlayableUnit(unit)&&unit.name==='고순'&&['force','cmd','intel','pol'].includes(statName)) {flatDown=0;pctDown=0;}
@@ -2743,6 +2827,7 @@ function processKillEvents(killer, deadUnit, allAllies, allEnemies, gameTime) {
     }
 
     deadUnit.isDead = true;
+    updateFrontCollapseState();
     scenarioOnDeathTrait(deadUnit);
     const scenarioExtraBounty = (deadUnit.id && deadUnit.id.startsWith("e_")) ? scenarioOnEnemyDeath(deadUnit,currentEnemyTeam,lastPlayerTeam,gameTime) : 0;
 
@@ -2934,6 +3019,7 @@ async function runATBSimulation(playerTeam, enemyTeam) {
 
     try {
         while (pAlive().length > 0 && eAlive().length > 0 && isBattleActive) {
+            updateFrontCollapseState();
             if (gameTime >= 90) { addLog("⏰ 90초 경과! 무승부(패배) 처리됩니다.", "log-kill"); break; }
             await new Promise(r => setTimeout(r, 100 / battleSpeedMulti)); gameTime += TICK_RATE; let allUnits = [...pAlive(), ...eAlive()];
             let currentSec = Math.floor(gameTime);
@@ -3458,6 +3544,7 @@ if (enemies.length === 0) break;
 
                                 if (battleFormationId==='eorin' && playerTeam.includes(unit) && !playerTeam.includes(defender)) finalDamage *= 1.10;
                                 if(isPlayer&&activeClinicHerb==='오석산'&&finalDamage>0)finalDamage*=1.05;
+                                if(!isAllyTarget&&enemyRearVulnerable(defender)&&finalDamage>0)finalDamage*=1.10;
                                 finalDamage = Math.floor(Math.max(0, Math.min(300, finalDamage))); 
                                 // 실제 적용 피해량은 무적·고정피해 면역·사망 방지 판정 이후 기록한다.
 
@@ -3801,6 +3888,7 @@ if (bozhiExpired) unit.buffs.push({stat: 'next_dmg_up', amount: 15, expireTime: 
             }
         }
     } catch (err) { console.error(err); addLog("⚠️ 전투 중 오류 발생으로 전투가 중단되었습니다.", "log-attack"); }
+    updateFrontCollapseState();
     await new Promise(r => setTimeout(r, 1000)); 
     
     let isWin = forcedScenarioVictory || (pAlive().length > 0 && eAlive().length === 0); 
@@ -3902,7 +3990,7 @@ function returnToGame(isWin) {
 
     battleResultProcessed = true;
     isBattleActive = false;
-    activeClinicHerb=null;clinicCheongungAvailable=false;
+    activeClinicHerb=null;clinicCheongungAvailable=false;battleFrontState=null;
 
     resetUniqueSkillBanners();
     document.getElementById('battle-screen').style.display = 'none';
@@ -4526,7 +4614,7 @@ let restoringRun=false;
 function clearRunSave(){try{localStorage.removeItem(RUN_SAVE_KEY);}catch(e){console.warn('저장 삭제 실패',e);}}
 function saveRun(){
  if(!isBattleActive && pendingRewardResolved) advanceMapAfterVisit();
- if(restoringRun || isBattleActive || !document.getElementById('game-screen') || !currentFactionGenerals.length) return;
+ if(suppressRunSaving || restoringRun || isBattleActive || !document.getElementById('game-screen') || !currentFactionGenerals.length) return;
  try {
   const readSlots=id=>Array.from(document.querySelectorAll(`#${id} .slot`)).map(slot=>({
    className:slot.className, bagId:slot.dataset.bagId||null,bagData:slot.dataset.bagData||null,
@@ -4538,14 +4626,18 @@ function saveRun(){
   const data={version:1,faction:document.getElementById('faction-title').textContent,
    playerGold,currentChapter,currentMapStage,currentMapNodeId,currentBattleRound,isInitialRound1,bagCounter,freeRerolls,
    mapData,ownedTreasures,pendingClinicHerb,pendingRecruits,pendingRewardChoices,pendingRewardResolved,storyHutProgress,pendingStoryEventNodeId,
+    view:document.getElementById('clinic-screen').style.display==='flex'?'clinic':
+         document.getElementById('map-screen').style.display==='flex'?'map':
+         document.getElementById('post-battle-reward').style.display==='flex'?'reward':'camp',
    inventory:readSlots('inventory-container'),storage:readSlots('storage-container'),
    shop:Array.from(document.querySelectorAll('#shop-container .item')).map(el=>({data:el.shopData,hidden:el.style.display==='none'}))};
   localStorage.setItem(RUN_SAVE_KEY,JSON.stringify(data));
  } catch(e){console.warn('게임 저장 실패 (저장 공간 또는 권한 확인)',e);}
 }
 function placeSavedGeneral(slot,data,uid,isInventory=false,styleStr=''){
- syncPlayableGeneralData(data);
- const el=document.createElement('div');
+  syncPlayableGeneralData(data);
+  if(data.type==='type-general' || data.stats){data.price=generalShopPrice(data.tier);if(data.stats)data.stats.price=data.price;}
+  const el=document.createElement('div');
  el.className=`placed-item type-general tier-${data.tier}${data.w>data.h?' is-wide':''}`;
  el.innerHTML=generalPlacedMarkup(data);el.itemData=data;el.dataset.uid=uid||('uid_load_'+Math.random().toString(36).slice(2));
  if(isInventory){sizeDeployedCard(el,data);}
@@ -4553,9 +4645,11 @@ function placeSavedGeneral(slot,data,uid,isInventory=false,styleStr=''){
  else {el.style.position='relative';el.style.width='100%';el.style.height='100%';}
  slot.appendChild(el);return el;
 }
+function generalShopPrice(tier){return {C:3,B:7,A:13,S:20}[tier] ?? 0;}
 function renderSavedShopItem(item){
- if(!item||!item.data)return;
- const d=item.data,div=document.createElement('div');
+  if(!item||!item.data)return;
+  const d=item.data,div=document.createElement('div');
+  if(d.type==='type-general'){d.price=generalShopPrice(d.tier);if(d.stats)d.stats.price=d.price;}
  if(d.type==='type-general')syncPlayableGeneralData(d);
  div.className=d.type==='type-bag'?'item type-bag':`item type-general tier-${d.tier}`;
  div.innerHTML=d.type==='type-bag'?`${d.name}<br>🪙${d.price}`:`${generalItemMarkup(d)}<span class="shop-coin">🪙${d.price}</span>`;
@@ -4568,7 +4662,7 @@ function loadRun(){
  if(!data||data.version!==1||!data.faction)return false;
  restoringRun=true;
  try{
-  startGame(data.faction); // 기본 UI 슬롯/맵 핸들러를 먼저 구성
+   startGame(data.faction,{restoring:true}); // 저장을 삭제하지 않고 초기 UI 구성
   playerGold=data.playerGold;currentChapter=data.currentChapter||1;currentMapStage=data.currentMapStage;currentMapNodeId=data.currentMapNodeId;
   currentBattleRound=data.currentBattleRound;isInitialRound1=data.isInitialRound1;bagCounter=data.bagCounter;
    freeRerolls=data.freeRerolls||0;mapData=data.mapData;ownedTreasures=data.ownedTreasures||[];pendingClinicHerb=data.pendingClinicHerb||null;
@@ -4598,9 +4692,18 @@ function loadRun(){
   (data.shop||[]).forEach(renderSavedShopItem);
   updateRoundDisplay();renderOwnedTreasures();refreshDeploymentLimitUI();refreshGeneralHpBadges();updateBondUI();refreshRerollButton();
   document.getElementById('map-screen').style.display='none';
-  document.getElementById('game-screen').style.display='flex';
-  document.getElementById('faction-screen').style.display='none';
-  if(pendingRewardChoices&&!pendingRewardResolved)openRewardSelection();
+   document.getElementById('game-screen').style.display='flex';
+   document.getElementById('faction-screen').style.display='none';
+   document.getElementById('title-screen').style.display='none';
+   if(data.view==='map' && !pendingStoryEventNodeId && !(pendingRewardChoices&&!pendingRewardResolved)){
+      document.getElementById('game-screen').style.display='none';
+      document.getElementById('map-screen').style.display='flex';
+      updateMapStageLabel();renderMapNodes();
+   } else if(data.view==='clinic' && !pendingStoryEventNodeId){
+      document.getElementById('game-screen').style.display='none';
+      document.getElementById('clinic-screen').style.display='flex';
+   }
+   if(pendingRewardChoices&&!pendingRewardResolved)openRewardSelection();
   if(pendingStoryEventNodeId){const storyNode=mapData.nodes.find(n=>n.id===pendingStoryEventNodeId);if(storyNode&&!storyNode.storyResolved)openStoryEvent(storyNode);}
   return true;
  }catch(e){console.error('게임 불러오기 실패',e);alert('저장 데이터를 불러올 수 없습니다. 새 게임으로 시작합니다.');return false;}
@@ -4613,12 +4716,36 @@ function redeemPendingRecruit(){
  const d=pendingRecruits.shift();placeSavedGeneral(slot,d,'uid_pending_'+Date.now(),false);refreshGeneralHpBadges();saveRun();
  alert(`${d.name}이(가) 보관함에 들어왔습니다.`);
 }
-function beginSavedRun(){
- let exists=false;try{exists=!!localStorage.getItem(RUN_SAVE_KEY);}catch(e){}
- if(!exists)return;
- const ok=confirm('저장된 게임이 있습니다. 이어서 플레이할까요?\n취소하면 진영 선택에서 새 게임을 시작할 수 있습니다.');
- if(ok)loadRun();
+function readRunSave(){
+  try {const d=JSON.parse(localStorage.getItem(RUN_SAVE_KEY)||'null');return d&&d.version===1&&d.faction?d:null;}
+  catch(e){return null;}
 }
+function hasValidRunSave(){return !!readRunSave();}
+function showTitleScreen(){
+  document.getElementById('faction-screen').style.display='none';
+  document.getElementById('title-screen').style.display='flex';
+  const saved=readRunSave();
+  const btn=document.getElementById('title-continue-btn');
+  btn.disabled=!saved;
+  document.getElementById('title-save-desc').textContent=saved
+    ? `${saved.faction} · ${saved.currentBattleRound||1}라운드 · ${Number(saved.playerGold||0)}금화 저장됨`
+    : '저장된 게임이 없습니다. 새로하기로 시작하세요.';
+}
+function showNewGameFactions(){
+  document.getElementById('title-screen').style.display='none';
+  document.getElementById('faction-screen').style.display='block';
+}
+function continueSavedGame(){
+  if(!hasValidRunSave()){showTitleScreen();return alert('이어할 수 있는 저장 데이터가 없습니다.');}
+  if(!loadRun())showTitleScreen();
+}
+function restartWholeGame(){
+  if(!confirm('현재 진행 상황과 자동 저장이 모두 삭제됩니다. 처음부터 다시 시작할까요?'))return;
+  suppressRunSaving=true;
+  clearRunSave();
+  location.reload();
+}
+function beginSavedRun(){if(!currentFactionGenerals.length)showTitleScreen();}
 window.addEventListener('pagehide',saveRun);
 window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveRun();});
 setInterval(saveRun,5000);
