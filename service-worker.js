@@ -1,5 +1,5 @@
 // Game PWA cache version. Online navigation and executable data use network-first.
-const CACHE_NAME = "tk-economy-retry-20261104-v1";
+const CACHE_NAME = "tk-front-rear-formation-20261105-v1";
 const CORE_ASSETS = [
   "./",
   "./index.html",

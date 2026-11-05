@@ -144,7 +144,7 @@ function scenarioEffectApply(effect, caster, target, time, sourceSkill, logParts
     } else if(effect.type==='heal_flat'){
         const h=scenarioHeal(who,effect.value);logParts.push(`[${who.name} +${h} 회복]`);
     } else if(effect.type==='cooldown'){
-        if(who && !who.buffs?.some(b=>b.stat==='scenario_cooldown_immunity')){
+        if(who && !who.buffs?.some(b=>b.stat==='scenario_cooldown_immunity') && !(typeof clinicBlockHarmfulCooldown==='function' && clinicBlockHarmfulCooldown(who))){
             who.currentCooldown=Math.min(effect.cap||10,who.currentCooldown+effect.value);
             logParts.push(`[${who.name} 쿨타임 +${effect.value}초]`);
         }
@@ -175,17 +175,12 @@ function scenarioEffectApply(effect, caster, target, time, sourceSkill, logParts
 }
 function scenarioSkillTargets(caster,skill,allies,enemies){
     const t=skill.target;
-    const singleTargetPool=enemies.filter(e=>!(isPlayableUnit(e)&&e.name==='우금'&&e.hp/e.maxHp<=0.2&&playerOtherAlliesAlive(e,enemies)));
-    const selectable=singleTargetPool.length?singleTargetPool:enemies;
     if(t==='self')return [caster];
     if(t==='ally_all')return [...allies];
     if(t==='ally_lowest_hp_ratio')return [[...allies].sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0]].filter(Boolean);
-    if(t==='enemy_all')return [...enemies];
-    if(t==='enemy_two'||t==='enemy_three')return [...selectable].sort(()=>Math.random()-0.5).slice(0,t==='enemy_two'?2:3);
-    if(t==='enemy_lowest_hp_ratio')return [[...selectable].sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0]].filter(Boolean);
-    const taunted=selectable.filter(a=>a.buffs?.some(b=>b.stat==='taunt'));
-    const pool=taunted.length?taunted:selectable;
-    return pool.length?[pool[Math.floor(Math.random()*pool.length)]]:[];
+    const count=t==='enemy_three'?3:t==='enemy_two'?2:1;
+    const mode=t==='enemy_lowest_hp_ratio'?'lowest_hp_ratio':formationRange(caster,skill);
+    return formationPickOpponents(caster,skill,enemies,{count,mode});
 }
 function scenarioOnHitTrait(caster,target,allies,enemies,skill,time){
     const t=caster.scenarioTrait;if(!t)return;
@@ -197,7 +192,7 @@ function scenarioOnHitTrait(caster,target,allies,enemies,skill,time){
             const repeated=caster.scenarioHitCounts[target.id]||0;
             for(const e of t.effects||[]){
                 if(e.type==='dodge_points')scenarioPutBuff(target,'dodge',e.value,e.durationSec,time,key);
-                else if(e.type==='remaining_cooldown_seconds' && repeated<2 && !enemies.some(u=>u.name==='왕릉'&&u.hp>0))target.currentCooldown=Math.min(10,target.currentCooldown+e.value);
+                else if(e.type==='remaining_cooldown_seconds' && repeated<2 && !enemies.some(u=>u.name==='왕릉'&&u.hp>0) && !(typeof clinicBlockHarmfulCooldown==='function' && clinicBlockHarmfulCooldown(target)))target.currentCooldown=Math.min(10,target.currentCooldown+e.value);
             }
             caster.scenarioHitCounts[target.id]=repeated+1;
         }
@@ -238,6 +233,8 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
     if(!targetList.length)return 0;
     const support=['ally_all','ally_lowest_hp_ratio','self'].includes(original.target);
     const kind=original.type==='물리'?'physical':original.type==='책략'?'strategy':'fixed';
+    const rowAOE=targetList.length>1;
+    const rowAOEMult=({1:1,2:.90,3:.80,4:.70,5:.65})[Math.min(5,targetList.length)]||1;
     let gold=0;const logs=[];
     addLog(`[${unit.name}] 고유 기술 [${original.name}] 발동!`,support?'log-buff':'log-skill');
     showUniqueSkillBanner(unit,{name:original.name,isUnique:true});
@@ -287,6 +284,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
                 if(b.stat==='next_dmg_up'){val*=1+b.amount/100;buffs.splice(i,1);}
                 if(b.stat==='next_dmg_down'){val*=Math.max(0,1-b.amount/100);buffs.splice(i,1);}
             }
+            if(rowAOE)val*=rowAOEMult;
             val*=scenarioTakenModifier(target,enemies,allies,kind,time);
             for(let i=target.buffs.length-1;i>=0;i--){
                 const b=target.buffs[i];
@@ -312,6 +310,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             if(isPlayableUnit(target)&&target.name==='한당')val*=1-.08*Math.min(6,enemies.filter(a=>a.hp>0).length);
             if(kind==='strategy'&&enemies.some(a=>a.name==='고옹'&&isPlayableUnit(a)&&a.hp>0))val*=.9;
             if(target.id?.startsWith('p_')&&typeof battleFormationId!=='undefined'&&battleFormationId==='bangwon')val*=.9;
+            if(target.id?.startsWith('p_')&&hasTreasure('손자병법'))val*=.95;
             if(target.id?.startsWith('p_')&&typeof hasTreasure==='function'&&hasTreasure('팔진도 진법서')&&scenarioAlive(playerTeam).length>=4)val*=.95;
             if(typeof activeBondsInBattle!=='undefined'){
                 if(target.id?.startsWith('p_')&&activeBondsInBattle.includes('도원결의')&&['유비','관우','장비'].includes(target.name))val*=.9;
