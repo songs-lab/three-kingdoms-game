@@ -879,10 +879,128 @@ button { cursor: pointer; }
 @media(max-height:690px){.unique-banner-stack{bottom:4px;height:150px;}}
 /* 이전 PWA에 FIGHT.png가 빠져도 실제 포함된 병영 배경으로 폴백 */
 #battle-screen{background-image:linear-gradient(rgba(0,0,0,.63),rgba(0,0,0,.70)),url('./FIGHT.png'),url('./MAIN.png');}
+/* 2026-11 전투 연출: 수치 계산과 분리된 장식용 효과 */
+#speed-btn{min-width:86px;transition:background-color .16s;}
+.battle-unit.fx-casting .unit-icon{animation:fx-cast-aura .38s ease-out;outline:2px solid #f3d184;outline-offset:1px;}
+.battle-unit.fx-support .unit-icon{animation:fx-support-aura .55s ease-out;}
+@keyframes fx-cast-aura{0%{filter:brightness(1)}40%{filter:brightness(1.8) drop-shadow(0 0 9px #e7b44f);transform:scale(1.07)}100%{filter:brightness(1);transform:scale(1)}}
+@keyframes fx-support-aura{50%{filter:brightness(1.5) drop-shadow(0 0 9px #66f5a6);transform:scale(1.04)}}
+.fx-projectile.fx-arrow{height:5px;width:34px;border-radius:0;clip-path:polygon(0 34%,72% 34%,72% 0,100% 50%,72% 100%,72% 66%,0 66%);background:linear-gradient(90deg,#bd9b65,#fff1b5,#fff);color:#ffe5a0;}
+.fx-projectile.fx-fire{width:23px;height:23px;border-radius:70% 5% 60% 40%;background:radial-gradient(circle at 32% 70%,#fff5bb 8%,#ffbe44 32%,#e55329 65%,transparent 72%);box-shadow:0 0 12px #f46b32;color:#ff9c3f;clip-path:none;}
+.fx-projectile.fx-control{height:20px;width:20px;border:2px solid #b9a1fa;border-radius:35%;background:rgba(89,64,169,.5);box-shadow:0 0 13px #ab82ee;color:#a98dff;}
+.fx-projectile.fx-physical{box-shadow:0 0 7px #ffab58;}
+.battle-aim-line{position:absolute;height:2px;transform-origin:0 50%;background:linear-gradient(90deg,rgba(255,233,170,.07),rgba(255,221,122,.85));box-shadow:0 0 6px rgba(245,189,78,.5);pointer-events:none;z-index:1;}
+.fx-popup.fx-miss{color:#e7f0fa;font-size:14px;text-shadow:0 0 8px #96c7fa,1px 2px 2px #000;}
+.fx-popup.fx-crit{font-size:21px;text-shadow:0 0 8px #ff9b3b,1px 2px 2px #000;}
+/* 전열 붕괴 시 추가 배너만 강조하고 기존 진형 배치를 움직이지 않는다. */
+.collapse-banner{animation:fx-break-shake .5s ease-out;}
+.friendly-collapse-banner{border-color:#8dc2e9!important;background:linear-gradient(100deg,rgba(30,54,76,.95),rgba(24,35,51,.95))!important;box-shadow:0 4px 25px rgba(75,149,218,.35)!important;}
+.friendly-collapse-banner .unique-banner-name{color:#a8d9fa;}
+.unique-banner.fx-family-archery{border-color:#b2d3b9;}
+.unique-banner.fx-family-archery .unique-banner-title{color:#b6edd3;}
+.unique-banner.fx-family-fire{border-color:#de874c;box-shadow:0 0 12px rgba(252,112,52,.3);}
+.unique-banner.fx-family-fire .unique-banner-title{color:#ffb079;}
+.unique-banner.fx-family-support{border-color:#7acead;}
+.unique-banner.fx-family-support .unique-banner-title{color:#86f4b2;}
+.unique-banner.fx-family-control{border-color:#ba97e1;}
+.unique-banner.fx-family-control .unique-banner-title{color:#e1b4ff;}
+.unique-banner.fx-family-strategy{border-color:#7caadd;}
+.unique-banner.fx-family-strategy .unique-banner-title{color:#a8d2ff;}
+.battle-unit.fx-lunge .unit-icon{animation-duration:calc(.32s / var(--battle-speed,1));}
+.battle-unit.fx-struck .unit-icon{animation-duration:calc(.29s / var(--battle-speed,1));}
+.battle-unit.fx-healing .unit-icon{animation-duration:calc(.34s / var(--battle-speed,1));}
+.battle-unit.fx-casting .unit-icon{animation-duration:calc(.38s / var(--battle-speed,1));}
+.battle-unit.fx-support .unit-icon{animation-duration:calc(.55s / var(--battle-speed,1));}
+@keyframes fx-break-shake{0%{transform:translateX(0);filter:brightness(1)}20%{transform:translateX(-5px);filter:brightness(1.7)}45%{transform:translateX(4px)}70%{transform:translateX(-2px)}100%{transform:translateX(0);filter:brightness(1)}}
+#battle-boss-intro{position:absolute;inset:0;z-index:70;display:none;align-items:center;justify-content:center;pointer-events:none;background:radial-gradient(circle at center,rgba(64,20,17,.84),rgba(5,11,17,.88));opacity:0;transition:opacity .2s;}
+#battle-boss-intro.visible{display:flex;opacity:1;}
+.boss-intro-card{display:flex;align-items:center;gap:13px;max-width:min(430px,90vw);padding:15px 17px;border-top:2px solid #e6bd75;border-bottom:2px solid #e6bd75;background:rgba(20,30,38,.82);box-shadow:0 0 50px rgba(192,65,46,.3);}
+.boss-intro-face{width:86px;height:106px;flex:0 0 86px;border:2px solid #dfac55;border-radius:6px;overflow:hidden;background:#293744;}
+.boss-intro-face>.portrait-frame{width:100%;height:100%;}
+.boss-intro-text{min-width:0;flex:1;}
+.boss-intro-eyebrow{font-size:11px;color:#f4bb7c;letter-spacing:.12em;font-weight:800;}
+.boss-intro-name{font-size:26px;line-height:1.3;color:#fff0c4;font-weight:900;text-shadow:0 2px 3px #000;}
+.boss-intro-desc{margin-top:6px;color:#dbe2e8;font-size:11px;line-height:1.5;overflow-wrap:anywhere;}
+#role-advice{display:block;margin:4px 0 3px;color:#f2d39a;font-size:11px;line-height:1.35;}
+#role-advice .role-why{font-size:10px;color:#c8d3dd;font-weight:400;}
+@media(max-width:600px){.boss-intro-face{width:66px;height:86px;flex-basis:66px}.boss-intro-name{font-size:21px}.boss-intro-card{padding:12px;gap:10px}}
+@media(prefers-reduced-motion:reduce){.battle-unit.fx-casting .unit-icon,.battle-unit.fx-support .unit-icon,.collapse-banner{animation:none!important}#battle-boss-intro{transition:none}}
 #inventory-container .slot.unlocked.formation-front-cell{box-shadow:inset 0 0 0 1px rgba(219,107,76,.42);}
 #inventory-container .slot.unlocked.formation-rear-cell{box-shadow:inset 0 0 0 1px rgba(77,150,222,.45);}
 #inventory-container .slot.unlocked.formation-center-cell{box-shadow:inset 0 0 0 1px rgba(120,161,216,.3);}
 
+/* 영구 기록: 독립 모달 · 모바일 화면 대응 */
+.career-entry{border:1px solid rgba(220,190,126,.6);background:rgba(20,36,48,.86);color:#ffe0a4;border-radius:8px;padding:8px 11px;font-size:12px;font-weight:700;cursor:pointer}
+.career-title-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+#career-modal{display:none;position:fixed;inset:0;z-index:3500;background:rgba(4,9,14,.94);align-items:center;justify-content:center;padding:12px;box-sizing:border-box;color:#e3edf4}
+#career-panel{width:min(760px,100%);height:min(790px,92dvh);background:linear-gradient(150deg,#263b4b,#101923 75%);border:1px solid #bc9663;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 50px #050709}
+.career-head{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 15px;border-bottom:1px solid #506371}
+.career-head h2{font-size:18px;color:#f1d99d;margin:0}
+.career-tabs{display:flex;gap:6px;padding:10px 12px 0}
+.career-tabs button{min-width:0;flex:1;border:1px solid #5b7180;border-radius:7px 7px 0 0;padding:10px 2px;color:#dbe2e7;background:#263b4b;font-weight:700;cursor:pointer;font-size:11px}
+.career-tabs button.on{background:#a98349;color:#111c26;border-color:#e3be7a}
+#career-content{overflow-y:auto;padding:12px 14px 22px;flex:1;overscroll-behavior:contain}
+.career-toolbar{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:8px 0 12px}
+.career-toolbar select,.career-toolbar input{background:#111c29;color:#fff;border:1px solid #6b8091;border-radius:6px;padding:8px;min-width:0;font-size:12px}
+.career-toolbar input{flex:1;min-width:100px}
+.career-summary{font-size:12px;line-height:1.55;color:#b6ccd9;margin-bottom:8px}
+.career-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.career-general{color:#e6ebf1;min-width:0;text-align:center;background:#1c2e3b;border:1px solid #485b69;border-radius:8px;overflow:hidden;padding:7px 5px 9px;cursor:pointer;position:relative}
+.career-general.locked{background:#121b24;border-color:#303d46;color:#70818e}
+.career-general .portrait-frame{display:block;width:68px;height:82px;max-width:100%;margin:0 auto 6px}
+.career-general .portrait-image{display:block;width:100%;height:100%}
+.career-general .portrait-label{display:none}
+.career-general.locked .career-silhouette{height:82px;display:flex;align-items:center;justify-content:center;font-size:25px}
+.career-general-name{font-size:13px;font-weight:800;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.career-general-meta{font-size:10px;color:#b5c5ce;margin-top:4px}
+.career-panel-card{border:1px solid #435463;border-radius:8px;padding:12px;margin:10px 0;background:rgba(8,18,28,.42)}
+.career-panel-card h3{margin:0 0 7px;font-size:15px;color:#f4d6a6}
+.career-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.career-metric{background:#192a37;border-radius:7px;padding:10px;font-size:12px;color:#a9c4d4}
+.career-metric strong{display:block;font-size:18px;color:#fff0ca}
+.career-achievement{display:flex;align-items:center;gap:12px;border:1px solid #4b5c68;background:#1c2b39;border-radius:8px;padding:12px;margin-bottom:8px}
+.career-achievement.locked{filter:saturate(.55);opacity:.73}
+.career-achievement .medal{font-size:23px;min-width:33px}
+.career-achievement strong{color:#efcf9c;font-size:13px}
+.career-achievement small{display:block;color:#a5bfce;font-size:11px;margin-top:4px}
+.career-hero-line{display:flex;gap:9px;align-items:center;padding:6px 0;border-bottom:1px solid #344452;font-size:12px}
+.career-hero-line .portrait-frame{display:block;width:37px;height:45px;flex:0 0 37px}
+.career-hero-line .portrait-image{display:block;width:100%;height:100%}
+.career-hero-line .portrait-label{display:none}
+.career-return{background:#8c4f34;color:white;border:0;border-radius:6px;padding:8px 12px;cursor:pointer}
+#career-end-screen{position:fixed;inset:0;z-index:2600;overflow-y:auto;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(6,12,19,.97);box-sizing:border-box;color:#fff}
+#career-end-screen .career-panel-card{max-width:490px;width:100%;text-align:center;border-color:#bda06b;padding:20px}
+#career-end-screen h1{color:#edcb83}
+@media(max-width:470px){.career-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.career-toolbar select{width:auto}.career-head h2{font-size:16px}#career-content{padding:10px}#career-modal{padding:5px}#career-panel{height:96dvh}}
+
+/* v5 · 45라운드 난이도 해금 / 현재 난이도 표시 */
+#difficulty-panel{max-width:530px;margin:20px auto 14px;padding:14px 12px;border:1px solid rgba(229,194,115,.6);border-radius:10px;background:rgba(11,24,36,.88);color:#f7edcf}
+.difficulty-head{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;font-weight:800;margin-bottom:10px}
+#difficulty-selection-label{color:#efcd85}
+.difficulty-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.difficulty-option{padding:10px 4px;border:1px solid #657588;border-radius:7px;background:#243546;color:#e5eff8;cursor:pointer;font-weight:700;font-size:12px;min-height:48px}
+.difficulty-option.selected{border:2px solid #e7ba55;background:#6d4a2e;color:#fff5d8}
+.difficulty-option:disabled{opacity:.5;cursor:not-allowed;border-style:dashed}
+#difficulty-description{margin:10px 0 0;color:#c9d8e1;font-size:12px;line-height:1.6;text-align:left;min-height:39px}
+#difficulty-in-game{display:inline-block;white-space:nowrap;border-radius:5px;border:1px solid #bda36c;background:#4c3c2b;color:#fbe7a8;padding:3px 6px;font-size:11px;font-weight:800}
+.difficulty-encounter-note{color:#ebce8e;font-size:12px;line-height:1.5;margin:7px 0}
+.difficulty-record-table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0 12px}
+.difficulty-record-table th,.difficulty-record-table td{padding:7px 4px;border-bottom:1px solid #4a5a65;text-align:center}
+.difficulty-record-table th{color:#ead09b;font-size:11px}
+@media(max-width:480px){#difficulty-panel{margin:12px 6px 10px}.difficulty-option{font-size:11px;padding:8px 2px}#difficulty-in-game{font-size:10px}#round-display{font-size:11px}}
+/* v6 · 전투 분석 / 로컬 저장 백업 */
+.career-chart-row{display:grid;grid-template-columns:70px minmax(0,1fr) 46px;align-items:center;gap:8px;margin:9px 0;font-size:12px}
+.career-chart-track{height:10px;border-radius:8px;background:#111d2a;overflow:hidden;border:1px solid #51606f}
+.career-chart-fill{height:100%;background:linear-gradient(90deg,#589aaf,#e1bf78);min-width:0;border-radius:8px}
+.career-analyze-table{width:100%;border-collapse:collapse;font-size:11px;margin:8px 0 14px}
+.career-analyze-table th,.career-analyze-table td{text-align:center;padding:8px 3px;border-bottom:1px solid #445666}
+.career-analyze-table th{font-size:11px;color:#e1ca99}
+.career-analyze-table tr.loss{background:rgba(176,65,57,.15)}
+.career-backup-action{border:1px solid #7198ac;border-radius:7px;background:#263f4d;color:#e0f0f8;padding:9px 12px;font-weight:700;cursor:pointer;font-size:12px}
+.career-backup-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.career-backup-note{color:#c9d4db;font-size:11px;line-height:1.55}
+.career-legend{color:#9eb5c5;font-size:11px;line-height:1.6}
+@media(max-width:420px){.career-chart-row{grid-template-columns:55px minmax(0,1fr) 38px;gap:5px}.career-analyze-table{font-size:10px}.career-analyze-table th,.career-analyze-table td{padding:7px 2px}}
 </style>
 </head>
 <body>
@@ -902,23 +1020,37 @@ button { cursor: pointer; }
   <div class="title-sub">전장을 담은 아홉 칸의 병법</div>
   <button class="title-action" onclick="showNewGameFactions()">새로하기</button>
   <button class="title-action secondary" id="title-continue-btn" onclick="continueSavedGame()" disabled>이어하기</button>
+  <div class="career-title-actions"><button class="career-entry" onclick="openCareer('roster')">장수 도감</button><button class="career-entry" onclick="openCareer('achievements')">업적</button><button class="career-entry" onclick="openCareer('history')">출정 기록</button><button class="career-entry" onclick="openCareer('analysis')">전투 분석</button><button class="career-entry" onclick="openCareer('backup')">저장 백업</button></div>
   <div id="title-save-desc" aria-live="polite">저장된 진행 상황을 확인하는 중...</div>
 </div>
+<div id="career-modal" role="dialog" aria-modal="true" aria-label="삼국지 인물록과 출정 기록">
+ <div id="career-panel">
+  <div class="career-head"><h2>삼국지 인물록</h2><button class="career-return" onclick="closeCareer()">닫기</button></div>
+  <div class="career-tabs"><button data-career-tab="roster" onclick="careerTab('roster')">장수 도감</button><button data-career-tab="achievements" onclick="careerTab('achievements')">업적</button><button data-career-tab="history" onclick="careerTab('history')">출정 기록</button><button data-career-tab="analysis" onclick="careerTab('analysis')">전투 분석</button><button data-career-tab="backup" onclick="careerTab('backup')">백업</button></div>
+  <div id="career-content"></div>
+ </div>
+</div>
+<input type="file" id="career-backup-import" accept=".json,application/json" style="display:none" aria-label="저장 백업 파일 선택" onchange="importCareerBackupFile(event)">
 <div id="faction-screen">
     <h1>시작할 진영을 선택하세요</h1>
+    <section id="difficulty-panel" aria-label="게임 난이도 선택">
+      <div class="difficulty-head">전투 난이도 <span id="difficulty-selection-label">일반</span></div>
+      <div id="difficulty-choices" class="difficulty-options"></div>
+      <p id="difficulty-description" aria-live="polite"></p>
+    </section>
     <button class="faction-btn" id="btn-shu" onclick="startGame('촉나라')">촉 (蜀)</button>
     <button class="faction-btn" id="btn-wu" onclick="startGame('오나라')">오 (吳)</button>
     <button class="faction-btn" id="btn-wei" onclick="startGame('위나라')">위 (魏)</button>
     <button class="faction-back" onclick="showTitleScreen()">← 시작 화면으로</button>
 </div>
-<div id="game-screen"><div id="top-bar"><div id="faction-title">진영</div><div class="top-right"><span id="round-display">단계: 캠프 / 20</span><span id="gold-display">🪙 10</span><button id="battle-btn" onclick="goToMap()">🗺️ 지도 보기</button></div></div>
+<div id="game-screen"><div id="top-bar"><div id="faction-title">진영</div><div class="top-right"><span id="round-display">단계: 캠프 / 20</span><span id="difficulty-in-game" title="현재 출정 난이도">일반</span><span id="gold-display">🪙 10</span><button id="battle-btn" onclick="goToMap()">🗺️ 지도 보기</button></div></div>
 <div id="info-panel"><div class="info-img" id="info-face">👤</div><div class="info-details"><div id="info-name">무장을 선택하세요</div><div id="info-stats">아이템이나 무장을 터치하면 상세 스탯이 표시됩니다.</div><div id="info-skills"></div></div></div>
 <div id="barracks-heal-panel"><span>배낭/보관함의 장수를 선택한 뒤 8금화로 체력을 최대로 회복할 수 있습니다.</span><button type="button" onclick="healSelectedGeneralForGold()">선택 장수 회복 🪙8</button></div>
 <div id="bond-display">활성화된 인연이 없습니다.</div>
 <div id="formation-display" style="display:none;text-align:center;padding:5px 8px;background:rgba(34,82,69,.88);border-bottom:1px solid #92cda7;color:#d5ffcb;font-weight:bold;font-size:11px;"></div>
 <div id="formation-toast" role="status" aria-live="polite"></div>
 <div id="treasure-display"><span style="color:#bdc3c7;">보유 보물 없음</span></div>
-<div style="background:#263b4a;padding:4px 8px;text-align:center;font-size:11px;">💾 진행 상황 자동 저장 · <button onclick="saveRun();alert('현재 상태를 저장했습니다.');" style="padding:3px 8px;">지금 저장</button> <button onclick="redeemPendingRecruit()" style="padding:3px 8px;">대기 등용 장수 받기</button> <button class="restart-run-btn" onclick="restartWholeGame()">↻ 처음부터 다시하기</button></div>
+<div style="background:#263b4a;padding:4px 8px;text-align:center;font-size:11px;">💾 진행 상황 자동 저장 · <button onclick="saveRun();alert('현재 상태를 저장했습니다.');" style="padding:3px 8px;">지금 저장</button> <button onclick="redeemPendingRecruit()" style="padding:3px 8px;">대기 등용 장수 받기</button> <button class="career-entry" onclick="openCareer('roster')">📜 도감·전적</button> <button class="career-entry" onclick="openCareer('analysis')">📊 전투 분석</button> <button class="restart-run-btn" onclick="restartWholeGame()">↻ 처음부터 다시하기</button></div>
 <div id="shop-section"><div class="shop-header"><h3>상점 (6칸)</h3><button id="reroll-btn" onclick="rerollShop()">리롤 🪙1</button></div><div class="shop-grid" id="shop-container"></div></div>
 <div id="action-section"><div class="action-group"><span class="action-label" style="color:#f1c40f;">조합</span><div class="slot unlocked combine-slot" id="combine-1" onclick="handleActionSlot(this, 'combine')"></div><span class="action-label">+</span><div class="slot unlocked combine-slot" id="combine-2" onclick="handleActionSlot(this, 'combine')"></div><button class="action-btn" onclick="executeCombine()">합치기</button></div><div class="action-group"><button class="action-btn" style="background-color:#9b59b6; margin-right: 5px;" onclick="rotateSelected()">🔄 회전(R)</button><span class="action-label" style="color:#e74c3c;">판매(반값)</span><div class="slot unlocked sell-slot" id="sell-slot" onclick="handleActionSlot(this, 'sell')"></div></div></div>
 <div id="play-area"><div id="inventory-section"><div class="section-title">내 배낭 (전방 5 / 후방 5 · 위쪽이 전방)</div><div class="inventory-grid" id="inventory-container"></div></div><div id="storage-section"><div class="section-title">보관함</div><div class="storage-grid" id="storage-container"></div></div></div></div>
@@ -933,7 +1065,7 @@ button { cursor: pointer; }
 </div>
 
 <div id="skill-modal" class="modal-overlay"><div class="modal-content"><h2 id="skill-modal-name">스킬 이름</h2><div class="skill-detail"><span id="skill-modal-type" class="type-tag">타입</span><br><strong>피해량/효과:</strong> <span id="skill-modal-power"></span> <span id="skill-modal-acc" style="margin-left:10px;"></span><br><br><div id="skill-modal-desc">스킬 설명</div></div><button class="btn-close" onclick="closeSkillModal()">확인</button></div></div>
-<div id="battle-modal" class="modal-overlay"><div class="modal-content"><h2 id="modal-round-title" style="color:#e74c3c;">⚔️ 1 단계 적군 ⚔️</h2><div class="enemy-box"><span id="enemy-list">탐색 중...</span><br><span class="enemy-tag" id="enemy-desc" style="font-size:11px; font-weight:normal;"></span></div><div class="modal-btns"><button class="btn-enter" onclick="startBattleScene()">전투 시작!</button><button class="btn-cancel" onclick="cancelBattleModal()">돌아가기</button></div></div></div>
+<div id="battle-modal" class="modal-overlay"><div class="modal-content"><h2 id="modal-round-title" style="color:#e74c3c;">⚔️ 1 단계 적군 ⚔️</h2><div class="enemy-box"><span id="enemy-list">탐색 중...</span><br><div id="difficulty-encounter-note" class="difficulty-encounter-note"></div><span class="enemy-tag" id="enemy-desc" style="font-size:11px; font-weight:normal;"></span></div><div class="modal-btns"><button class="btn-enter" onclick="startBattleScene()">전투 시작!</button><button class="btn-cancel" onclick="cancelBattleModal()">돌아가기</button></div></div></div>
 
 <div id="map-screen" style="display:none; flex-direction: column; overflow:hidden; height:100dvh;">
     <div style="padding:15px; background:#e74c3c; text-align:center; font-weight:bold; font-size: 16px; border-bottom: 2px solid #f1c40f; z-index: 10;">진행 지도 (<span id="map-stage-display">제1장 · 0/45</span>)</div>
@@ -959,7 +1091,7 @@ button { cursor: pointer; }
     <div id="post-battle-reward-choices" style="display:flex;flex-direction:column;gap:9px;"></div>
   </div>
 </div>
-<div id="battle-screen"><div id="battle-fx-layer" aria-hidden="true"></div><div id="unique-skill-banner-layer" aria-hidden="true"></div><div class="battle-header"><span id="battle-header-title">⚔ 라운드 전투 ⚔️</span><button id="speed-btn" onclick="toggleBattleSpeed()">▶ 1배속</button></div><div class="battle-board enemy" id="enemy-battle-board"></div><div id="battle-middle"><div id="enemy-damage-meter"></div><div id="battle-log-area"><div class="log-entry">전투가 곧 시작됩니다...</div></div><div id="player-damage-meter"></div></div><div class="battle-board player" id="player-battle-board"></div><button id="battle-stats-open" onclick="openBattleStats()">📊 전투 기록 보기</button><div id="battle-stats-modal" role="dialog" aria-modal="true" aria-label="전투 상세 기록"><div id="battle-stats-panel"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px"><strong>⚔ 전투 상세 기록</strong><button id="battle-stats-close" onclick="closeBattleStats()">닫기</button></div><div id="battle-stats-scroll"><table id="battle-stats-table"><thead><tr><th>무장</th><th>처치</th><th>물리피해</th><th>책략피해</th><th>고정피해</th><th>받은피해</th><th>회복</th><th>스킬사용 횟수</th></tr></thead><tbody id="battle-stats-body"></tbody></table></div><div style="font-size:11px;color:#aab6c4;margin-top:10px">실제 HP 감소량 기준 · 과잉 피해 제외 · 회복은 실제 회복량 기준 · 보물/특성의 일부 간접 피해는 별도 집계될 수 있음</div></div></div><div id="battle-result-btn" onclick="returnToGame()">결과 정산 및 귀환</div></div>
+<div id="battle-screen"><div id="battle-fx-layer" aria-hidden="true"></div><div id="unique-skill-banner-layer" aria-hidden="true"></div><div id="battle-boss-intro" aria-hidden="true"></div><div class="battle-header"><span id="battle-header-title">⚔ 라운드 전투 ⚔️</span><button id="speed-btn" onclick="toggleBattleSpeed()">▶ 1배속</button></div><div class="battle-board enemy" id="enemy-battle-board"></div><div id="battle-middle"><div id="enemy-damage-meter"></div><div id="battle-log-area"><div class="log-entry">전투가 곧 시작됩니다...</div></div><div id="player-damage-meter"></div></div><div class="battle-board player" id="player-battle-board"></div><button id="battle-stats-open" onclick="openBattleStats()">📊 전투 기록 보기</button><div id="battle-stats-modal" role="dialog" aria-modal="true" aria-label="전투 상세 기록"><div id="battle-stats-panel"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px"><strong>⚔ 전투 상세 기록</strong><button id="battle-stats-close" onclick="closeBattleStats()">닫기</button></div><div id="battle-stats-scroll"><table id="battle-stats-table"><thead><tr><th>무장</th><th>처치</th><th>물리피해</th><th>책략피해</th><th>고정피해</th><th>받은피해</th><th>회복</th><th>스킬사용 횟수</th></tr></thead><tbody id="battle-stats-body"></tbody></table></div><div style="font-size:11px;color:#aab6c4;margin-top:10px">실제 HP 감소량 기준 · 과잉 피해 제외 · 회복은 실제 회복량 기준 · 보물/특성의 일부 간접 피해는 별도 집계될 수 있음</div></div></div><div id="battle-result-btn" onclick="returnToGame()">결과 정산 및 귀환</div></div>
 
 <div id="treasure-modal" class="modal-overlay">
     <div class="modal-content">
@@ -971,6 +1103,8 @@ button { cursor: pointer; }
 </div>
 
 <script src="./scenario-engine.js"></script>
+<script src="./branch-21-25.js"></script>
+<script src="./branch-26-30.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
     ['./MAIN.png', './FIGHT.png'].forEach(url => {
@@ -984,6 +1118,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // 초상화 좌표는 승인된 105명 명단 순서에 맞춰 지정. 파일이 없으면 이름 표시 유지.
 const portraitAtlas = {"유비":{"file":"shu.webp","x":0,"y":0},"관우":{"file":"shu.webp","x":1,"y":0},"장비":{"file":"shu.webp","x":2,"y":0},"조운":{"file":"shu.webp","x":3,"y":0},"마초":{"file":"shu.webp","x":4,"y":0},"황충":{"file":"shu.webp","x":5,"y":0},"제갈량":{"file":"shu.webp","x":6,"y":0},"방통":{"file":"shu.webp","x":7,"y":0},"법정":{"file":"shu.webp","x":8,"y":0},"강유":{"file":"shu.webp","x":0,"y":1},"위연":{"file":"shu.webp","x":1,"y":1},"황권":{"file":"shu.webp","x":2,"y":1},"엄안":{"file":"shu.webp","x":3,"y":1},"왕평":{"file":"shu.webp","x":4,"y":1},"마대":{"file":"shu.webp","x":5,"y":1},"관평":{"file":"shu.webp","x":6,"y":1},"관흥":{"file":"shu.webp","x":7,"y":1},"장포":{"file":"shu.webp","x":8,"y":1},"부첨":{"file":"shu.webp","x":0,"y":2},"요화":{"file":"shu.webp","x":1,"y":2},"오의":{"file":"shu.webp","x":2,"y":2},"오란":{"file":"shu.webp","x":3,"y":2},"장익":{"file":"shu.webp","x":4,"y":2},"장억":{"file":"shu.webp","x":5,"y":2},"이엄":{"file":"shu.webp","x":6,"y":2},"이회":{"file":"shu.webp","x":7,"y":2},"비의":{"file":"shu.webp","x":8,"y":2},"동윤":{"file":"shu.webp","x":0,"y":3},"맹획":{"file":"shu.webp","x":1,"y":3},"왕련":{"file":"shu.webp","x":2,"y":3},"공손찬":{"file":"shu.webp","x":3,"y":3},"미축":{"file":"shu.webp","x":4,"y":3},"마속":{"file":"shu.webp","x":5,"y":3},"조조":{"file":"wei.webp","x":0,"y":0},"하후돈":{"file":"wei.webp","x":1,"y":0},"하후연":{"file":"wei.webp","x":2,"y":0},"장료":{"file":"wei.webp","x":3,"y":0},"허저":{"file":"wei.webp","x":4,"y":0},"전위":{"file":"wei.webp","x":5,"y":0},"서황":{"file":"wei.webp","x":6,"y":0},"장합":{"file":"wei.webp","x":7,"y":0},"악진":{"file":"wei.webp","x":0,"y":1},"우금":{"file":"wei.webp","x":1,"y":1},"조인":{"file":"wei.webp","x":2,"y":1},"조홍":{"file":"wei.webp","x":3,"y":1},"조휴":{"file":"wei.webp","x":4,"y":1},"조진":{"file":"wei.webp","x":5,"y":1},"사마의":{"file":"wei.webp","x":6,"y":1},"곽가":{"file":"wei.webp","x":7,"y":1},"순욱":{"file":"wei.webp","x":0,"y":2},"순유":{"file":"wei.webp","x":1,"y":2},"가후":{"file":"wei.webp","x":2,"y":2},"정욱":{"file":"wei.webp","x":3,"y":2},"곽회":{"file":"wei.webp","x":4,"y":2},"왕쌍":{"file":"wei.webp","x":5,"y":2},"문빙":{"file":"wei.webp","x":6,"y":2},"만총":{"file":"wei.webp","x":7,"y":2},"학소":{"file":"wei.webp","x":0,"y":3},"왕릉":{"file":"wei.webp","x":1,"y":3},"진태":{"file":"wei.webp","x":2,"y":3},"등애":{"file":"wei.webp","x":3,"y":3},"종회":{"file":"wei.webp","x":4,"y":3},"하후상":{"file":"wei.webp","x":5,"y":3},"고순":{"file":"wei.webp","x":6,"y":3},"진궁":{"file":"wei.webp","x":7,"y":3},"손견":{"file":"wu.webp","x":0,"y":0},"손권":{"file":"wu.webp","x":1,"y":0},"손책":{"file":"wu.webp","x":2,"y":0},"주유":{"file":"wu.webp","x":3,"y":0},"노숙":{"file":"wu.webp","x":4,"y":0},"여몽":{"file":"wu.webp","x":5,"y":0},"육손":{"file":"wu.webp","x":6,"y":0},"감녕":{"file":"wu.webp","x":7,"y":0},"태사자":{"file":"wu.webp","x":0,"y":1},"황개":{"file":"wu.webp","x":1,"y":1},"한당":{"file":"wu.webp","x":2,"y":1},"정보":{"file":"wu.webp","x":3,"y":1},"능통":{"file":"wu.webp","x":4,"y":1},"서성":{"file":"wu.webp","x":5,"y":1},"정봉":{"file":"wu.webp","x":6,"y":1},"반장":{"file":"wu.webp","x":7,"y":1},"주태":{"file":"wu.webp","x":0,"y":2},"장흠":{"file":"wu.webp","x":1,"y":2},"주환":{"file":"wu.webp","x":2,"y":2},"전종":{"file":"wu.webp","x":3,"y":2},"여범":{"file":"wu.webp","x":4,"y":2},"고옹":{"file":"wu.webp","x":5,"y":2},"장소":{"file":"wu.webp","x":6,"y":2},"장굉":{"file":"wu.webp","x":7,"y":2},"육항":{"file":"wu.webp","x":0,"y":3},"제갈각":{"file":"wu.webp","x":1,"y":3},"주거":{"file":"wu.webp","x":2,"y":3},"주방":{"file":"wu.webp","x":3,"y":3},"보즐":{"file":"wu.webp","x":4,"y":3},"감택":{"file":"wu.webp","x":5,"y":3},"여대":{"file":"wu.webp","x":6,"y":3},"원술":{"file":"wu.webp","x":7,"y":3},"여포":{"file":"other.webp","x":0,"y":0},"원소":{"file":"other.webp","x":1,"y":0},"문추":{"file":"other.webp","x":2,"y":0},"안량":{"file":"other.webp","x":3,"y":0},"한수":{"file":"other.webp","x":0,"y":1},"화웅":{"file":"other.webp","x":1,"y":1},"동탁":{"file":"other.webp","x":2,"y":1},"저수":{"file":"other.webp","x":3,"y":1},"황건적 졸개":{"file":"enemy.webp","x":0,"y":0},"관해":{"file":"enemy.webp","x":2,"y":0},"장보":{"file":"enemy.webp","x":3,"y":0},"유벽":{"file":"enemy.webp","x":4,"y":0},"장량":{"file":"enemy.webp","x":5,"y":0},"공도":{"file":"enemy.webp","x":6,"y":0},"장각":{"file":"enemy.webp","x":7,"y":0},"곽가(관도)":{"file":"enemy.webp","x":8,"y":0},"서영":{"file":"enemy.webp","x":0,"y":1},"장제":{"file":"enemy.webp","x":1,"y":1},"이유":{"file":"enemy.webp","x":2,"y":1},"곽사(동탁)":{"file":"enemy.webp","x":3,"y":1},"이각(동탁)":{"file":"enemy.webp","x":4,"y":1},"우보":{"file":"enemy.webp","x":5,"y":1},"호진":{"file":"enemy.webp","x":6,"y":1},"장개":{"file":"enemy.webp","x":7,"y":1},"장료(동탁)":{"file":"enemy.webp","x":8,"y":1},"원담":{"file":"enemy.webp","x":0,"y":2},"화웅(동탁)":{"file":"enemy.webp","x":1,"y":2},"주준":{"file":"enemy.webp","x":2,"y":2},"가후(군웅)":{"file":"enemy.webp","x":3,"y":2},"왕윤":{"file":"enemy.webp","x":4,"y":2},"송헌":{"file":"enemy.webp","x":5,"y":2},"심배":{"file":"enemy.webp","x":6,"y":2},"순우경":{"file":"enemy.webp","x":7,"y":2},"원술(군웅)":{"file":"enemy.webp","x":8,"y":2},"황조":{"file":"enemy.webp","x":0,"y":3},"진등":{"file":"enemy.webp","x":3,"y":3},"유요":{"file":"enemy.webp","x":4,"y":3},"고람":{"file":"enemy.webp","x":6,"y":3},"국의":{"file":"enemy.webp","x":7,"y":3},"견초":{"file":"enemy.webp","x":8,"y":3},"하후연(관도)":{"file":"enemy.webp","x":0,"y":4},"허공":{"file":"enemy.webp","x":1,"y":4},"여포(군웅)":{"file":"enemy.webp","x":2,"y":4},"공손찬(관도)":{"file":"enemy.webp","x":3,"y":4},"장수":{"file":"enemy.webp","x":4,"y":4},"원술(관도)":{"file":"enemy.webp","x":5,"y":4},"유훈":{"file":"enemy.webp","x":6,"y":4},"도겸":{"file":"enemy.webp","x":7,"y":4},"진궁(군웅)":{"file":"enemy.webp","x":8,"y":4},"전풍":{"file":"enemy.webp","x":2,"y":5},"유비(관도)":{"file":"enemy.webp","x":3,"y":5},"조조(관도)":{"file":"enemy.webp","x":4,"y":5},"관우(관도)":{"file":"enemy.webp","x":5,"y":5},"장비(관도)":{"file":"enemy.webp","x":7,"y":5},"하후돈(군웅)":{"file":"enemy.webp","x":8,"y":5},"위속":{"file":"enemy.webp","x":0,"y":6},"위월":{"file":"enemy.webp","x":1,"y":6},"원상":{"file":"enemy.webp","x":2,"y":6},"고순(동탁)":{"file":"enemy.webp","x":3,"y":6},"동탁(동탁)":{"file":"enemy.webp","x":4,"y":6},"고순(군웅)":{"file":"enemy.webp","x":5,"y":6},"성렴":{"file":"enemy.webp","x":6,"y":6},"미축(관도)":{"file":"enemy.webp","x":7,"y":6},"허유":{"file":"enemy.webp","x":8,"y":6},"저수(관도)":{"file":"enemy.webp","x":0,"y":7},"이각(군웅)":{"file":"enemy.webp","x":2,"y":7},"곽사(군웅)":{"file":"enemy.webp","x":3,"y":7},"여포(동탁)":{"file":"enemy.webp","x":4,"y":7},"전위(관도)":{"file":"wei.webp","x":5,"y":0},"가후(관도)":{"file":"wei.webp","x":2,"y":2},"장합(관도)":{"file":"wei.webp","x":7,"y":0},"우금(군웅)":{"file":"wei.webp","x":1,"y":1},"문추(관도)":{"file":"other.webp","x":2,"y":0},"안량(관도)":{"file":"other.webp","x":3,"y":0},"원소(관도)":{"file":"other.webp","x":1,"y":0},"장료(군웅)":{"file":"wei.webp","x":3,"y":0},"태사자(군웅)":{"file":"wu.webp","x":0,"y":1}};
+// 21~25R 시대별 변형 장수의 초상화는 해당 인물의 기존 시트 활용.
+portraitAtlas['제갈량(신야)'] = portraitAtlas['제갈량'];
+portraitAtlas['감녕(강하)'] = portraitAtlas['감녕'];
 const portraitSheets = {"shu.webp":[9,4],"wei.webp":[8,4],"wu.webp":[8,4],"other.webp":[4,2],"enemy.webp":[9,8]};
 function portraitMarkup(name, label = true) {
     const entry = portraitAtlas[name];
@@ -1066,7 +1203,7 @@ function globalStage(localStage) { return currentBattleRound; }
 function episodeForStage(global) { return EPISODES.find(e=>global>=e.start && global<=e.end) || EPISODES[0]; }
 function mapStageLabel() {
  const round=Math.min(45,currentBattleRound);
- return `지도 ${currentChapter} · ${episodeForStage(round).name} · 다음 전투 ${round}/45`;
+ return `지도 ${currentChapter} · ${episodeForStage(round).name} · 다음 전투 ${round}/45 · ${difficultyConfig().name}`;
 }
 function updateMapStageLabel() { const el=document.getElementById('map-stage-display'); if(el)el.textContent=mapStageLabel(); }
 const MAP_STAGES = 20; // 호환 상수: 실제 생성 층수는 챕터별 length를 사용한다.
@@ -1537,11 +1674,69 @@ function cancelTreasureModal() {
     document.getElementById('treasure-modal').style.display = 'none';
 }
 
+
+/* v5 · 난이도: 기존 일반 전투 수치는 변경하지 않는다. */
+const DIFFICULTY_LEVELS = [
+  {id:'normal', name:'일반', enemyHp:0, bossExtraHp:0, reroll:1, hint:'기존 게임과 동일한 적군 체력·상점 비용'},
+  {id:'warlord',name:'군웅',enemyHp:10,bossExtraHp:0,reroll:1,hint:'적군 최대 체력 +10% · 일반 난이도 45전 클리어로 해금'},
+  {id:'overlord',name:'패왕',enemyHp:15,bossExtraHp:0,reroll:2,hint:'적군 최대 체력 +15% · 유료 상점 리롤 2금화 · 군웅 클리어로 해금'},
+  {id:'heaven',name:'천하',enemyHp:20,bossExtraHp:10,reroll:2,hint:'적군 최대 체력 +20%, 보스전 추가 +10%p · 유료 리롤 2금화 · 패왕 클리어로 해금'}
+];
+let selectedDifficulty='normal';
+let activeDifficulty='normal';
+function difficultyNormalize(v){return DIFFICULTY_LEVELS.some(x=>x.id===v)?v:'normal';}
+function difficultyConfig(id=activeDifficulty){return DIFFICULTY_LEVELS.find(x=>x.id===difficultyNormalize(id))||DIFFICULTY_LEVELS[0];}
+function difficultyAllClears(){
+  const c=new Set(Array.isArray(careerState?.difficultyClears)?careerState.difficultyClears:[]);
+  // 구버전 v4에서는 난이도 정보가 없었으므로 클리어 이력을 일반 클리어로 인정.
+  if((careerState?.totals?.clears||0)>0 || careerState?.history?.some(r=>r.result==='clear'&&!r.difficulty))c.add('normal');
+  return c;
+}
+function difficultyIsUnlocked(id){
+  id=difficultyNormalize(id);
+  const idx=DIFFICULTY_LEVELS.findIndex(x=>x.id===id);
+  return idx===0||difficultyAllClears().has(DIFFICULTY_LEVELS[idx-1].id);
+}
+function difficultyChoose(id){
+  if(!difficultyIsUnlocked(id))return;
+  selectedDifficulty=difficultyNormalize(id);
+  difficultyRenderChoices();
+}
+function difficultyRenderChoices(){
+  const holder=document.getElementById('difficulty-choices');if(!holder)return;
+  if(!difficultyIsUnlocked(selectedDifficulty))selectedDifficulty='normal';
+  holder.innerHTML=DIFFICULTY_LEVELS.map(x=>{
+    const open=difficultyIsUnlocked(x.id),current=x.id===selectedDifficulty;
+    return `<button type="button" class="difficulty-option${current?' selected':''}" onclick="difficultyChoose('${x.id}')" ${open?'':'disabled'} aria-pressed="${current}" title="${x.hint}">${open?'':'🔒 '}${x.name}</button>`;
+  }).join('');
+  const cfg=difficultyConfig(selectedDifficulty);
+  document.getElementById('difficulty-selection-label').textContent=cfg.name;
+  document.getElementById('difficulty-description').textContent=cfg.hint+'. 난이도는 한 번 출정하면 변경할 수 없습니다.';
+}
+function difficultyEnemyHp(unit,isBoss){
+  if(!unit)return;
+  const base=Number.isFinite(Number(unit.difficultyBaseHp))&&Number(unit.difficultyBaseHp)>0
+    ? Number(unit.difficultyBaseHp) : Math.max(1,Number(unit.maxHp)||Number(unit.hp)||1);
+  const cfg=difficultyConfig();
+  const pct=cfg.enemyHp+(isBoss?cfg.bossExtraHp:0);
+  unit.difficultyBaseHp=base;
+  unit.maxHp=Math.max(1,Math.ceil(base*(100+pct)/100));
+  // 현재 HP는 이후 전투 준비 과정에서 남은 HP 혹은 변경된 최대 HP로 설정한다.
+}
+function difficultyRecordBlank(){return {runs:0,battles:0,wins:0,losses:0,clears:0};}
+function difficultyRecordFor(id){
+  id=difficultyNormalize(id);
+  if(!careerState.difficultyStats || typeof careerState.difficultyStats!=='object')careerState.difficultyStats={};
+  if(!careerState.difficultyStats[id])careerState.difficultyStats[id]=difficultyRecordBlank();
+  return careerState.difficultyStats[id];
+}
+
 let suppressRunSaving=false;
 function startGame(factionName, options={}) {
+    if (!options.restoring && !difficultyIsUnlocked(selectedDifficulty)) { alert('이 난이도는 아직 잠겨 있습니다.'); return; }
     if (!options.restoring && hasValidRunSave() &&
         !confirm('새로 시작하면 기존 이어하기 저장이 삭제됩니다. 새 게임을 시작할까요?')) return;
-    if (!options.restoring) { suppressRunSaving=true; clearRunSave(); playerGold=10; bagCounter=0; }
+    if (!options.restoring) { activeDifficulty=difficultyNormalize(selectedDifficulty); suppressRunSaving=true; careerArchivePreviousSave(); clearRunSave(); playerGold=10; bagCounter=0; careerNewRun(factionName); }
     document.getElementById('title-screen').style.display='none';
     const screen = document.getElementById('faction-screen');
     const game = document.getElementById('game-screen');
@@ -1658,18 +1853,42 @@ function applyPlayableSkillLock(attacker,defender,now) {
     addLog(`[특성] ${attacker.name}의 봉쇄! [${defender.name}] ${key==='strategy'?'책략':'물리'} 기술 ${duration}초 봉쇄`,'log-skill');
 }
 
+
+/* 장수 역할은 표시만 하는 추천 정보다. 진형 배치와 전투 수치에 영향 없음. */
+function recommendGeneralRole(itemData){
+    const st=itemData?.stats||{};
+    const unique=(st.skills||[]).find(sk=>sk.isUnique)||{};
+    const desc=String(unique.desc||'');
+    const trait=String(st.trait||'');
+    const mode=typeof formationRange==='function'?formationRange(null,unique):'front_first';
+    const force=Number(st.force)||0,intel=Number(st.intel)||0,cmd=Number(st.cmd)||0,hp=Number(st.hp)||0;
+    const support=/회복|치료|아군 전체|모든 아군|해제|보호|격려|강화|지원/.test(desc) && (Number(unique.power||0)===0 || /아군|회복|치료/.test(desc));
+    const guard=/도발|받는 피해|피해 감소|피해 무효|방어|반사|반격|불사|보호/.test(trait+' '+desc);
+    let role,place,reason;
+    if(support){role='지원형';place='후방';reason='회복·보호·아군 지원 기술 중심';}
+    else if(['rear_first','rear_all'].includes(mode)){role='저격형';place='후방';reason='후방을 먼저 노리는 공격 범위';}
+    else if(guard&&(cmd>=force-10||hp>=160)){role='방어형';place='전방';reason='생존력 또는 방어·반격 특성이 강점';}
+    else if(unique.type==='책략'||intel>=force+15){role='책략형';place='후방';reason='지력·책략 공격 활용';}
+    else {role='돌격형';place='전방';reason='물리 공격·전방 교전 중심';}
+    // 추천 위치는 구속 조건이 아니며, 가방의 배치 위치가 실제 진형을 결정한다.
+    return {role,place,reason};
+}
 function updateInfoPanel(itemData) {
     if(itemData&&itemData.type==='type-general') syncPlayableGeneralData(itemData);
     const nameEl = document.getElementById('info-name'); const statsEl = document.getElementById('info-stats'); const skillsEl = document.getElementById('info-skills'); skillsEl.innerHTML = ""; 
     const faceEl = document.getElementById('info-face');
     if (faceEl) faceEl.innerHTML = itemData.type === 'type-general' ? portraitMarkup(itemData.name, false) : '🎒';
+    let roleEl=document.getElementById('role-advice');
+    if(!roleEl){roleEl=document.createElement('div');roleEl.id='role-advice';nameEl.insertAdjacentElement('afterend',roleEl);}
     if (itemData.type === 'type-general') {
+        const rec=recommendGeneralRole(itemData);
+        roleEl.innerHTML=`${rec.place==='전방'?'🛡️':'🎯'} 추천 ${rec.place} · ${rec.role} <span class="role-why">— ${rec.reason} (배치 자유)</span>`;
         nameEl.innerText = `${itemData.name} [${itemData.tier}] (🪙${itemData.price})`;
         let hpDisplay = itemData.currentHp !== undefined ? `${Math.floor(itemData.currentHp)}/${itemData.stats.hp}` : `${itemData.stats.hp}`;
         statsEl.innerHTML = `<span class="stat-badge bg-size">크기: ${itemData.w}x${itemData.h}</span> <span class="stat-badge bg-hp">체력: ${hpDisplay}</span> <span class="stat-badge bg-force">무력: ${itemData.stats.force}</span> <span class="stat-badge bg-cmd">통솔: ${itemData.stats.cmd}</span> <span class="stat-badge bg-intel">지력: ${itemData.stats.intel}</span> <span class="stat-badge bg-pol">정치: ${itemData.stats.pol}</span> <span class="stat-badge bg-spd">스킬 쿨타임: ${itemData.stats.cooldown}초</span> <span class="stat-badge bg-acc">명중/회피: ${itemData.stats.hit}/${itemData.stats.dodge}</span>`;
         if(itemData.stats.trait) { let traitBtn = document.createElement('span'); traitBtn.className = 'skill-badge skill-trait'; traitBtn.innerText = "무장 특성"; traitBtn.onclick = (e) => { e.stopPropagation(); openSkillModal({ name: "고유 능력", isUnique: true, type: "패시브", power: 0, acc: "-", desc: itemData.stats.trait }); }; skillsEl.appendChild(traitBtn); }
         if(itemData.stats.skills) { itemData.stats.skills.forEach(skill => { let btn = document.createElement('span'); btn.className = skill.isUnique ? 'skill-badge skill-unique' : 'skill-badge'; btn.innerText = skill.name; btn.onclick = (e) => { e.stopPropagation(); openSkillModal(skill); }; skillsEl.appendChild(btn); }); }
-    } else if (itemData.type === 'type-bag') { nameEl.innerText = `${itemData.name} (🪙${itemData.price})`; statsEl.innerHTML = `배낭을 <b>${itemData.desc}</b> 확장합니다.`; }
+    } else if (itemData.type === 'type-bag') { roleEl.textContent=''; nameEl.innerText = `${itemData.name} (🪙${itemData.price})`; statsEl.innerHTML = `배낭을 <b>${itemData.desc}</b> 확장합니다.`; }
 }
 
 
@@ -1834,15 +2053,16 @@ function updateRoundDisplay() {
     document.getElementById('round-display').innerText=
         `지도 ${currentChapter} · ${episodeForStage(nextRound).name} | 다음 전투 ${nextRound}/45`;
     document.getElementById('gold-display').innerText=`🪙 ${playerGold}`;
+    const badge=document.getElementById('difficulty-in-game');if(badge)badge.textContent=difficultyConfig().name;
 }
 let freeRerolls = 0;
 function refreshRerollButton() {
     const btn = document.getElementById('reroll-btn');
-    if (btn) btn.textContent = freeRerolls > 0 ? `무료 리롤 (${freeRerolls}회)` : '리롤 🪙1';
+    if (btn) btn.textContent = freeRerolls > 0 ? `무료 리롤 (${freeRerolls}회)` : `리롤 🪙${difficultyConfig().reroll}`;
 }
 function rerollShop() {
     if (freeRerolls > 0) freeRerolls--;
-    else if (playerGold >= 1) playerGold--;
+    else if (playerGold >= difficultyConfig().reroll) playerGold-=difficultyConfig().reroll;
     else { alert('금화가 부족합니다!'); return; }
     isInitialRound1 = false; updateRoundDisplay(); rollShopItems(); refreshRerollButton(); saveRun();
 }
@@ -1853,7 +2073,7 @@ function rollShopItems() { const shopContainer = document.getElementById('shop-c
                 else if (roll < 0.93) targetTier = "A"; 
                 else targetTier = "S";}
                  let pool = currentFactionGenerals.filter(g => g.tier === targetTier && g.name !== "여포"); 
-            if (pool.length === 0) pool = currentFactionGenerals.filter(g => g.tier === "C"); let g = pool[Math.floor(Math.random() * pool.length)]; div.className = `item type-general tier-${g.tier}`; div.innerHTML = `${generalItemMarkup(g)}<span class="shop-coin">🪙${g.price}</span>`; itemObj = { type: 'type-general', name: g.name, price: g.price, stats: { ...g, skills: generateSkillsForGeneral(g.name, g.tier, g.force, g.intel) }, tier: g.tier, w: g.w, h: g.h, currentHp: g.hp }; } div.onclick = function() { clearSelection(); div.classList.add('selected'); activeSelection = { source: 'shop', element: div, data: itemObj }; updateInfoPanel(itemObj); }; div.shopData=itemObj; shopContainer.appendChild(div); } }
+            if (pool.length === 0) pool = currentFactionGenerals.filter(g => g.tier === "C"); let g = pool[Math.floor(Math.random() * pool.length)]; div.className = `item type-general tier-${g.tier}`; div.innerHTML = `${generalItemMarkup(g)}<span class="shop-coin">🪙${g.price}</span>`; itemObj = { type: 'type-general', name: g.name, price: g.price, stats: { ...g, skills: generateSkillsForGeneral(g.name, g.tier, g.force, g.intel) }, tier: g.tier, w: g.w, h: g.h, currentHp: g.hp }; } div.onclick = function() { clearSelection(); div.classList.add('selected'); activeSelection = { source: 'shop', element: div, data: itemObj }; updateInfoPanel(itemObj); }; div.shopData=itemObj; shopContainer.appendChild(div); } careerDiscoverVisibleShop(); }
 function initBoard() { const container = document.getElementById('inventory-container'); container.innerHTML = ""; for (let r = 0; r < BOARD_SIZE; r++) { for (let c = 0; c < BOARD_SIZE; c++) { let slot = document.createElement('div'); slot.className = 'slot locked'; slot.dataset.r = r; slot.dataset.c = c; slot.classList.add(r<4?'formation-front-cell':r===4?'formation-center-cell':'formation-rear-cell'); slot.onclick = function() { handleSlotClick(slot, false, parseInt(r), parseInt(c)); }; container.appendChild(slot); } } let defaultBag = { type: 'type-bag', name: "기본배낭", price: 0, w: 3, h: 3, desc: "3x3 확장" }; bagCounter++; for(let i=0; i<3; i++) { for(let j=0; j<3; j++) { let t = getInvSlot(2+i, 2+j); if(t) { t.classList.remove('locked'); t.classList.add('unlocked', 'bag-slot'); t.dataset.bagId = bagCounter; t.dataset.bagData = JSON.stringify(defaultBag); } } } }
 function initStorage() { const container = document.getElementById('storage-container'); container.innerHTML = ""; for (let i = 0; i < 5; i++) { let slot = document.createElement('div'); slot.className = 'slot unlocked'; slot.onclick = function() { handleSlotClick(slot, true, -1, -1); }; container.appendChild(slot); } }
 function getInvSlot(r, c) { return document.querySelector(`#inventory-container .slot[data-r='${r}'][data-c='${c}']`); }
@@ -1889,7 +2109,7 @@ function handleActionSlot(slot, actionType) {
                 newItem = activeSelection.element; 
             } 
             newItem.style.position = 'relative'; newItem.style.width = '100%'; newItem.style.height = '100%'; newItem.style.zIndex = '1'; newItem.style.fontSize = '10px'; 
-            slot.appendChild(newItem); clearSelection(); updateBondUI();
+            slot.appendChild(newItem); if(isShopItem)careerHire(itemData.name); clearSelection(); updateBondUI();
         } 
     } 
 }
@@ -1950,7 +2170,7 @@ function confirmCombine(generalName) {
     newItem.style.height = '100%';
     newItem.style.zIndex = '1';
     newItem.style.fontSize = '10px';
-    emptyStorageSlot.appendChild(newItem); 
+    emptyStorageSlot.appendChild(newItem); careerHire(resultObj.name);
     cancelCombine(); clearSelection(); updateBondUI(); refreshGeneralHpBadges(); alert(`조합 성공! [${resultObj.tier}등급] ${resultGeneral.name} 획득!`); 
 }
 
@@ -1999,8 +2219,9 @@ function handleSlotClick(slot, isStorage, r, c) {
                 newItem.style.position = 'relative'; newItem.style.width = '100%'; newItem.style.height = '100%'; newItem.style.zIndex = '1'; newItem.style.fontSize = '10px'; slot.appendChild(newItem); 
             } 
         } 
+        if (isShopItem && itemData.type==='type-general') careerHire(itemData.name);
         clearSelection(); updateBondUI(); refreshGeneralHpBadges();
-    } 
+    }
 }
 
 function parseRangeCount(valStr) { if (!valStr) return 0; if (typeof valStr === 'number') return valStr; if (valStr.includes('~')) { let parts = valStr.split('~'); return Math.floor(Math.random() * (parseInt(parts[1]) - parseInt(parts[0]) + 1)) + parseInt(parts[0]); } return parseInt(valStr); }
@@ -2198,13 +2419,28 @@ function showBattleModal(nodeType, targetNode) {
             }
         }
     }
-    if (!targetNode.enemyTeam) {
+    // 21~30R는 플레이 진영에 따른 확정 적 편성. 이전 버전의 무작위 적 저장은 갱신한다.
+    const branchSetup = !isBonusBattle ? branchRoundData(storyRound) : null;
+    if (branchSetup) {
+        const expected = createBranchEnemies(storyRound);
+        const saved = Array.isArray(targetNode.enemyTeam)?targetNode.enemyTeam:[];
+        const same = saved.length===expected.team.length && saved.every((u,i) =>
+            u.enemyId===expected.team[i].enemyId && u.name===expected.team[i].name && u.tier===expected.team[i].tier);
+        if(!same){targetNode.enemyTeam=expected.team;}
+        else branchHydrateSavedEnemies(targetNode.enemyTeam,storyRound);
+        targetNode.enemyListStr=expected.listStr;
+        document.getElementById('modal-round-title').innerText=`⚔️ ${storyRound} 라운드 · ${branchSetup.title} ⚔️`;
+    } else if (!targetNode.enemyTeam) {
         const generated = generateEnemiesForRound(diffStage, !isBonusBattle);
         targetNode.enemyTeam = generated.team;
         targetNode.enemyListStr = generated.listStr;
     }
 
     currentEnemyTeam = targetNode.enemyTeam;
+    const isBossDifficulty=!isBonusBattle&&(nodeType==='보스'||storyRound%5===0||currentEnemyTeam.some(u=>u.isBossSSS));
+    const dcfg=difficultyConfig(),hpBonus=dcfg.enemyHp+(isBossDifficulty?dcfg.bossExtraHp:0);
+    const diffNote=document.getElementById('difficulty-encounter-note');
+    if(diffNote)diffNote.textContent=`${dcfg.name} 난이도 · 적 최대 HP +${hpBonus}%`;
     if (!isBonusBattle) scenarioHydrateSavedEnemies(currentEnemyTeam, storyRound);
 
     document.getElementById('enemy-list').innerText =
@@ -2221,8 +2457,28 @@ function cancelBattleModal() {
 let earnedBounty = 0;
 let isBattleActive = false;
 let battleResultProcessed = false;
-let battleSpeedMulti = 1;
-function toggleBattleSpeed() { battleSpeedMulti = battleSpeedMulti === 1 ? 3 : 1; let btn = document.getElementById('speed-btn'); btn.innerText = battleSpeedMulti === 1 ? "▶ 1배속" : "▶▶▶ 3배속"; btn.style.backgroundColor = battleSpeedMulti === 1 ? "#f1c40f" : "#e74c3c"; btn.style.color = battleSpeedMulti === 1 ? "#2c3e50" : "white"; }
+// 배속은 시뮬레이션 0.1초 틱을 바꾸지 않고, 실제 대기시간만 바꾼다.
+// 진행/저장 데이터와 별도로 사용자 선택을 유지한다.
+const BATTLE_SPEED_KEY = 'tk_battle_speed_preference_v1';
+function battleSpeedLoad(){
+    try {const n=Number(localStorage.getItem(BATTLE_SPEED_KEY));return [1,2,3].includes(n)?n:2;}catch(_){return 2;}
+}
+let battleSpeedMulti = battleSpeedLoad();
+function battleSpeedRender(){
+    const screen=document.getElementById('battle-screen');
+    if(screen)screen.style.setProperty('--battle-speed',String(battleSpeedMulti));
+    const btn=document.getElementById('speed-btn');if(!btn)return;
+    btn.textContent=`${'▶'.repeat(battleSpeedMulti)} ${battleSpeedMulti}배속`;
+    btn.style.backgroundColor=battleSpeedMulti===1?'#f1c40f':battleSpeedMulti===2?'#8ed3c1':'#e67e22';
+    btn.style.color='#1e272e';
+    btn.setAttribute('aria-label',`현재 ${battleSpeedMulti}배속. 눌러서 다음 배속으로 변경`);
+    btn.title='1 → 2 → 3배속 순환 (선택 기억)';
+}
+function toggleBattleSpeed(){
+    battleSpeedMulti=battleSpeedMulti===3?1:battleSpeedMulti+1;
+    try{localStorage.setItem(BATTLE_SPEED_KEY,String(battleSpeedMulti));}catch(_){}
+    battleSpeedRender();
+}
 
 function updateDamageMeters(playerTeam, enemyTeam) { 
     let pTotal = playerTeam.reduce((sum, u) => sum + u.totalDamage, 0) || 1; let eTotal = enemyTeam.reduce((sum, u) => sum + u.totalDamage, 0) || 1; 
@@ -2244,6 +2500,7 @@ function formationPositionFromElement(el){
 function formationRange(caster,skill){
     if(!skill)return 'front_first';
     if(caster?.scenarioSkill){
+        if(caster.branchTrait && skill.range)return skill.range;
         return REVIEWED_SKILL_RANGES.enemy[caster.name+'|'+skill.name]||'front_first';
     }
     return (skill.isUnique?REVIEWED_SKILL_RANGES.player:REVIEWED_SKILL_RANGES.common)[skill.name]||'front_first';
@@ -2341,17 +2598,24 @@ function frontProtectionActive(u){
 function enemyRearVulnerable(u){
  return !!(u&&u.id?.startsWith('e_')&&u.battleRow==='rear'&&battleFrontState?.enemy?.collapsed&&u.hp>0);
 }
-function showCollapseBanner(){
+function showCollapseBanner(side='enemy'){
  const layer=document.getElementById('unique-skill-banner-layer');
  if(!layer||document.getElementById('battle-screen').style.display==='none')return;
  const generation=uniqueBannerGeneration;
  let stack=layer.querySelector('.unique-banner-stack');
  if(!stack){stack=document.createElement('div');stack.className='unique-banner-stack';layer.appendChild(stack);}
  while(stack.children.length>=3)stack.firstElementChild.remove();
- const banner=document.createElement('div');banner.className='unique-banner collapse-banner e-side';
- banner.innerHTML='<div class="collapse-icon">⚔️</div><div class="unique-banner-lines"><div class="unique-banner-title">진형 붕괴</div><div class="unique-banner-name">적군 전열 붕괴!</div><div class="unique-banner-actor">후열 회피 +15 해제 · 받는 최종 스킬 피해 +10%</div></div>';
+ const banner=document.createElement('div');banner.className='unique-banner collapse-banner '+(side==='player'?'p-side friendly-collapse-banner':'e-side');
+ const name=side==='player'?'아군 전열 붕괴!':'적군 전열 붕괴!';
+ const explain=side==='player'?'아군 후열 회피 +15 보호 해제':'적 후열 회피 +15 해제 · 받는 최종 스킬 피해 +10%';
+ const icon=document.createElement('div');icon.className='collapse-icon';icon.textContent=side==='player'?'⚠️':'⚔️';
+ const lines=document.createElement('div');lines.className='unique-banner-lines';
+ const heading=document.createElement('div');heading.className='unique-banner-title';heading.textContent='진형 붕괴';
+ const title=document.createElement('div');title.className='unique-banner-name';title.textContent=name;
+ const desc=document.createElement('div');desc.className='unique-banner-actor';desc.textContent=explain;
+ lines.append(heading,title,desc);banner.append(icon,lines);
  stack.appendChild(banner);
- const ms=battleSpeedMulti>1?2000:3300;
+ const ms=battleSpeedMulti===1?1450:battleSpeedMulti===2?1050:800;
  setTimeout(()=>{if(generation!==uniqueBannerGeneration||!banner.isConnected)return;banner.classList.add('removing');setTimeout(()=>{if(generation!==uniqueBannerGeneration||!banner.isConnected)return;const parent=banner.parentElement;banner.remove();if(parent&&!parent.children.length)parent.remove();},270);},ms);
 }
 function updateFrontCollapseState(){
@@ -2368,7 +2632,7 @@ function updateFrontCollapseState(){
   if(side==='enemy'){
    addLog('⚔️ 적군 전열 붕괴! 적 후열 회피 +15 해제, 받는 최종 스킬 피해 +10%.','log-kill');
    showCollapseBanner();
-  }else addLog('⚠️ 아군 전열 붕괴! 아군 후열의 회피 +15 보호 효과가 사라집니다.','log-kill');
+  }else {addLog('⚠️ 아군 전열 붕괴! 아군 후열의 회피 +15 보호 효과가 사라집니다.','log-kill');showCollapseBanner('player');}
  }
 }
 /* ── 전후방 전투 끝 ── */
@@ -2462,10 +2726,10 @@ async function startBattleScene() {
 hasJadeSeal = false;
 isBattleActive = true;
 battleResultProcessed = false;
-battleSpeedMulti = 1;
+battleSpeedMulti = battleSpeedLoad();
     chilseongBodoUsed = false;
     chilseongDeungUsed = false; 
-    document.getElementById('speed-btn').innerText = "▶ 1배속"; document.getElementById('speed-btn').style.backgroundColor = "#f1c40f"; 
+    battleSpeedRender(); 
     
     let playerTeam = [];
     document.querySelectorAll('#inventory-container .placed-item.type-general').forEach((el, index) => {
@@ -2489,7 +2753,10 @@ battleSpeedMulti = 1;
         playerTeam.push(unit);
     });
     
+    const diffNode=mapData.nodes.find(n=>n.id===currentMapNodeId);
+    const diffBoss=!!diffNode&&!diffNode.eventForcedBattle&&(diffNode.type==='보스'||(Number(activeCustomRound||currentBattleRound)%5===0)||currentEnemyTeam.some(e=>e.isBossSSS));
     currentEnemyTeam.forEach((e, index) => { 
+    difficultyEnemyHp(e,diffBoss);
     let baseGeneral = allGenerals.find(g => g.name === e.name);
     // 패배한 전투의 잔존 적 체력은 노드에 보관한다. 죽은 적은 재도전에서도 죽은 상태로 유지한다.
     e.hp = Number.isFinite(e.battleRemainingHp) ? Math.max(0, Math.min(e.maxHp, e.battleRemainingHp)) : e.maxHp;
@@ -2575,15 +2842,43 @@ battleSpeedMulti = 1;
     });
     
     applyClinicHerbAtBattleStart(playerTeam,currentEnemyTeam);
+    branchOnBattleStart(currentEnemyTeam,playerTeam);
     renderBattleUnits('player-battle-board', playerTeam, "내 배낭 진영"); 
     renderBattleUnits('enemy-battle-board', currentEnemyTeam, "적군 진영"); 
     updateDamageMeters(playerTeam, currentEnemyTeam);
-    
-    await runATBSimulation(playerTeam, currentEnemyTeam);
+    await showBossBattleIntro(currentEnemyTeam);
+    if(isBattleActive) await runATBSimulation(playerTeam, currentEnemyTeam);
 }
 
 
 
+
+/* 5·10·15·20라운드 등의 보스전 시작 연출. 능력치/AI 변경 없음. */
+async function showBossBattleIntro(team){
+    const mount=document.getElementById('battle-boss-intro');
+    const node=(typeof mapData!=='undefined'?mapData.nodes.find(n=>n.id===currentMapNodeId):null);
+    const bossNode=node?.type==='보스';
+    const bossStage=Number(activeCustomRound||currentBattleRound||0);
+    const isBoss=bossNode||(bossStage>0&&bossStage%5===0)||team.some(u=>u.isBossSSS);
+    if(!mount||!isBoss||!isBattleActive)return;
+    const alive=team.filter(u=>u.hp>0);
+    if(!alive.length)return;
+    const leader=alive.find(u=>u.isBossSSS)||alive.slice().sort((a,b)=>(b.maxHp||0)-(a.maxHp||0))[0];
+    const intro=document.createElement('div');intro.className='boss-intro-card';
+    const face=document.createElement('div');face.className='boss-intro-face';face.innerHTML=portraitMarkup(leader.name,false);
+    const lines=document.createElement('div');lines.className='boss-intro-text';
+    const title=document.createElement('div');title.className='boss-intro-eyebrow';title.textContent=`⚔ 보스 전투 · 제${bossStage}전`;
+    const name=document.createElement('div');name.className='boss-intro-name';name.textContent=leader.name;
+    const trait=document.createElement('div');trait.className='boss-intro-desc';
+    const raw=String(leader.scenarioTrait?.description||leader.trait||leader.scenarioSkill?.description||'');
+    trait.textContent=raw?(raw.length>65?raw.slice(0,65)+'…':raw):'강력한 적의 주력이 출현했습니다.';
+    lines.append(title,name,trait);intro.append(face,lines);
+    mount.replaceChildren(intro);mount.style.display='flex';
+    requestAnimationFrame(()=>mount.classList.add('visible'));
+    const dur=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?650:1150;
+    await new Promise(resolve=>setTimeout(resolve,dur));
+    mount.classList.remove('visible');mount.style.display='none';mount.replaceChildren();
+}
 /* 전체 105명 고유스킬에 동일한 배너 연출을 적용한다. 스킬 판정/피해와 독립. */
 const uniqueBannerNames = new Set(allGenerals.map(g => g.name));
 let uniqueBannerGeneration = 0;
@@ -2609,14 +2904,15 @@ function showUniqueSkillBanner(unit, skill) {
         // 제거 중인 배너는 신규 배너를 가리지 않도록 즉시 정리한다.
         while (stack.children.length >= 3) stack.firstElementChild.remove();
         const banner = document.createElement('div');
-        banner.className = 'unique-banner ' + (String(unit.id).startsWith('p_') ? 'p-side' : 'e-side');
+        const family=battleFXSkillFamily(skill);
+        banner.className = 'unique-banner fx-family-'+family+' ' + (String(unit.id).startsWith('p_') ? 'p-side' : 'e-side');
         const face = document.createElement('div');
         face.className = 'unique-banner-face';
         face.innerHTML = portraitMarkup(unit.name, false);
         const lines = document.createElement('div');
         lines.className = 'unique-banner-lines';
         const heading = document.createElement('div');
-        heading.className = 'unique-banner-title'; heading.textContent = '고유 스킬 발동';
+        heading.className = 'unique-banner-title'; heading.textContent = ({charge:'돌격 · 참격',archery:'궁술 · 저격',fire:'화공 · 책략',support:'회복 · 지원',control:'상태이상 · 제어',strategy:'책략'}[family]||'고유 스킬')+' 발동';
         const skillName = document.createElement('div');
         skillName.className = 'unique-banner-name'; skillName.textContent = skill.name;
         const actor = document.createElement('div');
@@ -2627,7 +2923,7 @@ function showUniqueSkillBanner(unit, skill) {
         // 각 배너는 이후 다른 스킬이 발동하는지와 무관하게 개별 타이머로 자동 소멸.
         // 1배속 3.0초 / 3배속 1.8초간 표시한 뒤 0.26초 동안 위로 사라진다.
         // 4번째 스킬이 먼저 발동하면 기존처럼 가장 오래된 배너부터 밀려난다.
-        const duration = battleSpeedMulti > 1 ? 1800 : 3000;
+        const duration = battleSpeedMulti===1?1950:battleSpeedMulti===2?1320:900;
         banner.dataset.expiresAt = String(Date.now() + duration);
         setTimeout(() => {
             if (gen !== uniqueBannerGeneration || !banner.isConnected) return;
@@ -2648,7 +2944,7 @@ function battleFXDuration(ms) { return Math.max(70, Math.round(ms / (battleSpeed
 function resetBattleFX() {
     const layer = document.getElementById('battle-fx-layer');
     if (layer) layer.replaceChildren();
-    document.querySelectorAll('.battle-unit.fx-lunge,.battle-unit.fx-struck,.battle-unit.fx-healing').forEach(el => el.classList.remove('fx-lunge','fx-struck','fx-healing'));
+    document.querySelectorAll('.battle-unit.fx-lunge,.battle-unit.fx-struck,.battle-unit.fx-healing,.battle-unit.fx-casting,.battle-unit.fx-support').forEach(el => el.classList.remove('fx-lunge','fx-struck','fx-healing','fx-casting','fx-support'));
 }
 function battleFXPulse(unit, className) {
     const box = unit && document.getElementById(`unit-${unit.domId || unit.id}`);
@@ -2672,23 +2968,60 @@ function battleFXPopup(point, label, className) {
     const pop = document.createElement('div'); pop.className = 'fx-popup '+className;
     pop.textContent = label; pop.style.left = point.x+'px';pop.style.top=(point.y-9)+'px';
     layer.appendChild(pop);
-    const duration=battleFXDuration(780);
+    const duration=battleFXDuration(600);
     pop.animate([{transform:'translate(-50%,0) scale(.85)',opacity:0},{transform:'translate(-50%,-14px) scale(1.14)',opacity:1,offset:.24},{transform:'translate(-50%,-43px) scale(1)',opacity:0}],{duration,easing:'ease-out'}).finished.catch(()=>{}).finally(()=>pop.remove());
     setTimeout(()=>pop.remove(),duration+80);
 }
-function battleFXHit(attacker, defender, amount, kind, crit=false, miss=false) {
+function battleFXSkillFamily(skill){
+    const name=String(skill?.name||''),desc=String(skill?.desc||'');
+    const text=name+' '+desc;
+    if(/화공|화계|화염|불길|적벽|방화/.test(text))return 'fire';
+    if(/궁|저격|사격|연노|화살|백발|시위/.test(text))return 'archery';
+    if(/마비|혼란|봉쇄|속박|봉인|감속|기만|교란|침묵/.test(text))return 'control';
+    if((/회복|치료|보호|지원|격려|해제|능력치 증가|강화/.test(text)&&
+          (Number(skill?.power||0)===0||/아군|자신/.test(text))))return 'support';
+    if(skill?.type==='책략')return 'strategy';
+    return 'charge';
+}
+function battleFXStyle(kind,skillName=''){
+    const s=String(skillName||'');
+    if(/화공|화계|화염|불|적벽/.test(s))return 'fx-fire';
+    if(/저격|사격|궁|화살|연노|시위|백발|노궁/.test(s))return 'fx-arrow';
+    if(/혼란|봉쇄|마비|간파|계책|공심|봉인|사슬/.test(s))return 'fx-control';
+    return kind==='책략'?'fx-magic':kind==='고정피해'?'fx-fixed':'fx-physical';
+}
+function battleFXSupport(attacker,targets,skill){
+    if(!isBattleActive)return;
+    try{
+        battleFXPulse(attacker,'fx-casting');
+        const type=String(skill?.type||'');
+        for(const target of (targets||[]).slice(0,10))if(target&&target.hp>0){
+            battleFXPulse(target,'fx-support');
+            // 회복량은 실제 HP 회복 경로에서 표시하므로 중복 표시는 하지 않는다.
+            if(type==='패시브')continue;
+        }
+    }catch(_){}
+}
+function battleFXHit(attacker, defender, amount, kind, crit=false, miss=false, skillName='') {
     try {
         if (!isBattleActive) return;
         const a = battleFXPoint(attacker), d = battleFXPoint(defender);
         if (!a || !d) return;
         const layer = document.getElementById('battle-fx-layer'); if (!layer) return;
         battleFXPulse(attacker,'fx-lunge');
-        const type = kind === '책략' ? 'fx-magic' : kind === '고정피해' ? 'fx-fixed' : 'fx-physical';
+        const type=battleFXStyle(kind,skillName);
         const bullet=document.createElement('span'); bullet.className='fx-projectile '+type;
         bullet.style.left=(a.x-18)+'px';bullet.style.top=(a.y-4)+'px';layer.appendChild(bullet);
         const dx=d.x-a.x,dy=d.y-a.y;
+        const line=document.createElement('span');line.className='battle-aim-line';
+        const len=Math.hypot(dx,dy);line.style.left=a.x+'px';line.style.top=a.y+'px';
+        line.style.width=len+'px';line.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;
+        layer.appendChild(line);
+        const fadeMs=battleFXDuration(290);
+        line.animate([{opacity:0},{opacity:0.8,offset:.25},{opacity:0}],{duration:fadeMs}).finished.catch(()=>{}).finally(()=>line.remove());
+        setTimeout(()=>line.remove(),fadeMs+80);
         bullet.animate([{transform:`translate(0,0) rotate(${Math.atan2(dy,dx)}rad)`,opacity:.95},{transform:`translate(${dx}px,${dy}px) rotate(${Math.atan2(dy,dx)}rad)`,opacity:.95}],{duration:battleFXDuration(240),easing:'ease-in'}).finished.catch(()=>{}).finally(()=>bullet.remove());
-        setTimeout(()=>{bullet.remove();if(miss){battleFXPopup(d,'MISS','fx-miss');}else{battleFXPulse(defender,'fx-struck');battleFXPopup(d,(crit?'CRIT ':'-')+Math.floor(amount)+(crit?'!':''),crit?'fx-crit':type);}},battleFXDuration(225));
+        setTimeout(()=>{bullet.remove();if(miss){battleFXPopup(d,'회피!','fx-miss');}else{battleFXPulse(defender,'fx-struck');battleFXPopup(d,(crit?'치명타 ':'-')+Math.floor(amount)+(crit?'!':''),crit?'fx-crit':(type==='fx-fire'||type==='fx-control'||type==='fx-arrow'?(kind==='책략'?'fx-magic':'fx-physical'):type));}},battleFXDuration(225));
     } catch(e) {console.warn('연출 생략',e);}
 }
 function battleFXHeal(unit, amount) {
@@ -2772,6 +3105,8 @@ function getStat(unit, statName, allAliveUnits, gameTime) {
     // 전방이 살아 있는 동안만 후열 전원 회피 +15. 전열 붕괴 후에는 복구되지 않는다.
     if(statName==='dodge'&&frontProtectionActive(unit))flatUp+=15;
     const scenarioDelta = scenarioStatDelta(unit,statName,allAliveUnits,gameTime);
+    const branchDelta = branchStatDelta(unit,statName,allAliveUnits||[]);
+    if(branchDelta >= 0) flatUp += branchDelta; else flatDown += -branchDelta;
     if(scenarioDelta >= 0) flatUp += scenarioDelta; else flatDown += -scenarioDelta;
     if (isPlayableUnit(unit)&&unit.name==='고순'&&['force','cmd','intel','pol'].includes(statName)) {flatDown=0;pctDown=0;}
 
@@ -2828,7 +3163,7 @@ function processKillEvents(killer, deadUnit, allAllies, allEnemies, gameTime) {
 
     deadUnit.isDead = true;
     updateFrontCollapseState();
-    scenarioOnDeathTrait(deadUnit);
+    scenarioOnDeathTrait(deadUnit,gameTime);
     const scenarioExtraBounty = (deadUnit.id && deadUnit.id.startsWith("e_")) ? scenarioOnEnemyDeath(deadUnit,currentEnemyTeam,lastPlayerTeam,gameTime) : 0;
 
     let el = document.querySelector(
@@ -3023,6 +3358,7 @@ async function runATBSimulation(playerTeam, enemyTeam) {
             if (gameTime >= 90) { addLog("⏰ 90초 경과! 무승부(패배) 처리됩니다.", "log-kill"); break; }
             await new Promise(r => setTimeout(r, 100 / battleSpeedMulti)); gameTime += TICK_RATE; let allUnits = [...pAlive(), ...eAlive()];
             let currentSec = Math.floor(gameTime);
+            branchCheckThresholds(enemyTeam,gameTime);
             allUnits.forEach(u => { battleStatActor=u;
                 if (u.hp <= 0) return;
                 if (Math.floor(gameTime) > Math.floor(gameTime - TICK_RATE)) {
@@ -3032,23 +3368,26 @@ async function runATBSimulation(playerTeam, enemyTeam) {
                     const dotEffects = [
                         { stat: 'fire', damage: 5, label: `[화염] ${u.name} -5 피해!` },
                         { stat: 'fire_strong', damage: 10, label: `[적벽화계🔥] ${u.name} 지속 고정피해!` },
-                        { stat: 'poison', damage: 5, label: `[독] ${u.name} -5 피해!` }
+                        { stat: 'poison', damage: 5, label: `[독] ${u.name} -5 피해!` },
+                        { stat: 'branch_fire', damage: 8, label: `[박망파 화상🔥] ${u.name} 지속 피해!` }
                     ];
 
                     for (const dot of dotEffects) {
                         if (u.hp <= 0) break;
                         const effect = u.buffs.find(b => b.stat === dot.stat);
                         if (!effect) continue;
+                        if(dot.stat==='branch_fire'){if(effect.expireTime<=gameTime||currentSec < effect.nextTick)continue;effect.nextTick=currentSec+2;}
 
-                        let dotDamage=(dot.stat==='fire_strong' && Number.isFinite(effect.amount)) ? effect.amount : dot.damage;
+                        let dotDamage=((dot.stat==='fire_strong'||dot.stat==='branch_fire') && Number.isFinite(effect.amount)) ? effect.amount : dot.damage;
                         const dotTeam=playerTeam.includes(u)?playerTeam:enemyTeam;
-                        if(dot.stat==='fire_strong'&&immuneToPlayerFixedDamage(u,dotTeam,'고정피해'))dotDamage=0;
+                        if((dot.stat==='fire_strong'||dot.stat==='branch_fire')&&immuneToPlayerFixedDamage(u,dotTeam,'고정피해'))dotDamage=0;
                         if(isPlayableUnit(u)){
                             if(dotTeam.some(a=>isPlayableUnit(a)&&a.name==='순욱'&&a.hp>0))dotDamage*=.85;
                             if(dotTeam.some(a=>isPlayableUnit(a)&&a.name==='보즐'&&a.hp>0&&a.currentCooldown>0))dotDamage*=.9;
                             if(u.name==='한당')dotDamage*=1-.08*Math.min(6,dotTeam.filter(a=>a.hp>0).length);
                         }
                         dotDamage=playableLeathalGuard(u,Math.floor(dotDamage),gameTime);
+                        dotDamage=branchAbsorbShield(u,dotDamage,gameTime);
                         const dotActual=Math.min(Math.max(0,u.hp),dotDamage);
                         u.hp -= dotDamage;
                         if(effect.sourceId){const dotSource=dotSources.find(x=>x.id===effect.sourceId);if(dotSource)battleStatDamage(dotSource,'고정피해',dotActual);}
@@ -3147,6 +3486,7 @@ if (enemies.length === 0) break;
                 }
                 if (unit.scenarioSkill && allies.some(u=>u.enemyId==='enemy_variant:조조:관도' && u.hp>0)) maxCd=Math.max(1,maxCd-0.3);
                 maxCd = Math.max(1, Math.min(10, maxCd));
+                if(branchIsUnit(unit)||unit.buffs?.some(b=>b.stat==='branch_attack_speed'&&b.expireTime>gameTime))maxCd=Math.max(1,maxCd*branchSpeedModifier(unit,allies,gameTime));
                 
                 if (typeof activeBondsInBattle !== 'undefined' && activeBondsInBattle.includes("형주공방전")) {
                     if (unit.name === "반장" && unit.id.startsWith('p_')) {
@@ -3180,7 +3520,7 @@ if (enemies.length === 0) break;
                     unit.jiaXuStacks = 0; unit.currentCooldown = maxCd; if (cdEl) cdEl.style.width = "0%";
                     let availableSkills=unit.skills.filter(sk=>!playableCooldownLock(unit,sk,gameTime));
                     if(!availableSkills.length){unit.currentCooldown=0.1;continue;}
-                    let skill = availableSkills[Math.floor(Math.random() * availableSkills.length)];
+                    let skill = {...availableSkills[Math.floor(Math.random() * availableSkills.length)]};
                     if(isPlayer&&!unit.scenarioSkill){const stat=battleStatFind(unit);if(stat)stat.skills++;}
                     if (unit.scenarioSkill) {
                         if(playableCooldownLock(unit,{type:unit.scenarioSkill.type},gameTime)) { unit.currentCooldown=0.1;continue; }
@@ -3223,6 +3563,7 @@ if (enemies.length === 0) break;
 
                     if (targets.length === 0) continue;
                     showUniqueSkillBanner(unit, skill);
+                    if(isAllyTarget)battleFXSupport(unit,targets,skill);
 
                     if (allies.some(a => a.name === "왕련" && a.hp > 0)) { let heal = Math.max(1, Math.floor(unit.maxHp * 0.01)); unit.hp = Math.min(unit.maxHp, unit.hp + heal); let upHp = document.getElementById(`hp-${unit.domId}`); if (upHp) upHp.style.width = Math.max(0, (unit.hp / unit.maxHp) * 100) + "%"; let upTxt = document.getElementById(`hp-txt-${unit.domId}`); if (upTxt) upTxt.innerText = Math.floor(Math.max(0, unit.hp)) + "/" + unit.maxHp; }
                     if (unit.name === "보즐" && !isPlayableUnit(unit) && unit.buZhiShield) { unit.buZhiShield = false; unit.buZhiTimer = gameTime + 7; addLog(`[특성] 보즐 방어 일시해제 및 공격!`, "log-skill"); }
@@ -3291,7 +3632,7 @@ if (enemies.length === 0) break;
                             if (skill.name !== "왕좌지재" && !isAllyTarget) finalHitRate = Math.max(20, Math.min(100, finalHitRate));
 
                             if ((skill.acc < 100 || !isAllyTarget) && Math.random() * 100 > finalHitRate) { 
-                                battleFXHit(unit,defender,0,skill.type,false,true);
+                                battleFXHit(unit,defender,0,skill.type,false,true,skill.name);
                                 if(isPlayableUnit(defender)&&defender.name==='공손찬'&&unit.hp>0){
                                     let counter=immuneToPlayerFixedDamage(unit,allies,'고정피해')?0:20;
                                     counter=playableLeathalGuard(unit,counter,gameTime);
@@ -3392,6 +3733,7 @@ if (enemies.length === 0) break;
 
                                 if (battleFormationId==='bangwon' && playerTeam.includes(defender)) dmgTakenMult *= 0.90;
                                 finalDamage *= dmgTakenMult;
+                                if(branchIsUnit(defender))finalDamage*=branchDamageTakenModifier(defender,enemies);
                                 
                                 let dmgDealtDown = 0; unit.buffs.forEach(b => { if(b.stat === 'dmg_dealt_down') dmgDealtDown += b.amount; }); finalDamage *= (1 - dmgDealtDown / 100);
                                 
@@ -3803,6 +4145,7 @@ if (
                                     if (isMultiTargetAttack) finalDamage *= aoeDamageMultiplier;
                                     finalDamage=playableLeathalGuard(defender,Math.min(300,Math.floor(finalDamage)),gameTime);
                                     const actualHpDamage=Math.min(Math.max(0,defender.hp),finalDamage);
+                                    finalDamage=branchAbsorbShield(defender,finalDamage,gameTime);
                                     defender.hp -= finalDamage;
                                     battleStatDamage(unit,skill.type,actualHpDamage);
                                     if(defender.hp>0) triggerGuoHuaiPassive(defender,gameTime);
@@ -3826,7 +4169,7 @@ if (
                                         if(reflected>0){defender.totalDamage+=reflected;battleStatDamage(defender,'고정피해',reflected);logMsg+=`[반격 고정피해 ${reflected}] `;}
                                         if(unit.hp<=0)earnedBounty+=processKillEvents(defender,unit,enemies,allies,gameTime);
                                     }
-                                    if (finalDamage > 0) battleFXHit(unit, defender, finalDamage, skill.type, isCrit); 
+                                    if (finalDamage > 0) battleFXHit(unit, defender, finalDamage, skill.type, isCrit,false,skill.name); 
                                 } else { 
                                     if (skill.name === "격려") { defender.buffs.push({stat: 'force', type: 'up_pct', amount: 10, expireTime: gameTime + 10}); logMsg += "[무력 10% 증가] "; }
                                     if (skill.name === "구원병") { let h = Math.floor((defender.maxHp - defender.hp) / 4); defender.hp = Math.min(defender.maxHp, defender.hp + h); logMsg += `[체력 ${h} 회복] `; }
@@ -3960,6 +4303,7 @@ function confirmRewardChoice(id) {
         const g=pool[Math.floor(Math.random()*pool.length)];
         if(g){
             const obj={type:'type-general',name:g.name,price:g.price,stats:{...g,skills:generateSkillsForGeneral(g.name,g.tier,g.force,g.intel)},tier:g.tier,w:g.w,h:g.h,currentHp:g.hp};
+            careerHire(g.name);
             const slot=Array.from(document.querySelectorAll('#storage-container .slot')).find(s=>!s.children.length);
             if(slot){placeSavedGeneral(slot,obj,'uid_reward_'+Date.now(),false);info=`${g.name} 등용 (보관함)`;}
             else {pendingRecruits.push(obj);info=`${g.name} 등용 (보관함이 가득 차 대기 명단에 보관)`;}
@@ -3989,6 +4333,7 @@ function returnToGame(isWin) {
     if (!isBattleActive || battleResultProcessed) return;
 
     battleResultProcessed = true;
+    careerRecordBattle(isWin);
     isBattleActive = false;
     activeClinicHerb=null;clinicCheongungAvailable=false;battleFrontState=null;
 
@@ -4108,8 +4453,9 @@ function returnToGame(isWin) {
         updateRoundDisplay();
         // 45번째 전투 승리로만 게임 종료 (지도 번호와 무관).
         if(currNode && !currNode.eventForcedBattle && currNode.roundAdvanced && finishedRound===45) {
-            clearRunSave();
-            document.body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#2c3e50;color:#f1c40f;text-align:center"><h1>🏆 천하 통일!</h1><p style="color:white">45번째 전투에서 승리하고 천하를 평정했습니다!</p><button onclick="location.reload()" style="padding:15px">다시 하기</button></div>`;
+            careerFinalize('clear');
+            clearRunSave(); suppressRunSaving=true;
+            careerEndScreen('clear','45번째 전투에서 승리하고 천하를 평정했습니다!');
             return;
         }
     } else {
@@ -4125,21 +4471,15 @@ function returnToGame(isWin) {
             '.placed-item.type-general'
         );
 
-        const cheapestPrice = 2;
+        const cheapestPrice = 3; // 현재 C등급 상점 가격과 동일
 
         if (
             remainingGenerals.length === 0 &&
             playerGold < cheapestPrice
         ) {
-            clearRunSave();
-            document.body.innerHTML = `
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background-color:#000; color:#e74c3c; text-align:center;">
-                    <h1>💀 게임 오버</h1>
-                    <p style="color:white; margin-bottom:20px;">출전할 아군 장수가 전멸했고, 새로 영입할 금화도 부족합니다...</p>
-                    <button onclick="location.reload()" style="padding:15px 30px; font-size:18px; background-color:#e74c3c; color:white; border:none; border-radius:8px; cursor:pointer;">처음부터 다시 시작</button>
-                </div>
-            `;
-
+            careerFinalize('defeat');
+            clearRunSave(); suppressRunSaving=true;
+            careerEndScreen('defeat','출전할 장수가 없고, 새로운 장수를 영입할 금화도 부족합니다.');
             return;
         } else if (remainingGenerals.length === 0) {
             alert(
@@ -4568,7 +4908,7 @@ function storyChangeHp(amount,all=true){const members=storyOwned();const targets
 function storyHealAll(){for(const el of storyOwned()){const d=el.itemData;d.currentHp=d.stats.hp;}refreshGeneralHpBadges();}
 function storyStat(stat,delta,all=false,eligible=null){const arr=storyOwned().filter(el=>!eligible||eligible(el.itemData));if(!arr.length)return null;const chosen=all?arr:[storyRandom(arr)];for(const el of chosen)el.itemData.stats[stat]=Math.max(0,Number(el.itemData.stats[stat]||0)+delta);return all?`${chosen.length}명`:chosen[0].itemData.name;}
 function storyGainTreasure(tierPool){const pool=treasureDB.filter(t=>tierPool.includes(t.tier)&&t.name!=='옥새'&&!ownedTreasures.some(o=>o.name===t.name));if(!pool.length)return null;const t=storyRandom(pool);ownedTreasures.push(t);renderOwnedTreasures();refreshDeploymentLimitUI();return t.name;}
-function storyRecruitZhuge(){const g=allGenerals.find(x=>x.name==='제갈량'&&x.tier==='SS');if(!g)return '제갈량 데이터를 찾지 못했습니다.';const obj={type:'type-general',name:g.name,price:g.price,stats:{...g,skills:generateSkillsForGeneral(g.name,g.tier,g.force,g.intel)},tier:g.tier,w:g.w,h:g.h,currentHp:g.hp};const slot=Array.from(document.querySelectorAll('#storage-container .slot')).find(x=>!x.children.length);if(slot){placeSavedGeneral(slot,obj,'uid_story_'+Date.now(),false);refreshGeneralHpBadges();return 'SS 제갈량 등용! 보관함으로 이동했습니다.';}pendingRecruits.push(obj);return 'SS 제갈량 등용! 보관함이 가득 차 대기 명단에 보관했습니다.';}
+function storyRecruitZhuge(){const g=allGenerals.find(x=>x.name==='제갈량'&&x.tier==='SS');if(!g)return '제갈량 데이터를 찾지 못했습니다.';const obj={type:'type-general',name:g.name,price:g.price,stats:{...g,skills:generateSkillsForGeneral(g.name,g.tier,g.force,g.intel)},tier:g.tier,w:g.w,h:g.h,currentHp:g.hp};careerHire(g.name);const slot=Array.from(document.querySelectorAll('#storage-container .slot')).find(x=>!x.children.length);if(slot){placeSavedGeneral(slot,obj,'uid_story_'+Date.now(),false);refreshGeneralHpBadges();return 'SS 제갈량 등용! 보관함으로 이동했습니다.';}pendingRecruits.push(obj);return 'SS 제갈량 등용! 보관함이 가득 차 대기 명단에 보관했습니다.';}
 function pickStoryEvent(){const pool=STORY_EVENTS.filter(e=>e.id==='hutFall'?storyHutProgress===0:e.id==='hutSnow'?storyHutProgress===1:e.id==='hutSun'?storyHutProgress===2:true);return storyRandom(pool);}
 function openStoryEvent(node){if(!node)return;if(!node.storyEventId){const chosen=pickStoryEvent();node.storyEventId=chosen.id;}const ev=STORY_EVENTS.find(e=>e.id===node.storyEventId);if(!ev)return;pendingStoryEventNodeId=node.id;document.getElementById('story-event-title').textContent=`❓ ${ev.name}`;document.getElementById('story-event-description').textContent=ev.desc;document.getElementById('story-event-note').textContent='사건 선택 결과는 즉시 적용되며 되돌릴 수 없습니다.';const box=document.getElementById('story-event-actions');box.innerHTML='';for(const [label,action] of ev.choices){const btn=document.createElement('button');btn.textContent=label;btn.className='btn-enter';btn.style.cssText='width:100%;text-align:left;min-height:45px;padding:10px 12px;font-size:13px;';btn.onclick=()=>resolveStoryEvent(action);box.appendChild(btn);}document.getElementById('map-screen').style.display='none';document.getElementById('story-event-modal').style.display='flex';saveRun();}
 function resolveStoryEvent(action){const node=mapData.nodes.find(n=>n.id===pendingStoryEventNodeId);if(!node||node.storyResolved)return;const owned=storyOwned();let result='아무 일도 일어나지 않았다.';let forceBattle=false;
@@ -4624,7 +4964,7 @@ function saveRun(){
     style:slot.firstElementChild.getAttribute('style')||'',className:slot.firstElementChild.className}:null
   }));
   const data={version:1,faction:document.getElementById('faction-title').textContent,
-   playerGold,currentChapter,currentMapStage,currentMapNodeId,currentBattleRound,isInitialRound1,bagCounter,freeRerolls,
+   playerGold,currentChapter,currentMapStage,currentMapNodeId,currentBattleRound,isInitialRound1,bagCounter,freeRerolls,difficulty:activeDifficulty,careerRun:careerActiveRun,
    mapData,ownedTreasures,pendingClinicHerb,pendingRecruits,pendingRewardChoices,pendingRewardResolved,storyHutProgress,pendingStoryEventNodeId,
     view:document.getElementById('clinic-screen').style.display==='flex'?'clinic':
          document.getElementById('map-screen').style.display==='flex'?'map':
@@ -4662,7 +5002,10 @@ function loadRun(){
  if(!data||data.version!==1||!data.faction)return false;
  restoringRun=true;
  try{
+   activeDifficulty=difficultyNormalize(data.difficulty||data.careerRun?.difficulty);
+   selectedDifficulty=activeDifficulty;
    startGame(data.faction,{restoring:true}); // 저장을 삭제하지 않고 초기 UI 구성
+  careerRestoreRun(data.careerRun,data.faction,data.currentBattleRound);
   playerGold=data.playerGold;currentChapter=data.currentChapter||1;currentMapStage=data.currentMapStage;currentMapNodeId=data.currentMapNodeId;
   currentBattleRound=data.currentBattleRound;isInitialRound1=data.isInitialRound1;bagCounter=data.bagCounter;
    freeRerolls=data.freeRerolls||0;mapData=data.mapData;ownedTreasures=data.ownedTreasures||[];pendingClinicHerb=data.pendingClinicHerb||null;
@@ -4690,6 +5033,7 @@ function loadRun(){
   resizeDeployedCards();
   document.getElementById('shop-container').innerHTML='';
   (data.shop||[]).forEach(renderSavedShopItem);
+  careerSeedLoadedRun();
   updateRoundDisplay();renderOwnedTreasures();refreshDeploymentLimitUI();refreshGeneralHpBadges();updateBondUI();refreshRerollButton();
   document.getElementById('map-screen').style.display='none';
    document.getElementById('game-screen').style.display='flex';
@@ -4728,12 +5072,13 @@ function showTitleScreen(){
   const btn=document.getElementById('title-continue-btn');
   btn.disabled=!saved;
   document.getElementById('title-save-desc').textContent=saved
-    ? `${saved.faction} · ${saved.currentBattleRound||1}라운드 · ${Number(saved.playerGold||0)}금화 저장됨`
+    ? `${saved.faction} · ${difficultyConfig(saved.difficulty||saved.careerRun?.difficulty).name} · ${saved.currentBattleRound||1}라운드 · ${Number(saved.playerGold||0)}금화 저장됨`
     : '저장된 게임이 없습니다. 새로하기로 시작하세요.';
 }
 function showNewGameFactions(){
   document.getElementById('title-screen').style.display='none';
   document.getElementById('faction-screen').style.display='block';
+  difficultyRenderChoices();
 }
 function continueSavedGame(){
   if(!hasValidRunSave()){showTitleScreen();return alert('이어할 수 있는 저장 데이터가 없습니다.');}
@@ -4741,10 +5086,351 @@ function continueSavedGame(){
 }
 function restartWholeGame(){
   if(!confirm('현재 진행 상황과 자동 저장이 모두 삭제됩니다. 처음부터 다시 시작할까요?'))return;
+  careerArchivePreviousSave();
   suppressRunSaving=true;
   clearRunSave();
   location.reload();
 }
+// ===== 인물록 / 업적 / 출정 전적 (전투 밸런스와 분리된 기록 시스템) =====
+const CAREER_SAVE_KEY='threeKingdomsBackpack_career_v1';
+const CAREER_MAX_HISTORY=20;
+let careerActiveRun=null;
+let careerView='roster',careerSelectedGeneral=null;
+function careerDefault(){return {version:1,generals:{},totals:{runs:0,battles:0,wins:0,losses:0,bossWins:0,kills:0,damage:0,clears:0,bestRound:0},clearedFactions:[],difficultyClears:[],difficultyStats:{},achievements:{},history:[]};}
+function careerRead(){
+  try{const d=JSON.parse(localStorage.getItem(CAREER_SAVE_KEY)||'null');
+    if(!d||d.version!==1||typeof d!=='object')return careerDefault();
+    const blank=careerDefault();return {...blank,...d,generals:d.generals&&typeof d.generals==='object'?d.generals:{},totals:{...blank.totals,...d.totals},clearedFactions:Array.isArray(d.clearedFactions)?d.clearedFactions:[],difficultyClears:Array.isArray(d.difficultyClears)?d.difficultyClears:(Number(d.totals?.clears)>0?['normal']:[]),difficultyStats:d.difficultyStats&&typeof d.difficultyStats==='object'?d.difficultyStats:{},achievements:d.achievements||{},history:Array.isArray(d.history)?d.history.slice(0,CAREER_MAX_HISTORY):[]};
+  }catch(e){console.warn('인물록 읽기 실패',e);return careerDefault();}
+}
+let careerState=careerRead();
+function careerPersist(){try{localStorage.setItem(CAREER_SAVE_KEY,JSON.stringify(careerState));return true;}catch(e){console.warn('인물록 저장 실패: 브라우저 저장공간 확인',e);return false;}}
+function careerSafeNum(n){return Number.isFinite(Number(n))?Math.max(0,Number(n)):0;}
+function careerGeneral(name){
+  if(!allGenerals.some(g=>g.name===name))return null;
+  if(!careerState.generals[name])careerState.generals[name]={seen:0,hired:0,battles:0,clears:0,kills:0,damage:0,bestBattleDamage:0};
+  return careerState.generals[name];
+}
+function careerSee(name){
+  if(restoringRun||!name)return;
+  const g=careerGeneral(name);if(g&&!g.seen){g.seen=1;careerCheckAchievements();careerPersist();}
+}
+function careerDiscoverVisibleShop(){
+ if(restoringRun)return;
+ let changed=false;
+ document.querySelectorAll('#shop-container .item').forEach(el=>{
+   if(el.style.display==='none')return;
+   const name=el.shopData?.type==='type-general'?el.shopData.name:null;
+   const g=name?careerGeneral(name):null;
+   if(g&&!g.seen){g.seen=1;changed=true;}
+ });
+ if(changed){careerCheckAchievements();careerPersist();}
+}
+function careerSeedLoadedRun(){
+ // 이전 버전의 이어하기 저장에서 현재 소지·상점 장수를 발견 처리한다 (과거 영입 횟수 추정 안 함).
+ let changed=false;
+ const names=new Set();
+ document.querySelectorAll('#shop-container .item').forEach(el=>{
+   if(el.style.display!=='none' && el.shopData?.type==='type-general')names.add(el.shopData.name);
+ });
+ document.querySelectorAll('#inventory-container .placed-item.type-general,#storage-container .placed-item.type-general,#combine-1 .placed-item.type-general,#combine-2 .placed-item.type-general').forEach(el=>{
+   if(el.itemData?.name)names.add(el.itemData.name);
+ });
+ for(const item of pendingRecruits||[])if(item?.name)names.add(item.name);
+ for(const name of names){const g=careerGeneral(name);if(g&&!g.seen){g.seen=1;changed=true;}}
+ if(changed){careerCheckAchievements();careerPersist();}
+}
+function careerHire(name){const g=careerGeneral(name);if(!g)return;g.seen=1;g.hired+=1;careerCheckAchievements();careerPersist();}
+function careerRunTemplate(faction,round=1){return {battleLog:[],id:'run_'+Date.now()+'_'+Math.random().toString(36).slice(2,9),faction:String(faction||'미확인'),createdAt:new Date().toISOString(),battles:0,wins:0,losses:0,kills:0,damage:0,bestRound:Math.max(0,careerSafeNum(round)-1),difficulty:activeDifficulty,heroStats:{}};}
+function careerNewRun(faction){careerActiveRun=careerRunTemplate(faction);careerState.totals.runs+=1;difficultyRecordFor(activeDifficulty).runs+=1;careerCheckAchievements();careerPersist();}
+function careerRestoreRun(saved,faction,round){
+  careerActiveRun=saved&&saved.id&&typeof saved==='object'?{...careerRunTemplate(faction,round),...saved,heroStats:saved.heroStats||{},battleLog:Array.isArray(saved.battleLog)?saved.battleLog.slice(-90):[]}:careerRunTemplate(faction,round);
+  // 기존 v3.1 저장에 기록 데이터가 없다면 이어하기 시점부터 기록을 시작한다.
+}
+function careerArchivePreviousSave(){
+ let r=careerActiveRun;
+ if(!r){try{const old=readRunSave();if(old){r=old.careerRun||careerRunTemplate(old.faction,old.currentBattleRound);}}catch(_){}}
+ if(r && r.id)careerFinalize('abandoned',r);
+}
+const CAREER_ACHIEVEMENTS=[
+ {id:'first_win',name:'첫 출정',desc:'전투에서 처음 승리',test:p=>p.totals.wins>=1},
+ {id:'meet_ten',name:'인재를 보는 눈',desc:'장수 10명 발견',test:p=>Object.values(p.generals).filter(g=>g.seen).length>=10},
+ {id:'hire_ten',name:'인재 등용',desc:'장수 10회 영입',test:p=>Object.values(p.generals).reduce((s,g)=>s+careerSafeNum(g.hired),0)>=10},
+ {id:'ten_wins',name:'백전연마',desc:'전투 누적 10승 달성',test:p=>p.totals.wins>=10},
+ {id:'one_hundred',name:'백인참',desc:'적군 누적 100명 처치',test:p=>p.totals.kills>=100},
+ {id:'clear_shu',name:'촉한의 의지',desc:'촉나라로 45번째 전투 클리어',test:p=>p.clearedFactions.includes('촉나라')},
+ {id:'clear_wei',name:'위왕의 패업',desc:'위나라로 45번째 전투 클리어',test:p=>p.clearedFactions.includes('위나라')},
+ {id:'clear_wu',name:'강동의 호랑이',desc:'오나라로 45번째 전투 클리어',test:p=>p.clearedFactions.includes('오나라')},
+ {id:'clear_all',name:'천하통일',desc:'위·촉·오 각 1회 클리어',test:p=>['위나라','촉나라','오나라'].every(f=>p.clearedFactions.includes(f))},
+ {id:'solo_boss',name:'불굴의 군세',desc:'보스전에서 아군 1명만 살아남아 승리',test:p=>p.totals.soloBossWins>0},
+ {id:'difficulty_warlord',name:'군웅 평정',desc:'군웅 난이도로 45전 클리어',test:p=>(p.difficultyClears||[]).includes('warlord')},
+ {id:'difficulty_overlord',name:'패왕의 길',desc:'패왕 난이도로 45전 클리어',test:p=>(p.difficultyClears||[]).includes('overlord')},
+ {id:'difficulty_heaven',name:'천하의 주인',desc:'천하 난이도로 45전 클리어',test:p=>(p.difficultyClears||[]).includes('heaven')}
+];
+function careerCheckAchievements(){
+ for(const a of CAREER_ACHIEVEMENTS)if(!careerState.achievements[a.id]&&a.test(careerState))careerState.achievements[a.id]=new Date().toISOString();
+}
+function careerRecordBattle(win){
+  if(!careerActiveRun)careerRestoreRun(null,document.getElementById('faction-title')?.textContent,currentBattleRound);
+  const run=careerActiveRun;
+  const dStats=difficultyRecordFor(run.difficulty);
+  const rows=Array.isArray(battleStatLastResult)?battleStatLastResult:[];
+  const round=Math.min(45,Number(currentBattleRound)||1);
+  const totalKills=rows.reduce((sum,r)=>sum+careerSafeNum(r.kills),0);
+  const totalDamage=rows.reduce((sum,r)=>sum+careerSafeNum(r.physical)+careerSafeNum(r.magic)+careerSafeNum(r.fixed),0);
+  run.battles++;run.wins+=win?1:0;run.losses+=win?0:1;run.kills+=totalKills;run.damage+=totalDamage;
+  if(win)run.bestRound=Math.max(run.bestRound,round);
+  careerState.totals.battles++;careerState.totals.wins+=win?1:0;careerState.totals.losses+=win?0:1;
+  dStats.battles++;dStats.wins+=win?1:0;dStats.losses+=win?0:1;
+  careerState.totals.kills+=totalKills;careerState.totals.damage+=totalDamage;
+  if(win)careerState.totals.bestRound=Math.max(careerState.totals.bestRound,round);
+  const node=mapData?.nodes?.find(n=>n.id===currentMapNodeId);
+  if(win&&(node?.type==='보스')){careerState.totals.bossWins++;if(lastPlayerTeam.filter(u=>u.hp>0).length===1)careerState.totals.soloBossWins=(careerState.totals.soloBossWins||0)+1;}
+  for(const row of rows){
+    const g=careerGeneral(row.name);if(!g)continue;
+    const damage=careerSafeNum(row.physical)+careerSafeNum(row.magic)+careerSafeNum(row.fixed);
+    g.seen=1;g.battles++;g.kills+=careerSafeNum(row.kills);g.damage+=damage;g.bestBattleDamage=Math.max(g.bestBattleDamage,damage);
+    const h=run.heroStats[row.name]||(run.heroStats[row.name]={battles:0,kills:0,damage:0});
+    h.battles++;h.kills+=careerSafeNum(row.kills);h.damage+=damage;
+  }
+  // v6: 전투당 가벼운 요약만 저장한다. 전체 로그와 적군 데이터는 저장하지 않는다.
+  const heroRows=rows.map(row=>({
+    name:String(row.name||''),kills:careerSafeNum(row.kills),
+    damage:careerSafeNum(row.physical)+careerSafeNum(row.magic)+careerSafeNum(row.fixed)
+  })).sort((a,b)=>b.damage-a.damage);
+  const bRecord={
+    round,win:!!win,at:new Date().toISOString(),boss:node?.type==='보스',
+    kills:totalKills,damage:totalDamage,
+    physical:rows.reduce((n,r)=>n+careerSafeNum(r.physical),0),
+    strategy:rows.reduce((n,r)=>n+careerSafeNum(r.magic),0),
+    fixed:rows.reduce((n,r)=>n+careerSafeNum(r.fixed),0),
+    taken:rows.reduce((n,r)=>n+careerSafeNum(r.taken),0),
+    healing:rows.reduce((n,r)=>n+careerSafeNum(r.healed),0),
+    survivors:Array.isArray(lastPlayerTeam)?lastPlayerTeam.filter(u=>u.hp>0).length:0,
+    deployed:Array.isArray(lastPlayerTeam)?lastPlayerTeam.length:0,
+    topHeroes:heroRows.slice(0,3)
+  };
+  if(!Array.isArray(run.battleLog))run.battleLog=[];
+  run.battleLog.push(bRecord);
+  if(run.battleLog.length>90)run.battleLog=run.battleLog.slice(-90);
+  careerCheckAchievements();careerPersist();
+}
+function careerFinalize(result,provided){
+ const r=provided||careerActiveRun;
+ if(!r||!r.id)return;
+ if(careerState.history.some(h=>h.id===r.id)){if(!provided)careerActiveRun=null;return;}
+ const item={...r,result,finishedAt:new Date().toISOString()};
+ careerState.history.unshift(item);careerState.history=careerState.history.slice(0,CAREER_MAX_HISTORY);
+ if(result==='clear'){
+  careerState.totals.clears++;
+  const clearedDifficulty=difficultyNormalize(r.difficulty);
+  if(!careerState.difficultyClears.includes(clearedDifficulty))careerState.difficultyClears.push(clearedDifficulty);
+  difficultyRecordFor(clearedDifficulty).clears++;
+  if(!careerState.clearedFactions.includes(r.faction))careerState.clearedFactions.push(r.faction);
+  for(const name of Object.keys(r.heroStats||{})){
+    // 최종전 참가자만 클리어 참가 기록에 표시한다.
+    if(!battleStatLastResult.some(b=>b.name===name))continue;
+    const g=careerGeneral(name);if(g)g.clears++;
+  }
+ }
+ careerCheckAchievements();careerPersist();
+ if(!provided||provided===careerActiveRun)careerActiveRun=null;
+}
+function careerEsc(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+function careerDate(value){const d=new Date(value);return Number.isFinite(d.getTime())?d.toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';}
+function careerN(value){return Math.round(careerSafeNum(value)).toLocaleString('ko-KR');}
+function careerTab(tab){careerView=tab;careerSelectedGeneral=null;careerRender();}
+function openCareer(tab='roster'){careerView=tab;careerSelectedGeneral=null;document.getElementById('career-modal').style.display='flex';careerRender();}
+function closeCareer(){document.getElementById('career-modal').style.display='none';}
+function careerRender(){
+ const root=document.getElementById('career-content');if(!root)return;
+ document.querySelectorAll('[data-career-tab]').forEach(b=>b.classList.toggle('on',b.dataset.careerTab===careerView));
+ if(careerView==='roster')careerRenderRoster();
+ else if(careerView==='achievements')careerRenderAchievements();
+ else if(careerView==='analysis')careerRenderAnalysis();
+ else if(careerView==='backup')careerRenderBackup();
+ else careerRenderHistory();
+}
+let careerRosterFaction='all',careerRosterFilter='all',careerRosterQuery='';
+function careerRosterFiltered(){return allGenerals.filter(g=>{
+ const found=!!careerState.generals[g.name]?.seen;
+ return (careerRosterFaction==='all'||String(g.faction).split(',').includes(careerRosterFaction)||(careerRosterFaction==='other'&&g.faction==='other'))
+ &&(careerRosterFilter==='all'||(careerRosterFilter==='seen'?found:!found))
+ &&(!careerRosterQuery|| (found&&g.name.includes(careerRosterQuery)));
+});}
+function careerRosterControls(){
+ const root=document.getElementById('career-content');
+ root.querySelector('#career-faction').value=careerRosterFaction;
+ root.querySelector('#career-filter').value=careerRosterFilter;
+ root.querySelector('#career-search').value=careerRosterQuery;
+}
+function careerRenderRoster(){
+ const found=allGenerals.filter(g=>careerState.generals[g.name]?.seen).length;
+ const root=document.getElementById('career-content');
+ root.innerHTML=`<div class="career-summary">발견 ${found} / ${allGenerals.length}명 · 상점에서 확인하면 발견, 보유하면 영입 기록이 남습니다. 새로운 게임을 시작해도 유지됩니다.</div>
+ <div class="career-toolbar"><select id="career-faction" aria-label="진영 선택" onchange="careerRosterFaction=this.value;careerRosterGrid()"><option value="all">모든 진영</option><option value="shu">촉</option><option value="wei">위</option><option value="wu">오</option><option value="other">기타</option></select><select id="career-filter" aria-label="발견 여부" onchange="careerRosterFilter=this.value;careerRosterGrid()"><option value="all">전체</option><option value="seen">발견</option><option value="hidden">미발견</option></select><input id="career-search" type="search" placeholder="발견한 장수 이름 검색" oninput="careerRosterQuery=this.value;careerRosterGrid()"></div>
+ <div id="career-roster-detail"></div><div class="career-grid" id="career-roster-grid"></div>`;
+ careerRosterControls();careerRosterGrid();
+}
+function careerRosterGrid(){
+ const root=document.getElementById('career-roster-grid');if(!root)return;
+ const names=careerRosterFiltered();
+ root.innerHTML=names.map(g=>{
+ const v=careerState.generals[g.name],seen=!!v?.seen;
+ return `<button type="button" class="career-general${seen?'':' locked'}" ${seen?`onclick="careerGeneralDetail('${careerEsc(g.name)}')"`:''}>
+ ${seen?portraitMarkup(g.name,false):'<div class="career-silhouette">?</div>'}
+ <div class="career-general-name">${seen?careerEsc(g.name):'???'}</div><div class="career-general-meta">${seen?careerEsc(g.tier)+' · '+careerEsc(g.faction):'미발견'}</div></button>`;
+ }).join('')||'<p class="career-summary">표시할 장수가 없습니다.</p>';
+ const detail=document.getElementById('career-roster-detail');if(detail)detail.innerHTML='';
+}
+function careerGeneralDetail(name){
+ const g=allGenerals.find(x=>x.name===name),r=careerState.generals[name];if(!g||!r?.seen)return;
+ const role=recommendGeneralRole({stats:{...g,skills:[{isUnique:true,name:uniqueSkillsData[name]?.[1]||'',type:uniqueSkillsData[name]?.[2]||'',power:uniqueSkillsData[name]?.[3]||0,desc:uniqueSkillsData[name]?.[5]||''}]}});
+ const skill=uniqueSkillsData[name]||[];
+ const root=document.getElementById('career-roster-detail');
+ root.innerHTML=`<div class="career-panel-card"><h3>${careerEsc(name)} [${careerEsc(g.tier)}]</h3>
+ <div class="career-summary">${careerEsc(role.place)} 추천 · ${careerEsc(role.role)} | 통솔 ${g.cmd} · 무력 ${g.force} · 지력 ${g.intel} · 정치 ${g.pol} · HP ${g.hp}</div>
+ <div class="career-summary">고유기술: ${careerEsc(skill[1]||'미확인')} — ${careerEsc(skill[5]||'')}</div>
+ <div class="career-metrics"><div class="career-metric">영입<strong>${careerN(r.hired)}회</strong></div><div class="career-metric">전투 참여<strong>${careerN(r.battles)}회</strong></div><div class="career-metric">누적 피해<strong>${careerN(r.damage)}</strong></div><div class="career-metric">최대 단일전투 피해<strong>${careerN(r.bestBattleDamage)}</strong></div><div class="career-metric">누적 처치<strong>${careerN(r.kills)}명</strong></div><div class="career-metric">최종전 참가 클리어<strong>${careerN(r.clears)}회</strong></div></div>
+ <button class="career-return" onclick="document.getElementById('career-roster-detail').innerHTML=''">닫기</button></div>`;
+ root.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function careerRenderAchievements(){
+ const root=document.getElementById('career-content');const count=CAREER_ACHIEVEMENTS.filter(a=>careerState.achievements[a.id]).length;
+ root.innerHTML=`<p class="career-summary">획득 ${count} / ${CAREER_ACHIEVEMENTS.length}개 · 현재 업적은 칭호와 수집 기록이며 전투 수치를 올리지 않습니다.</p>`+
+ CAREER_ACHIEVEMENTS.map(a=>{const got=careerState.achievements[a.id];return `<div class="career-achievement${got?'':' locked'}"><div class="medal">${got?'🏅':'🔒'}</div><div><strong>${careerEsc(a.name)}</strong><small>${careerEsc(a.desc)}</small><small>${got?'획득 '+careerDate(got):'미달성'}</small></div></div>`;}).join('');
+}
+function careerHistoryCard(run,current=false){
+ const heroes=Object.entries(run.heroStats||{}).sort((a,b)=>careerSafeNum(b[1].damage)-careerSafeNum(a[1].damage));
+ const title=run.result==='clear'?'🏆 천하통일':run.result==='defeat'?'💀 게임 오버':run.result==='abandoned'?'출정 중단':'진행 중';
+ return `<div class="career-panel-card"><h3>${title} · ${careerEsc(run.faction)} · ${careerEsc(difficultyConfig(run.difficulty).name)}</h3><div class="career-summary">${careerDate(run.createdAt)} 출정 ${current?'(진행 중)': '· 종료 '+careerDate(run.finishedAt)}</div>
+ <div class="career-metrics"><div class="career-metric">최고 클리어 라운드<strong>${careerN(run.bestRound)} / 45</strong></div><div class="career-metric">전투 승리 / 패배<strong>${careerN(run.wins)} / ${careerN(run.losses)}</strong></div><div class="career-metric">누적 처치<strong>${careerN(run.kills)}</strong></div><div class="career-metric">누적 피해<strong>${careerN(run.damage)}</strong></div></div>
+ ${heroes.length?`<div class="career-summary">이번 출정 활약 장수</div>`+heroes.slice(0,3).map(([name,s])=>`<div class="career-hero-line">${portraitMarkup(name,false)}<div style="flex:1">${careerEsc(name)}<br><span style="color:#adbdcb">피해 ${careerN(s.damage)} · 처치 ${careerN(s.kills)} · 참가 ${careerN(s.battles)}전</span></div></div>`).join(''):'<div class="career-summary">아직 전투 기록이 없습니다.</div>'}
+ </div>`;
+}
+function careerRenderHistory(){
+ const p=careerState;
+ const root=document.getElementById('career-content');
+ const diffRows=DIFFICULTY_LEVELS.map(d=>{const x=p.difficultyStats?.[d.id]||difficultyRecordBlank();return `<tr><td>${d.name}</td><td>${careerN(x.runs)}</td><td>${careerN(x.wins)} / ${careerN(x.battles)}</td><td>${careerN(x.clears)}</td></tr>`;}).join('');
+ const diffTable=`<div class="career-summary">난이도별 기록 (v5 이후 집계)</div><table class="difficulty-record-table"><thead><tr><th>난이도</th><th>출정</th><th>전투 승리 / 총 전투</th><th>클리어</th></tr></thead><tbody>${diffRows}</tbody></table>`;
+ root.innerHTML=`<div class="career-metrics"><div class="career-metric">누적 출정<strong>${careerN(p.totals.runs)}회</strong></div><div class="career-metric">천하통일<strong>${careerN(p.totals.clears)}회</strong></div><div class="career-metric">누적 전투 승리<strong>${careerN(p.totals.wins)}회</strong></div><div class="career-metric">최고 클리어 라운드<strong>${careerN(p.totals.bestRound)} / 45</strong></div></div><p class="career-summary">최근 완료·중단 출정 20판까지 보관합니다. v3.1 이전 전투는 소급 집계하지 않습니다.</p>`+
+ (careerActiveRun?careerHistoryCard(careerActiveRun,true):'')+
+ (p.history.length?p.history.map(x=>careerHistoryCard(x)).join(''):'<p class="career-summary">아직 종료된 출정 기록이 없습니다.</p>')+diffTable;
+}
+function careerEndScreen(result,detail){
+ document.getElementById('career-end-screen')?.remove();
+ const run=careerState.history[0]||{};
+ const box=document.createElement('div');box.id='career-end-screen';
+ box.innerHTML=`<div class="career-panel-card"><h1>${result==='clear'?'🏆 천하 통일!':'💀 게임 오버'}</h1><p>${careerEsc(detail)}</p><p>${careerEsc(difficultyConfig(run.difficulty).name)} 난이도 · ${careerEsc(run.faction||'')}</p>
+ <div class="career-metrics"><div class="career-metric">전투 승리<strong>${careerN(run.wins)}회</strong></div><div class="career-metric">누적 피해<strong>${careerN(run.damage)}</strong></div><div class="career-metric">적 처치<strong>${careerN(run.kills)}명</strong></div><div class="career-metric">최고 라운드<strong>${careerN(run.bestRound)} / 45</strong></div></div>
+ <button class="career-entry" onclick="openCareer('history')">📜 출정 기록 보기</button> <button class="career-entry" onclick="location.reload()">시작 화면으로</button></div>`;
+ document.body.appendChild(box);
+}
+
+// ===== v6 · 전투 분석: v6 이후의 라운드별 기록, 전투 수치 불변 =====
+let careerAnalysisDifficulty='all';
+function careerAnalysisRuns(){
+ const runs=[...(careerActiveRun?[careerActiveRun]:[]),...careerState.history];
+ return runs.filter(r=>careerAnalysisDifficulty==='all'||difficultyNormalize(r.difficulty)===careerAnalysisDifficulty);
+}
+function careerRenderAnalysis(){
+ const root=document.getElementById('career-content');if(!root)return;
+ const runs=careerAnalysisRuns();
+ const records=runs.flatMap(r=>(Array.isArray(r.battleLog)?r.battleLog:[]).map(b=>({...b,difficulty:r.difficulty,faction:r.faction})));
+ const wins=records.filter(r=>r.win).length, losses=records.length-wins;
+ const avg=records.length?Math.round(records.reduce((n,r)=>n+careerSafeNum(r.damage),0)/records.length):0;
+ const heroTotals={};
+ for(const r of records)for(const h of r.topHeroes||[]){
+   if(!h||typeof h.name!=='string')continue;
+   const item=heroTotals[h.name]||(heroTotals[h.name]={damage:0,kills:0,appearances:0});
+   item.damage+=careerSafeNum(h.damage);item.kills+=careerSafeNum(h.kills);item.appearances++;
+ }
+ const lead=Object.entries(heroTotals).sort((a,b)=>b[1].damage-a[1].damage).slice(0,3);
+ const dmgTypes=[['물리',records.reduce((n,r)=>n+careerSafeNum(r.physical),0)],['책략',records.reduce((n,r)=>n+careerSafeNum(r.strategy),0)],['고정',records.reduce((n,r)=>n+careerSafeNum(r.fixed),0)]];
+ const sumTypes=dmgTypes.reduce((n,r)=>n+r[1],0);
+ const lossRounds=new Map();
+ for(const b of records)if(!b.win)lossRounds.set(b.round,(lossRounds.get(b.round)||0)+1);
+ const topLoss=[...lossRounds].sort((a,b)=>b[1]-a[1]||a[0]-b[0]).slice(0,5);
+ const recent=records.slice().sort((a,b)=>String(b.at||'').localeCompare(String(a.at||''))).slice(0,25);
+ root.innerHTML=`<div class="career-toolbar"><label for="career-analysis-diff">난이도</label><select id="career-analysis-diff" onchange="careerAnalysisDifficulty=this.value;careerRenderAnalysis()">
+ <option value="all">전체</option>${DIFFICULTY_LEVELS.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+ <p class="career-legend">v6 이후의 전투를 라운드별로 기록합니다. 최근 종료된 20회 출정과 진행 중인 출정을 기준으로 분석하며, 과거 버전 전투는 소급되지 않습니다. 패배 후 재도전은 각각 별도 전투로 셉니다.</p>
+ <div class="career-metrics"><div class="career-metric">기록된 전투<strong>${careerN(records.length)}회</strong></div><div class="career-metric">승률<strong>${records.length?Math.round(wins/records.length*100):0}%</strong></div><div class="career-metric">승리 / 패배<strong>${careerN(wins)} / ${careerN(losses)}</strong></div><div class="career-metric">평균 아군 피해<strong>${careerN(avg)}</strong></div></div>
+ <div class="career-panel-card"><h3>피해 유형 비중</h3>${dmgTypes.map(([label,value])=>`<div class="career-chart-row"><span>${label}</span><div class="career-chart-track"><div class="career-chart-fill" style="width:${sumTypes?Math.round(value/sumTypes*100):0}%"></div></div><span>${sumTypes?Math.round(value/sumTypes*100):0}%</span></div>`).join('')}</div>
+ <div class="career-panel-card"><h3>패배가 많았던 라운드</h3>${topLoss.length?topLoss.map(([round,n])=>`<div class="career-chart-row"><span>${careerN(round)}라운드</span><div class="career-chart-track"><div class="career-chart-fill" style="width:${Math.round(100*n/topLoss[0][1])}%"></div></div><span>${careerN(n)}회</span></div>`).join(''):'<p class="career-legend">현재 저장된 패배 기록이 없습니다.</p>'}</div>
+ <div class="career-panel-card"><h3>기여도가 높은 장수 (각 전투 상위 3명 기준)</h3>${lead.length?lead.map(([name,h],i)=>`<div class="career-hero-line"><strong>${i+1}. ${careerEsc(name)}</strong><span style="margin-left:auto">피해 ${careerN(h.damage)} · 처치 ${careerN(h.kills)}</span></div>`).join(''):'<p class="career-legend">아직 분석할 전투 기록이 없습니다.</p>'}<p class="career-legend">전투별 피해 상위 3명만 저장하므로 전체 장수 순위와는 다를 수 있습니다.</p></div>
+ <div class="career-panel-card"><h3>최근 전투 25회</h3>${recent.length?`<table class="career-analyze-table"><thead><tr><th>라운드</th><th>결과</th><th>피해</th><th>생존</th><th>최고 기여</th></tr></thead><tbody>${recent.map(b=>`<tr class="${b.win?'':'loss'}"><td>${careerN(b.round)}${b.boss?' ★':''}</td><td>${b.win?'승리':'패배'}</td><td>${careerN(b.damage)}</td><td>${careerN(b.survivors)}/${careerN(b.deployed)}</td><td>${careerEsc(b.topHeroes?.[0]?.name||'-')}</td></tr>`).join('')}</tbody></table>`:'<p class="career-legend">새 전투를 마치면 여기에 표시됩니다.</p>'}</div>
+ <div class="career-backup-actions"><button class="career-backup-action" onclick="exportCareerAnalysisCSV()">전투 기록 CSV 내보내기</button><button class="career-backup-action" onclick="careerTab('backup')">저장 백업·복원</button></div>`;
+ const select=document.getElementById('career-analysis-diff');if(select)select.value=careerAnalysisDifficulty;
+}
+function careerCSVCell(value){const str=String(value??'');return /[",\r\n]/.test(str)?'"'+str.replace(/"/g,'""')+'"':str;}
+function careerDownload(name,text,mime){
+ const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
+function exportCareerAnalysisCSV(){
+ const rows=careerAnalysisRuns().flatMap(r=>(r.battleLog||[]).map(b=>({faction:r.faction,difficulty:difficultyConfig(r.difficulty).name,...b})));
+ const header=['진영','난이도','날짜','라운드','보스전','결과','처치','물리 피해','책략 피해','고정 피해','총 피해','받은 피해','회복','생존','출전','최고 기여 장수'];
+ const body=rows.map(r=>[r.faction,r.difficulty,r.at,r.round,r.boss?'Y':'N',r.win?'승리':'패배',r.kills,r.physical,r.strategy,r.fixed,r.damage,r.taken,r.healing,r.survivors,r.deployed,r.topHeroes?.[0]?.name||''].map(careerCSVCell).join(','));
+ careerDownload('tkbb_battle_analysis_'+new Date().toISOString().slice(0,10)+'.csv','\uFEFF'+[header.map(careerCSVCell).join(','),...body].join('\r\n'),'text/csv;charset=utf-8');
+}
+
+// ===== v6 · 브라우저 저장 데이터의 JSON 백업과 복원 =====
+function careerRenderBackup(){
+ const root=document.getElementById('career-content');if(!root)return;
+ const saved=readRunSave();
+ root.innerHTML=`<div class="career-panel-card"><h3>내 게임 기록 백업</h3><p class="career-backup-note">현재 출정 저장과 장수 도감, 업적, 출정 전적, 난이도 해금 기록을 하나의 JSON 파일로 보관할 수 있어요.</p>
+ <p class="career-legend">현재 출정: ${saved?careerEsc(saved.faction)+' · '+careerEsc(difficultyConfig(saved.difficulty).name)+' · '+careerN(saved.currentBattleRound)+'라운드':'없음'}<br>영구 기록: ${careerN(careerState.totals.runs)}회 출정 · ${careerN(careerState.totals.clears)}회 클리어</p>
+ <div class="career-backup-actions"><button class="career-backup-action" onclick="exportCareerBackup()">JSON 백업 다운로드</button><button class="career-backup-action" onclick="chooseCareerBackupFile()">백업 파일 복원</button></div>
+ <p class="career-backup-note">복원하면 현재 저장된 모든 진행 데이터와 도감 기록을 백업 파일 내용으로 덮어씁니다. 복원 전 현재 기록을 먼저 백업해 두는 것을 권장해요.</p></div>
+ <div class="career-panel-card"><h3>브라우저 저장 주의</h3><p class="career-backup-note">게임 기록은 현재 기기의 브라우저 저장소에 남습니다. 사이트 데이터를 삭제하거나 다른 기기에서 접속하면 자동으로 이전 기록이 옮겨지지 않으므로, 기기를 바꾸기 전에 백업 파일을 보관해 주세요. 전투 진행 중에는 마지막 자동 저장 시점의 출정이 백업됩니다.</p></div>`;
+}
+function exportCareerBackup(){
+ if(typeof isBattleActive!=='undefined'&&!isBattleActive)saveRun();
+ careerPersist();
+ const obj={format:'tkbb-local-backup',version:1,exportedAt:new Date().toISOString(),run:readRunSave(),career:careerState};
+ careerDownload('tkbb_save_backup_'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(obj,null,2),'application/json;charset=utf-8');
+}
+function chooseCareerBackupFile(){const f=document.getElementById('career-backup-import');if(!f)return;f.value='';f.click();}
+function careerValidBackup(x){
+ if(!x||x.format!=='tkbb-local-backup'||x.version!==1)return false;
+ const c=x.career;if(!c||c.version!==1||!c.generals||typeof c.generals!=='object'||Array.isArray(c.generals)||!c.totals||!Array.isArray(c.history)||!Array.isArray(c.clearedFactions)||!c.achievements||typeof c.achievements!=='object')return false;
+ if(c.history.length>100||Object.keys(c.generals).length>300)return false;
+ const r=x.run;
+ if(r!==null&&r!==undefined){
+   if(r.version!==1||!['촉나라','위나라','오나라'].includes(r.faction))return false;
+   if(!Array.isArray(r.inventory)||![64,81].includes(r.inventory.length)||!Array.isArray(r.storage)||!Array.isArray(r.shop))return false;
+   if(!r.mapData||!Array.isArray(r.mapData.nodes))return false;
+ }
+ return true;
+}
+async function importCareerBackupFile(event){
+ const file=event.target.files?.[0];if(!file)return;
+ try{
+   if(file.size>6*1024*1024)throw new Error('6MB 이하의 백업 파일만 지원합니다.');
+   const obj=JSON.parse(await file.text());
+   if(!careerValidBackup(obj))throw new Error('이 게임에서 생성한 정상적인 v6 백업 파일이 아닙니다.');
+   if(!confirm('현재 출정·도감·업적·전적 데이터가 백업 시점으로 덮어써집니다. 복원할까요?'))return;
+   const oldRun=localStorage.getItem(RUN_SAVE_KEY),oldCareer=localStorage.getItem(CAREER_SAVE_KEY);
+   try{
+     const restoredCareer={...obj.career,history:obj.career.history.slice(0,CAREER_MAX_HISTORY)};
+     if(obj.run)localStorage.setItem(RUN_SAVE_KEY,JSON.stringify(obj.run));else localStorage.removeItem(RUN_SAVE_KEY);
+     localStorage.setItem(CAREER_SAVE_KEY,JSON.stringify(restoredCareer));
+   }catch(err){
+     try{if(oldRun===null)localStorage.removeItem(RUN_SAVE_KEY);else localStorage.setItem(RUN_SAVE_KEY,oldRun);
+         if(oldCareer===null)localStorage.removeItem(CAREER_SAVE_KEY);else localStorage.setItem(CAREER_SAVE_KEY,oldCareer);}catch(_){/* 최선 복구 */}
+     throw err;
+   }
+   suppressRunSaving=true;
+   alert('백업을 복원했습니다. 게임을 다시 불러옵니다.');
+   location.reload();
+ }catch(e){console.warn('백업 불러오기 실패',e);alert('백업 복원 실패: '+e.message);}
+ finally{event.target.value='';}
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('career-modal')?.style.display==='flex')closeCareer();});
+
 function beginSavedRun(){if(!currentFactionGenerals.length)showTitleScreen();}
 window.addEventListener('pagehide',saveRun);
 window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveRun();});

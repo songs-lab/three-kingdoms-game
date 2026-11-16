@@ -1,9 +1,11 @@
 // Game PWA cache version. Online navigation and executable data use network-first.
-const CACHE_NAME = "tk-front-collapse-title-20261105-v2";
+const CACHE_NAME = "tk-battle-national-enemies-21-30-v8";
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./scenario-engine.js",
+  "./branch-21-25.js",
+  "./branch-26-30.js",
   "./enemy_rounds_01_20.json",
   "./manifest.webmanifest",
   "./icons/icon-180.png",

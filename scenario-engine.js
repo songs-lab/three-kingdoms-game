@@ -99,6 +99,7 @@ function scenarioTakenModifier(defender,defTeam,atkTeam,kind,time){
             percent+=ef.value;
         }
     }
+    if(branchIsUnit(defender))return Math.max(0,1+percent/100)*branchDamageTakenModifier(defender,defTeam);
     return Math.max(0,1+percent/100);
 }
 function scenarioPutBuff(target, stat, amount, duration, time, sourceId, mode='up') {
@@ -130,7 +131,10 @@ function scenarioGuardHealing(unit){
 }
 function scenarioEffectApply(effect, caster, target, time, sourceSkill, logParts){
     const who=effect.who==='self'?caster:target;
+    if(!who || who.hp<=0)return;
+    if(!Array.isArray(who.buffs))who.buffs=[];
     const origin=sourceSkill.id;
+    if(branchApplyEffect(effect,caster,who,time,sourceSkill,logParts))return;
     if(effect.type==='stat'){
         scenarioPutBuff(who,effect.stat,effect.delta,effect.duration,time,origin);
         logParts.push(`[${who.name} ${effect.stat} ${effect.delta>0?'+':''}${effect.delta}]`);
@@ -149,6 +153,7 @@ function scenarioEffectApply(effect, caster, target, time, sourceSkill, logParts
             logParts.push(`[${who.name} 쿨타임 +${effect.value}초]`);
         }
     } else if(effect.type==='no_heal'){
+        scenarioGuardHealing(who);
         if(!who.buffs.some(b=>b.stat==='scenario_no_heal'))who.buffs.push({stat:'scenario_no_heal',source:'scenario:'+origin,expireTime:999});
         logParts.push(`[${who.name} 회복 불가]`);
     } else if(effect.type==='next_damage_down'){
@@ -174,6 +179,7 @@ function scenarioEffectApply(effect, caster, target, time, sourceSkill, logParts
     }
 }
 function scenarioSkillTargets(caster,skill,allies,enemies){
+    if(branchIsUnit(caster)){const assigned=branchSkillTarget(caster,skill,allies,enemies);if(assigned)return assigned;}
     const t=skill.target;
     if(t==='self')return [caster];
     if(t==='ally_all')return [...allies];
@@ -198,12 +204,13 @@ function scenarioOnHitTrait(caster,target,allies,enemies,skill,time){
         }
     }
 }
-function scenarioOnDeathTrait(deadUnit){
+function scenarioOnDeathTrait(deadUnit,gameTime){
+    branchOnDeath(deadUnit,currentEnemyTeam,gameTime);
     const allies=deadUnit.id?.startsWith('e_')?currentEnemyTeam:lastPlayerTeam;
     const enemies=deadUnit.id?.startsWith('e_')?lastPlayerTeam:currentEnemyTeam;
     const enemyDied=deadUnit.id?.startsWith('p_');
     for(const caster of scenarioAlive(currentEnemyTeam)){
-        if(!caster.scenarioTrait)return;
+        if(!caster.scenarioTrait)continue;
         const tr=caster.scenarioTrait;
         if(tr.trigger.type!==(enemyDied?'on_enemy_defeat':'on_ally_defeat'))continue;
         const stat=SCENARIO_STATS[tr.effects?.[0]?.stat];if(!stat)continue;
@@ -231,13 +238,14 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
     if(!original || unit.hp<=0)return 0;
     const targetList=scenarioSkillTargets(unit,original,allies,enemies);
     if(!targetList.length)return 0;
-    const support=['ally_all','ally_lowest_hp_ratio','self'].includes(original.target);
+    const support=['ally_all','ally_front_all','ally_lowest_hp_ratio','self'].includes(original.target);
     const kind=original.type==='물리'?'physical':original.type==='책략'?'strategy':'fixed';
     const rowAOE=targetList.length>1;
     const rowAOEMult=({1:1,2:.90,3:.80,4:.70,5:.65})[Math.min(5,targetList.length)]||1;
     let gold=0;const logs=[];
     addLog(`[${unit.name}] 고유 기술 [${original.name}] 발동!`,support?'log-buff':'log-skill');
     showUniqueSkillBanner(unit,{name:original.name,isUnique:true});
+    if(support)battleFXSupport(unit,targetList,original);
     let hitOnceUsed=false;
     for(let strike=0;strike<(support?1:Math.max(1,original.attackCount||1));strike++){
         for(const target of targetList){
@@ -252,7 +260,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             const traitHit=scenarioAttackModifier(unit,target,allies,enemies,kind,time,'accuracy_points');
             const hitRate=Math.min(100,Math.max(20,original.acc+atkHit+traitHit-defDodge));
             if(Math.random()*100>=hitRate){
-                battleFXHit(unit,target,0,original.type,false,true);
+                battleFXHit(unit,target,0,original.type,false,true,original.name);
                 if(isPlayableUnit(target)&&target.name==='공손찬'&&unit.hp>0){
                     const targetTeam=playerTeam.includes(unit)?playerTeam:enemyTeam;
                     let reflect=immuneToPlayerFixedDamage(unit,targetTeam,'고정피해')?0:20;
@@ -276,6 +284,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             if(crit&&(target.buffs.some(b=>b.stat==='anti_crit')||['허저','하후상'].includes(target.name)||(target.name==='고순'&&!isPlayableUnit(target))))crit=false;
             if(crit)val*=1.3;
             val*=1+scenarioAttackModifier(unit,target,allies,enemies,kind,time,'final_damage_pct')/100;
+            if(branchIsUnit(unit))val*=1+branchAttackModifier(unit,target,allies,kind)/100;
             const buffs=unit.buffs;
             for(let i=buffs.length-1;i>=0;i--){
                 const b=buffs[i];
@@ -319,6 +328,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             let damage=Math.max(0,Math.min(300,Math.floor(val)));
             if(kind==='fixed'&&immuneToPlayerFixedDamage(target,enemies,'고정피해'))damage=0;
             damage=playableLeathalGuard(target,damage,time);
+            damage=branchAbsorbShield(target,damage,time);
             target.hp=Math.max(0,target.hp-damage);
             if(target.hp>0)triggerGuoHuaiPassive(target,time);
             unit.totalDamage=(unit.totalDamage||0)+damage;
@@ -331,7 +341,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
                 if(reflected){target.totalDamage=(target.totalDamage||0)+reflected;logs.push(`[전위 반격 ${reflected}]`);}
                 if(unit.hp<=0)gold+=processKillEvents(target,unit,playerTeam,enemyTeam,time);
             }
-            battleFXHit(unit,target,damage,original.type,crit);
+            battleFXHit(unit,target,damage,original.type,crit,false,original.name);
             scenarioHealthBar(target);
             logs.push(`[${target.name} ${damage} 피해${crit?' 치명타':''}]`);
             scenarioOnHitTrait(unit,target,allies,enemies,original,time);
@@ -339,6 +349,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             if(!hitOnceUsed){for(const ef of original.runtimeEffects||[])if(ef.phase==='hit_once')scenarioEffectApply(ef,unit,target,time,original,logs);hitOnceUsed=true;}
             if(target.hp<=0){
                 gold+=processKillEvents(unit,target,enemyTeam,playerTeam,time);
+                branchOnKill(unit,time);
                 for(const ef of original.runtimeEffects||[])if(ef.phase==='kill')scenarioEffectApply(ef,unit,unit,time,original,logs);
             }
             if(!scenarioAlive(playerTeam).length || forcedScenarioVictory)break;
