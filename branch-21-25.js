@@ -22,7 +22,7 @@ const BRANCH_21_25 = {
     25:{title:'강하 원수 토벌 — 황조 본진',front:[['감녕(강하)','S'],['문빙','A'],['소비','B']],rear:[['황조','SS'],['채모','A'],['장윤','B']]}
   }
 };
-const BRANCH_21_25_HP = {B:115,A:150,S:190,SS:245};
+const BRANCH_21_25_HP = {B:115,A:150,S:190,SS:245,SSS:300};
 const BRANCH_MINOR_SKILLS = {
  '누반':['오환 협공','물리','front_first',42], '원상':['원씨의 반격','물리','rear_first',45], '원희':['원씨 지원사격','책략','front_first',33],
  '왕위':['양양 방어','물리','front_first',34], '채모':['수군 지휘검','책략','front_first',37], '장윤':['수군 견제','물리','front_first',34], '괴월':['호족 계략','책략','front_first',40],
@@ -83,7 +83,7 @@ function createBranchEnemies(round,faction=branchPlayerKey()){
    const baseName=name.replace(/\([^)]*\)$/,'');
    const general=allGenerals.find(g=>g.name===baseName);
    const plan=BRANCH_MAJOR[branchKey(faction,round,name)]||branchDefaultPlan(name,row);
-   const baseStats={B:[70,65,58,52],A:[82,78,74,68],S:[92,88,83,78],SS:[98,93,97,90]}[tier];
+   const baseStats={B:[70,65,58,52],A:[82,78,74,68],S:[92,88,83,78],SS:[98,93,97,90],SSS:[100,98,100,95]}[tier];
    const cmd=general?.cmd??baseStats[0],force=general?.force??baseStats[1],intel=general?.intel??baseStats[2],pol=general?.pol??baseStats[3];
    const k={...plan.s,id:`branch_skill:${faction}:${round}:${name}`,isUnique:true,target:plan.s.range.startsWith('ally_')?plan.s.range:'enemy_single',desc:plan.s.name+' — '+plan.t[1],runtimeEffects:plan.s.effects||[]};
    const trait={id:`branch_trait:${faction}:${round}:${name}`,name:plan.t[0],description:plan.t[1],trigger:{type:'passive'},conditions:[],effects:[]};
@@ -94,6 +94,7 @@ function createBranchEnemies(round,faction=branchPlayerKey()){
      skills:[{name:k.name,type:k.type,power:k.power,acc:k.acc,target:k.target,attackCount:1}],
      bounty:{B:1,A:2,S:3,SS:4}[tier]||0};
  });
+ restorationApplyBranchTeam(team,round,faction);
  return {team,title:config.title,listStr:`[${config.title}]  전열: ${config.front.map(([n,t])=>`[${t}] ${n}`).join(', ')}  /  후열: ${config.rear.map(([n,t])=>`[${t}] ${n}`).join(', ')}`};
 }
 function branchHydrateSavedEnemies(team,round,faction=branchPlayerKey()){
@@ -101,9 +102,11 @@ function branchHydrateSavedEnemies(team,round,faction=branchPlayerKey()){
  team.forEach((unit,i)=>{
    const standard=generated.team[i];if(!standard)return;
    const retainedHp=Number.isFinite(unit.battleRemainingHp)?unit.battleRemainingHp:null;
+    const retainedCommons=Array.isArray(unit.restorationCommonNames)?unit.restorationCommonNames.slice():null;
    // 해당 라운드의 확정 기술과 대형을 복원. 재도전의 잔존 HP는 유지한다.
    Object.assign(unit,standard);
-   if(retainedHp!==null)unit.battleRemainingHp=Math.max(0,Math.min(standard.maxHp,retainedHp));
+   if(retainedCommons){unit.restorationCommonNames=retainedCommons;unit.skills=[unit.scenarioSkill,...restorationPickCommonSkills(unit.tier,retainedCommons)];}
+    if(retainedHp!==null)unit.battleRemainingHp=Math.max(0,Math.min(standard.maxHp,retainedHp));
  });
 }
 function branchCount(team){return (team||[]).filter(u=>u?.hp>0&&!u.isDead).length;}
@@ -164,13 +167,15 @@ function branchGrantShield(target,pct,duration,time,source){
 // 위 전투 엔진과 일반 장수 엔진 모두 동일하게 보호막을 소모한다.
 function branchAbsorbShield(unit,damage,time){
  if(!unit||damage<=0)return damage;
- let remaining=damage;
- for(const buff of (unit.buffs||[])){
+  let remaining=damage;
+  const hadChencang=(unit.buffs||[]).some(b=>b.stat==='branch_shield'&&b.source==='v15:haozhao'&&b.amount>0);
+  for(const buff of (unit.buffs||[])){
    if(buff.stat!=='branch_shield'||buff.expireTime<=time||remaining<=0)continue;
    const blocked=Math.min(remaining,Math.max(0,buff.amount));buff.amount-=blocked;remaining-=blocked;
  }
- unit.buffs=(unit.buffs||[]).filter(b=>b.stat!=='branch_shield'||b.amount>0);
- return remaining;
+  unit.buffs=(unit.buffs||[]).filter(b=>b.stat!=='branch_shield'||b.amount>0);
+  if(hadChencang&&!unit.buffs.some(b=>b.stat==='branch_shield'&&b.source==='v15:haozhao'))restorationTacticShieldBroken(unit,null,time);
+  return remaining;
 }
 function branchApplyEffect(effect,caster,target,time,origin,logs){
  if(!effect)return false;

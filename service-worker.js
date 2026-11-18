@@ -1,11 +1,14 @@
 // Game PWA cache version. Online navigation and executable data use network-first.
-const CACHE_NAME = "tk-battle-national-enemies-21-30-v8";
+const CACHE_NAME = "tk-battle-restored-1-45-v15";
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./scenario-engine.js",
   "./branch-21-25.js",
   "./branch-26-30.js",
+  "./enemy-v15-data.js",
+  "./enemy-v15-tactics.js",
+  "./enemy-v15-engine.js",
   "./enemy_rounds_01_20.json",
   "./manifest.webmanifest",
   "./icons/icon-180.png",

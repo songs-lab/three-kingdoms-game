@@ -1076,8 +1076,8 @@ button { cursor: pointer; }
 
 <div id="clinic-screen" style="display:none; flex-direction:column; align-items:center; justify-content:center; height:100dvh; background-color:#27ae60; color: white;">
     <h2 style="color: #f1c40f;">🏥 의원</h2>
-    <p style="margin-bottom: 30px; font-size: 14px; text-align:center;">상처를 치료할 수 있습니다.<br>보유한 모든 장수의 체력을 최대로 회복합니다.</p>
-    <button onclick="executeClinicHeal()" style="padding:15px 30px; font-size:18px; font-weight:bold; background-color: #f1c40f; color: #2c3e50; border: none; border-radius: 8px; margin-bottom:15px;">전체 회복 및 복귀</button>
+    <p style="margin-bottom: 30px; font-size: 14px; text-align:center;">상처를 치료할 수 있습니다.<br>생존한 장수마다 최대 체력의 20%를 회복합니다.</p>
+    <button onclick="executeClinicHeal()" style="padding:15px 30px; font-size:18px; font-weight:bold; background-color: #f1c40f; color: #2c3e50; border: none; border-radius: 8px; margin-bottom:15px;">체력 20% 회복 및 복귀</button>
     <button onclick="executeClinicHerb()" style="padding:13px 25px; font-size:16px; font-weight:bold; background:#e8f5e9;color:#174a2a;border:2px solid #f1c40f;border-radius:8px;margin-bottom:12px;">🌿 무작위 약초 받기</button>
     <p id="clinic-herb-info" style="font-size:13px;text-align:center;margin:0 20px 14px;line-height:1.6;">마비산 · 천궁 · 오석산 중 하나를 받습니다.<br>한 종류만 보관하며 다음 전투 종료 시 사라집니다.</p>
     <button onclick="goToMap()" style="padding:10px 20px; font-size:14px; background-color: #2c3e50; color: white; border: 2px solid #f1c40f; border-radius: 5px;">치료 없이 돌아가기</button>
@@ -1105,6 +1105,9 @@ button { cursor: pointer; }
 <script src="./scenario-engine.js"></script>
 <script src="./branch-21-25.js"></script>
 <script src="./branch-26-30.js"></script>
+<script src="./enemy-v15-data.js"></script>
+<script src="./enemy-v15-tactics.js"></script>
+<script src="./enemy-v15-engine.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
     ['./MAIN.png', './FIGHT.png'].forEach(url => {
@@ -1460,7 +1463,7 @@ function generateSkillsForGeneral(name, tier, force, intel) {
 }
 
 const rawDB = [
-    ["A","유비",75,73,74,78,150,0,0,5,1,3,"회피 +10, 자신을 제외한 아군 전체를 4초마다 최대 HP의 10% 회복.","shu"],
+    ["A","유비",75,73,74,78,150,0,0,5,2,2,"회피 +10, 자신을 제외한 아군 전체를 4초마다 최대 HP의 10% 회복.","shu"],
     ["SS","관우",95,97,75,62,200,0,0,4,4,4,"물리 스킬 사용 시 상대 통솔을 100% 무시, 상대 스킬/특성으로 자신의 무력이 떨어지지 않는다","shu"],
     ["SS","장비",85,98,30,22,230,0,0,4,4,4,"자신보다 체력이 낮은 적에게 물리 피해 +30%, 물리 피해를 입힐 때마다 치명타 확률 1% 상승","shu"],
     ["S","조운",91,96,76,65,180,0,0,2,3,3,"체력이 50% 이하가 되면 회피 +25, 물리 스킬 최종 피해 +15%","shu"],
@@ -1486,7 +1489,7 @@ const rawDB = [
     ["C","장억",79,72,74,77,80,0,0,10,1,1,"자신보다 체력이 높은 적에게 받는 피해 5% 감소","shu"],
     ["B","이엄",83,84,75,74,100,0,0,6,1,1,"체력이 70% 이상일 때 통솔 +5, 정치 +5","shu"],
     ["C","이회",79,65,78,77,80,0,0,10,1,1,"책략 스킬 적중 시 대상의 현재 남은 쿨타임 1초 증가, 최대 10초","shu"],
-    ["A","비의",77,30,83,92,150,0,0,4,1,3,"자신이 생존하는 동안 아군 전체의 스킬 사용시간 0.5초 감소","shu"],
+    ["A","비의",77,30,83,92,150,0,0,4,2,2,"자신이 생존하는 동안 아군 전체의 스킬 사용시간 0.5초 감소","shu"],
     ["B","동윤",47,28,78,91,100,0,0,6,2,1,"자신의 정치가 상대보다 높을 경우 책략 기술 피해 +10%","shu"],
     ["C","맹획",76,87,42,45,140,0,0,10,1,1,"체력이 50% 이하가 되면 무력 +15, 전투당 1회","shu"],
     ["C","왕련",17,9,69,82,80,0,0,10,1,1,"자신이 생존하는 동안 아군이 스킬을 사용할 때마다 체력 1% 회복","shu"],
@@ -1555,7 +1558,7 @@ const rawDB = [
     ["B","고순",85,86,55,46,130,0,0,8,1,1,"자신의 통솔·무력·지력·정치는 적의 약화 효과로 감소하지 않음.","other"],
     ["C","진궁",78,55,89,83,80,0,0,8,1,1,"자신 생존 시 무력이 90 이상인 아군의 체력을 4초에 1번 10% 회복","other"],
 ["B","공손찬",84,83,70,46,110,0,0,7,2,2,"적의 공격을 회피하면 해당 공격자에게 고정피해 20 반사.","shu"],
-["C","미축",33,29,77,83,80,0,0,10,1,3,"자신이 해당 전투에 참여하여 승리 시 추가 금화 +3 획득","shu"],
+["C","미축",33,29,77,83,80,0,0,10,2,2,"자신이 해당 전투에 참여하여 승리 시 추가 금화 +2 획득","shu"],
 ["B","원술",44,65,61,16,110,0,0,6,2,2,"자신의 HP가 50% 초과라면 모든 최종 피해 +15%, HP가 50% 이하라면 받는 모든 최종 피해 +10%","other"],
 ["A","원소",81,69,70,73,140,0,0,5,3,2,"아군 생존자가 3명 이상이면 아군 전체 모든 최종 피해 +10%. 원소가 생존해 있을 때만 적용","other"],
 ["B","문추",78,94,25,25,120,0,0,6,2,2,"자신의 HP가 100 이상일 때 최종 물리 피해 +15%. 아군에 안량이 있을 경우 최대 체력 +10","shu,wei"],
@@ -2436,12 +2439,15 @@ function showBattleModal(nodeType, targetNode) {
         targetNode.enemyListStr = generated.listStr;
     }
 
+    if (!isBonusBattle && storyRound>=1 && storyRound<=20) restorationApplyScenarioTeam(targetNode.enemyTeam,storyRound);
     currentEnemyTeam = targetNode.enemyTeam;
     const isBossDifficulty=!isBonusBattle&&(nodeType==='보스'||storyRound%5===0||currentEnemyTeam.some(u=>u.isBossSSS));
     const dcfg=difficultyConfig(),hpBonus=dcfg.enemyHp+(isBossDifficulty?dcfg.bossExtraHp:0);
     const diffNote=document.getElementById('difficulty-encounter-note');
     if(diffNote)diffNote.textContent=`${dcfg.name} 난이도 · 적 최대 HP +${hpBonus}%`;
     if (!isBonusBattle) scenarioHydrateSavedEnemies(currentEnemyTeam, storyRound);
+    if (!isBonusBattle && storyRound<=20) restorationApplyScenarioTeam(currentEnemyTeam,storyRound);
+    if (!isBonusBattle && branchSetup) document.getElementById('enemy-desc').textContent=currentEnemyTeam.filter(e=>e.restorationTactic).map(e=>`${e.name}: ${e.restorationTactic.counter}`).slice(0,3).join(' · ');
 
     document.getElementById('enemy-list').innerText =
         targetNode.enemyListStr;
@@ -2843,6 +2849,7 @@ battleSpeedMulti = battleSpeedLoad();
     
     applyClinicHerbAtBattleStart(playerTeam,currentEnemyTeam);
     branchOnBattleStart(currentEnemyTeam,playerTeam);
+    restorationTacticStart(currentEnemyTeam,playerTeam);
     renderBattleUnits('player-battle-board', playerTeam, "내 배낭 진영"); 
     renderBattleUnits('enemy-battle-board', currentEnemyTeam, "적군 진영"); 
     updateDamageMeters(playerTeam, currentEnemyTeam);
@@ -3413,6 +3420,7 @@ async function runATBSimulation(playerTeam, enemyTeam) {
                     }
 
                     if (u.scenarioTrait) scenarioPeriodicTrait(u,gameTime,currentSec);
+                    if(u.restorationTactic)restorationTacticTick(u,enemyTeam,playerTeam,gameTime,currentSec);
                     triggerGuoHuaiPassive(u,gameTime);
                     if (isPlayableUnit(u)&&u.name==='요화'&&!u.yohwaAwakened&&gameTime>=15) {
                         u.yohwaAwakened=true;
@@ -3486,6 +3494,7 @@ if (enemies.length === 0) break;
                 }
                 if (unit.scenarioSkill && allies.some(u=>u.enemyId==='enemy_variant:조조:관도' && u.hp>0)) maxCd=Math.max(1,maxCd-0.3);
                 maxCd = Math.max(1, Math.min(10, maxCd));
+                if(unit.restorationTactic) maxCd=Math.max(1,maxCd*restorationTacticCdMultiplier(unit,gameTime,allies));
                 if(branchIsUnit(unit)||unit.buffs?.some(b=>b.stat==='branch_attack_speed'&&b.expireTime>gameTime))maxCd=Math.max(1,maxCd*branchSpeedModifier(unit,allies,gameTime));
                 
                 if (typeof activeBondsInBattle !== 'undefined' && activeBondsInBattle.includes("형주공방전")) {
@@ -3506,9 +3515,7 @@ if (enemies.length === 0) break;
                 
                 // 고유 기술 유형별 봉쇄: 단일 기술만 보유한 적군은 남은 쿨타임을 그대로 정지한다.
                 // 복수 유형을 보유한 장수는 봉쇄되지 않은 다른 유형을 사용할 수 있다.
-                const lockedAllSkills=unit.scenarioSkill
-                    ? playableCooldownLock(unit,{type:unit.scenarioSkill.type},gameTime)
-                    : unit.skills.length>0 && unit.skills.every(sk=>playableCooldownLock(unit,sk,gameTime));
+                const lockedAllSkills=unit.skills.length>0 && unit.skills.every(sk=>playableCooldownLock(unit,sk,gameTime));
                 if(lockedAllSkills) continue;
                 unit.currentCooldown -= TICK_RATE; 
                 unit.currentCooldown = Math.round(unit.currentCooldown * 100) / 100;
@@ -3523,9 +3530,11 @@ if (enemies.length === 0) break;
                     let skill = {...availableSkills[Math.floor(Math.random() * availableSkills.length)]};
                     if(isPlayer&&!unit.scenarioSkill){const stat=battleStatFind(unit);if(stat)stat.skills++;}
                     if (unit.scenarioSkill) {
-                        if(playableCooldownLock(unit,{type:unit.scenarioSkill.type},gameTime)) { unit.currentCooldown=0.1;continue; }
+                        if(playableCooldownLock(unit,skill,gameTime)) { unit.currentCooldown=0.1;continue; }
                         if(isPlayer){const stat=battleStatFind(unit);if(stat)stat.skills++;}
-                        earnedBounty += scenarioExecuteSkill(unit,skill,allies,enemies,gameTime,playerTeam,enemyTeam);
+                        earnedBounty += skill.isUnique===false
+                          ? restorationExecuteCommonSkill(unit,skill,allies,enemies,gameTime,playerTeam,enemyTeam)
+                          : scenarioExecuteSkill(unit,skill,allies,enemies,gameTime,playerTeam,enemyTeam);
                         unit.buffs = unit.buffs.filter(b=>b.expireTime===undefined || b.expireTime>gameTime);
                         continue;
                     } 
@@ -4251,7 +4260,7 @@ const REWARD_DEFS = [
     {id:'heal',name:'전리품',desc:'생존한 모든 아군 체력 10% 회복'},
     {id:'recruit',name:'인재등용',desc:'전체 C등급 장수 중 무작위 1명 등용 (보관함 우선)'},
     {id:'treasure',name:'보물발견',desc:'미보유 C등급 보물 1개 발견 (선택지 출현 확률 5%)'},
-    {id:'gold',name:'금화발견',desc:'금화 3~8개 획득'},
+    {id:'gold',name:'금화발견',desc:'금화 2~4개 획득'},
     {id:'reroll',name:'상점 지원',desc:'상점 무료 리롤 2회 획득'},
     {id:'force',name:'무예 훈련',desc:'보유 무작위 장수 1명의 무력 영구 +5'},
     {id:'maxhp',name:'체력 훈련',desc:'보유 무작위 장수 1명의 최대 HP 영구 +10'},
@@ -4311,7 +4320,7 @@ function confirmRewardChoice(id) {
     } else if(id==='treasure') {
         const pool=treasureDB.filter(t=>t.tier==='C'&&!ownedTreasures.some(o=>o.name===t.name));
         if(pool.length){const t=pool[Math.floor(Math.random()*pool.length)];ownedTreasures.push(t);info=`${t.name} 획득`;renderOwnedTreasures();refreshDeploymentLimitUI();}
-    } else if(id==='gold') {const gold=3+Math.floor(Math.random()*6);playerGold+=gold;info=`금화 +${gold}`;}
+    } else if(id==='gold') {const gold=2+Math.floor(Math.random()*3);playerGold+=gold;info=`금화 +${gold}`;}
     else if(id==='reroll'){freeRerolls+=2;info='무료 리롤 +2회';}
     else if(id==='force'||id==='maxhp'||id==='intel'){
         if(owned.length){const el=owned[Math.floor(Math.random()*owned.length)];const d=el.itemData;
@@ -4429,11 +4438,11 @@ function returnToGame(isWin) {
         playerGold += baseGold + earnedBounty;
 
         if (lastPlayerTeam.some(u => u.name === "미축")) {
-            playerGold += 3;
+            playerGold += 2;
 
             setTimeout(() => {
                 alert(
-                    "💰 미축의 특성 발동! 승리 보상 금화 +3 획득!"
+                    "💰 미축의 특성 발동! 승리 보상 금화 +2 획득!"
                 );
             }, 200);
         }
@@ -4500,7 +4509,7 @@ function returnToGame(isWin) {
 
 // 지도 노드 등장 비율: 전투 50%, 사건 20%, 보물 10%, 의원 20%.
 // 맵 한 장의 확정 개수가 아니라 각 노드의 무작위 등장 확률이다.
-const MAP_NODE_DISTRIBUTION_VERSION = 2;
+const MAP_NODE_DISTRIBUTION_VERSION = 3;
 function rollMapNodeType() {
  const roll = Math.random();
  return roll < 0.50 ? '일반 전투' :
@@ -4520,6 +4529,7 @@ function generateMap() {
      // 마지막 층은 전투를 보장하되 중간 층은 요청 비율로 무작위 생성한다.
      let type=stage===length?'일반 전투':rollMapNodeType();
      if(type==='사건' && eventStreak>=2)type='일반 전투';
+     if(type==='보물')type='일반 전투'; // 보물은 경로 생성 후 지도당 1~2개 배치
      const id=`s${stage}_l${lane}`;
      mapData.nodes.push({id,stage,lane,type,state:'unvisited'});
      current.push({id,lane,type});
@@ -4536,8 +4546,17 @@ function generateMap() {
        mapData.edges.push({from:p.id,to:nearest.id});
      }
    }
-   eventStreak=current.every(n=>n.type==='사건')?eventStreak+1:0;
+   // 연결된 경로에서 의원→의원으로 이어지지 않도록 한다.
+   for(const n of current){const node=mapData.nodes.find(x=>x.id===n.id);
+     if(node.type==='의원' && mapData.edges.some(e=>e.to===n.id && mapData.nodes.find(x=>x.id===e.from)?.type==='의원'))node.type='일반 전투';
+   }
+   eventStreak=current.every(n=>mapData.nodes.find(x=>x.id===n.id)?.type==='사건')?eventStreak+1:0;
    previous=current;
+ }
+ const candidates=mapData.nodes.filter(n=>n.stage>0&&n.stage<length&&n.type==='일반 전투');
+ const target=1+(Math.random()<.5?0:1);
+ for(let i=0;i<target && candidates.length;i++){
+   const chosen=candidates.splice(Math.floor(Math.random()*candidates.length),1)[0];chosen.type='보물';
  }
 }
 // 기존 세이브를 계속 사용하되, 업데이트 전 생성됐던 남은 맵 노드만
@@ -4551,11 +4570,20 @@ function refreshSavedMapNodeDistribution() {
    const row=mapData.nodes.filter(n=>n.stage===stage);
    for(const node of row){
      if(node.state!=='unvisited')continue;
-     node.type=stage===MAP_STAGES?'일반 전투':rollMapNodeType();
+     node.type=stage===maxStage?'일반 전투':rollMapNodeType();
      if(node.type==='사건'&&eventStreak>=2)node.type='일반 전투';
+     if(node.type==='보물')node.type='일반 전투';
    }
-   eventStreak=row.length && row.every(n=>n.type==='사건')?eventStreak+1:0;
+   eventStreak=row.length&&row.every(n=>n.type==='사건')?eventStreak+1:0;
  }
+ const edges=mapData.edges||[];
+ for(const node of mapData.nodes.filter(n=>n.state==='unvisited').sort((a,b)=>a.stage-b.stage)){
+   if(node.type==='의원'&&edges.some(e=>e.to===node.id&&mapData.nodes.find(n=>n.id===e.from)?.type==='의원'))node.type='일반 전투';
+ }
+ const already=mapData.nodes.filter(n=>n.type==='보물').length;
+ const wanted=Math.max(0,(already>=1?already:1+(Math.random()<.5?0:1))-already);
+ const pool=mapData.nodes.filter(n=>n.state==='unvisited'&&n.stage>0&&n.stage<maxStage&&n.type==='일반 전투');
+ for(let i=0;i<wanted&&pool.length;i++)pool.splice(Math.floor(Math.random()*pool.length),1)[0].type='보물';
  mapData.distributionVersion=MAP_NODE_DISTRIBUTION_VERSION;
  return true;
 }
@@ -4587,7 +4615,8 @@ function advanceMapAfterVisit() {
  node.mapAdvanced=true;
  currentMapStage=Math.max(currentMapStage,node.stage);
  if(currentMapStage>=MAP_STAGES){
-   currentChapter++;
+   // 비전투 노드는 라운드를 소모하지 않으므로 지도 소진 때 전투 진도에 따라 장을 결정한다.
+   currentChapter=currentBattleRound>=41?3:currentBattleRound>=21?2:1;
    currentMapStage=0;currentMapNodeId='start';pendingMapNodeId=null;
    generateMap();
  }
@@ -4879,7 +4908,7 @@ function applyClinicHerbAtBattleStart(playerTeam,enemyTeam){
     addLog('🌿 [오석산] 아군 전체 HP -10(최소 1), 이번 전투 최종 피해 +5%!','log-skill');
   }
 }
-function executeClinicHeal() { let currNode = mapData.nodes.find(n => n.id === currentMapNodeId); if (currNode && currNode.state !== 'completed') { let healedCount = 0; document.querySelectorAll('.placed-item.type-general').forEach(el => { if (el.itemData && el.itemData.stats) { el.itemData.currentHp = el.itemData.stats.hp; healedCount++; } }); refreshGeneralHpBadges(); alert(`의원의 처방으로 생존 장수 ${healedCount}명의 체력이 최대로 회복되었습니다!`); currNode.state = 'completed'; } clearSelection(); updateBondUI(); goToMap(); }
+function executeClinicHeal() { let currNode = mapData.nodes.find(n => n.id === currentMapNodeId); if (currNode && currNode.state !== 'completed') { let healedCount = 0; document.querySelectorAll('.placed-item.type-general').forEach(el => { if (el.itemData && el.itemData.stats) { const d=el.itemData, max=d.stats.hp,prev=d.currentHp??max; if(prev>0){d.currentHp=Math.min(max,prev+Math.max(1,Math.floor(max*.20)));healedCount++;} } }); refreshGeneralHpBadges(); alert(`의원의 처방으로 생존 장수 ${healedCount}명이 최대 체력의 20%씩 회복했습니다!`); currNode.state = 'completed'; } clearSelection(); updateBondUI(); goToMap(); }
 
 
 // 15종 랜덤 사건. 사건 내용은 노드별로 최초 진입 시 확정하며 세이브 데이터에 포함된다.
@@ -4915,11 +4944,11 @@ function resolveStoryEvent(action){const node=mapData.nodes.find(n=>n.id===pendi
  const pay=(amount)=>{if(playerGold<amount){alert(`${amount}금화가 필요합니다. 현재 ${playerGold}금화입니다.`);return false;}playerGold-=amount;return true;};
  switch(action){
  case 'yellowGive':if(!pay(5))return;result=`5금화 지불. ${storyStat('cmd',10)||'대상 없음'} 통솔 +10`;break;
- case 'yellowAttack':storyChangeHp(-10,false);playerGold+=7;result='무작위 장수 체력 -10, 금화 +7';break;
+ case 'yellowAttack':storyChangeHp(-10,false);playerGold+=3;result='무작위 장수 체력 -10, 금화 +3';break;
  case 'smithTrade':if(!ownedTreasures.length){alert('교환할 보유 보물이 없습니다. 다른 선택지를 골라 주세요.');return;}if(!treasureDB.some(t=>t.tier==='A'&&!ownedTreasures.some(x=>x.name===t.name))){alert('발견 가능한 A등급 보물이 없습니다.');return;}const old=storyRandom(ownedTreasures);ownedTreasures=ownedTreasures.filter(x=>x!==old);const upgrade=storyGainTreasure(['A']);renderOwnedTreasures();result=`${old.name} 파괴, ${upgrade} 획득`;break;
  case 'doctorPay':if(!pay(5))return;if(Math.random()<.5){storyHealAll();result='화타의 특효약! 전체 체력 완전 회복';}else{storyChangeHp(-10);result='가짜 약이었다! 전체 체력 -10';}break;
- case 'depotFull':if(Math.random()<.5){playerGold+=15;result='물자 확보! 금화 +15';}else{storyChangeHp(-15);result='매복! 전체 체력 -15';}break;
- case 'depotQuick':{const roll=Math.random();if(roll<.8){playerGold+=8;result='금화 +8';}else if(roll<.9){storyChangeHp(-15);result='매복! 전체 체력 -15';}else{playerGold+=15;result='금화 +15';}break;}
+ case 'depotFull':if(Math.random()<.5){playerGold+=5;result='물자 확보! 금화 +5';}else{storyChangeHp(-15);result='매복! 전체 체력 -15';}break;
+ case 'depotQuick':{const roll=Math.random();if(roll<.8){playerGold+=4;result='금화 +4';}else if(roll<.9){storyChangeHp(-15);result='매복! 전체 체력 -15';}else{playerGold+=5;result='금화 +5';}break;}
  case 'horseRide':{const strongest=[...owned].sort((a,b)=>b.itemData.stats.force-a.itemData.stats.force)[0];if(!strongest){result='길들일 장수가 없다.';break;}const d=strongest.itemData;if(Math.random()<.5){d.currentHp=1;const horse=treasureDB.find(t=>t.name==='적토마');if(horse&&!ownedTreasures.some(t=>t.name==='적토마'))ownedTreasures.push(horse);result=`${d.name} 체력 1, 적토마 ${ownedTreasures.some(t=>t.name==='적토마')?'획득(보유)':'발견 실패'}`;}
  else{d.currentHp=Math.max(0,(d.currentHp??d.stats.hp)-20);result=`길들이기 실패! ${d.name} 체력 -20`;}refreshGeneralHpBadges();renderOwnedTreasures();break;}
   case 'sageTalk':{const name=storyStat('intel',5,false,d=>d.stats.intel>=90);result=name?`${name} 지력 +5`:'지력 90 이상인 무장이 없어 쫓겨났다.';break;}
@@ -4934,7 +4963,7 @@ function resolveStoryEvent(action){const node=mapData.nodes.find(n=>n.id===pendi
  case 'hutFall':storyHutProgress=Math.max(storyHutProgress,1);result='두 번째 방문, 「눈이 내리는 초가집」이 열렸습니다.';break;
  case 'hutSnow':storyHutProgress=Math.max(storyHutProgress,2);result='세 번째 방문, 「따뜻한 햇살의 초가집」이 열렸습니다.';break;
  case 'hutWait':storyHutProgress=3;result=storyRecruitZhuge();break;
- case 'gateEnter':{const roll=Math.random();if(roll<.3){storyChangeHp(-20);forceBattle=true;result='기습! 전체 체력 -20, 강제 전투가 시작됩니다.';}else if(roll<.6){result='아무 일도 일어나지 않았다.';}else{storyHealAll();playerGold+=10;result='주민들의 환영! 아군 전체 체력 완전 회복, 금화 +10';}break;}
+ case 'gateEnter':{const roll=Math.random();if(roll<.3){storyChangeHp(-20);forceBattle=true;result='기습! 전체 체력 -20, 강제 전투가 시작됩니다.';}else if(roll<.6){result='아무 일도 일어나지 않았다.';}else{storyHealAll();playerGold+=5;result='주민들의 환영! 아군 전체 체력 완전 회복, 금화 +5';}break;}
  default:break;
  }
  node.storyResolved=true;
@@ -5030,6 +5059,7 @@ function loadRun(){
    });
   };
   restore('inventory-container',data.inventory);restore('storage-container',data.storage);
+  restorationMigrateLegacyGeneralCards();
   resizeDeployedCards();
   document.getElementById('shop-container').innerHTML='';
   (data.shop||[]).forEach(renderSavedShopItem);

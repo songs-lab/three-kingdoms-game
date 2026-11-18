@@ -206,6 +206,7 @@ function scenarioOnHitTrait(caster,target,allies,enemies,skill,time){
 }
 function scenarioOnDeathTrait(deadUnit,gameTime){
     branchOnDeath(deadUnit,currentEnemyTeam,gameTime);
+    if(deadUnit.id?.startsWith('e_'))restorationTacticDeath(deadUnit,currentEnemyTeam,lastPlayerTeam,gameTime);
     const allies=deadUnit.id?.startsWith('e_')?currentEnemyTeam:lastPlayerTeam;
     const enemies=deadUnit.id?.startsWith('e_')?lastPlayerTeam:currentEnemyTeam;
     const enemyDied=deadUnit.id?.startsWith('p_');
@@ -234,7 +235,7 @@ function scenarioPeriodicTrait(caster,time,sec){
     if(actual)addLog(`[특성] ${caster.name} ${tr.name}! ${target.name} 체력 +${actual}`,'log-buff');
 }
 function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTeam){
-    const original=unit.scenarioSkill;
+    const original=restorationTacticSkill(unit,unit.scenarioSkill,time,allies,enemies);
     if(!original || unit.hp<=0)return 0;
     const targetList=scenarioSkillTargets(unit,original,allies,enemies);
     if(!targetList.length)return 0;
@@ -345,6 +346,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             scenarioHealthBar(target);
             logs.push(`[${target.name} ${damage} 피해${crit?' 치명타':''}]`);
             scenarioOnHitTrait(unit,target,allies,enemies,original,time);
+            restorationTacticOnHit(unit,target,allies,enemies,original,time);
             for(const ef of original.runtimeEffects||[])if(ef.phase==='hit')scenarioEffectApply(ef,unit,target,time,original,logs);
             if(!hitOnceUsed){for(const ef of original.runtimeEffects||[])if(ef.phase==='hit_once')scenarioEffectApply(ef,unit,target,time,original,logs);hitOnceUsed=true;}
             if(target.hp<=0){
@@ -360,6 +362,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
     if(kind==='physical')unit.scenarioFirstPhysicalUsed=true;
     if(logs.length)addLog(`[${unit.name}] ${logs.join(' ')}`,support?'log-buff':'log-skill');
     scenarioHealthBar(unit);
+    restorationTacticAfterSkill(unit,original,allies,enemies,time);
     updateDamageMeters(playerTeam,enemyTeam);
     return gold;
 }
