@@ -183,6 +183,7 @@ function scenarioSkillTargets(caster,skill,allies,enemies){
     const t=skill.target;
     if(t==='self')return [caster];
     if(t==='ally_all')return [...allies];
+    if(t==='ally_front_all')return allies.filter(u=>u&&u.hp>0&&u.battleRow==='front');
     if(t==='ally_lowest_hp_ratio')return [[...allies].sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0]].filter(Boolean);
     const count=t==='enemy_three'?3:t==='enemy_two'?2:1;
     const mode=t==='enemy_lowest_hp_ratio'?'lowest_hp_ratio':formationRange(caster,skill);
@@ -206,7 +207,10 @@ function scenarioOnHitTrait(caster,target,allies,enemies,skill,time){
 }
 function scenarioOnDeathTrait(deadUnit,gameTime){
     branchOnDeath(deadUnit,currentEnemyTeam,gameTime);
-    if(deadUnit.id?.startsWith('e_'))restorationTacticDeath(deadUnit,currentEnemyTeam,lastPlayerTeam,gameTime);
+    if(deadUnit.id?.startsWith('e_')){
+      restorationTacticDeath(deadUnit,currentEnemyTeam,lastPlayerTeam,gameTime);
+      v16Death(deadUnit,currentEnemyTeam,lastPlayerTeam,gameTime);
+    }
     const allies=deadUnit.id?.startsWith('e_')?currentEnemyTeam:lastPlayerTeam;
     const enemies=deadUnit.id?.startsWith('e_')?lastPlayerTeam:currentEnemyTeam;
     const enemyDied=deadUnit.id?.startsWith('p_');
@@ -235,7 +239,7 @@ function scenarioPeriodicTrait(caster,time,sec){
     if(actual)addLog(`[특성] ${caster.name} ${tr.name}! ${target.name} 체력 +${actual}`,'log-buff');
 }
 function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTeam){
-    const original=restorationTacticSkill(unit,unit.scenarioSkill,time,allies,enemies);
+    const original=v16CustomizeSkill(unit,restorationTacticSkill(unit,unit.scenarioSkill,time,allies,enemies),time,allies,enemies);
     if(!original || unit.hp<=0)return 0;
     const targetList=scenarioSkillTargets(unit,original,allies,enemies);
     if(!targetList.length)return 0;
@@ -295,6 +299,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
                 if(b.stat==='next_dmg_down'){val*=Math.max(0,1-b.amount/100);buffs.splice(i,1);}
             }
             if(rowAOE)val*=rowAOEMult;
+            val*=v16AttackFactor(unit,target,allies,kind,time);
             val*=scenarioTakenModifier(target,enemies,allies,kind,time);
             for(let i=target.buffs.length-1;i>=0;i--){
                 const b=target.buffs[i];
@@ -347,6 +352,7 @@ function scenarioExecuteSkill(unit,skill,allies,enemies,time,playerTeam,enemyTea
             logs.push(`[${target.name} ${damage} 피해${crit?' 치명타':''}]`);
             scenarioOnHitTrait(unit,target,allies,enemies,original,time);
             restorationTacticOnHit(unit,target,allies,enemies,original,time);
+            v16Hit(unit,target,allies,enemies,original,time);
             for(const ef of original.runtimeEffects||[])if(ef.phase==='hit')scenarioEffectApply(ef,unit,target,time,original,logs);
             if(!hitOnceUsed){for(const ef of original.runtimeEffects||[])if(ef.phase==='hit_once')scenarioEffectApply(ef,unit,target,time,original,logs);hitOnceUsed=true;}
             if(target.hp<=0){

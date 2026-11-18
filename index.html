@@ -849,6 +849,8 @@ button { cursor: pointer; }
 #battle-middle{flex:0 0 138px;min-height:138px;max-height:138px;overflow:hidden;}
 #battle-log-area{padding:5px 5px;gap:3px;min-height:0;scrollbar-width:thin;}
 #battle-log-area .log-entry{flex:0 0 auto;min-height:17px;line-height:17px;padding:0 4px;font-size:10px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}
+/* 적군 전술 설명은 중요 정보이므로 모바일에서도 생략하지 않는다. */
+#battle-log-area .log-entry.v16-strategy{white-space:normal!important;line-height:1.45!important;min-height:auto!important;padding:5px 6px!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere;border-left:2px solid #c6a467;color:#fff0c8;}
 #battle-result-btn{bottom:max(10px,env(safe-area-inset-bottom));}
 @media (max-width:600px){
  #battle-screen{height:100dvh;min-height:0;overflow:hidden;}
@@ -1065,7 +1067,7 @@ button { cursor: pointer; }
 </div>
 
 <div id="skill-modal" class="modal-overlay"><div class="modal-content"><h2 id="skill-modal-name">스킬 이름</h2><div class="skill-detail"><span id="skill-modal-type" class="type-tag">타입</span><br><strong>피해량/효과:</strong> <span id="skill-modal-power"></span> <span id="skill-modal-acc" style="margin-left:10px;"></span><br><br><div id="skill-modal-desc">스킬 설명</div></div><button class="btn-close" onclick="closeSkillModal()">확인</button></div></div>
-<div id="battle-modal" class="modal-overlay"><div class="modal-content"><h2 id="modal-round-title" style="color:#e74c3c;">⚔️ 1 단계 적군 ⚔️</h2><div class="enemy-box"><span id="enemy-list">탐색 중...</span><br><div id="difficulty-encounter-note" class="difficulty-encounter-note"></div><span class="enemy-tag" id="enemy-desc" style="font-size:11px; font-weight:normal;"></span></div><div class="modal-btns"><button class="btn-enter" onclick="startBattleScene()">전투 시작!</button><button class="btn-cancel" onclick="cancelBattleModal()">돌아가기</button></div></div></div>
+<div id="battle-modal" class="modal-overlay"><div class="modal-content"><h2 id="modal-round-title" style="color:#e74c3c;">⚔️ 1 단계 적군 ⚔️</h2><div class="enemy-box"><span id="enemy-list">탐색 중...</span><br><div id="difficulty-encounter-note" class="difficulty-encounter-note"></div><span class="enemy-tag" id="enemy-desc" style="font-size:11px; font-weight:normal;"></span><details id="enemy-tactics-details" style="font-size:12px;line-height:1.6;text-align:left;margin-top:9px;border-top:1px solid #627484;padding-top:7px;"><summary style="cursor:pointer;color:#ffe1a1;font-weight:bold;">적군 전술·장수별 역할·공략법 확인</summary><div id="enemy-tactics-plan" style="white-space:pre-line;max-height:38vh;overflow-y:auto;margin-top:7px;color:#f3eedf;"></div></details></div><div class="modal-btns"><button class="btn-enter" onclick="startBattleScene()">전투 시작!</button><button class="btn-cancel" onclick="cancelBattleModal()">돌아가기</button></div></div></div>
 
 <div id="map-screen" style="display:none; flex-direction: column; overflow:hidden; height:100dvh;">
     <div style="padding:15px; background:#e74c3c; text-align:center; font-weight:bold; font-size: 16px; border-bottom: 2px solid #f1c40f; z-index: 10;">진행 지도 (<span id="map-stage-display">제1장 · 0/45</span>)</div>
@@ -1108,6 +1110,7 @@ button { cursor: pointer; }
 <script src="./enemy-v15-data.js"></script>
 <script src="./enemy-v15-tactics.js"></script>
 <script src="./enemy-v15-engine.js"></script>
+<script src="./enemy-v16-synergy.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
     ['./MAIN.png', './FIGHT.png'].forEach(url => {
@@ -2447,7 +2450,15 @@ function showBattleModal(nodeType, targetNode) {
     if(diffNote)diffNote.textContent=`${dcfg.name} 난이도 · 적 최대 HP +${hpBonus}%`;
     if (!isBonusBattle) scenarioHydrateSavedEnemies(currentEnemyTeam, storyRound);
     if (!isBonusBattle && storyRound<=20) restorationApplyScenarioTeam(currentEnemyTeam,storyRound);
-    if (!isBonusBattle && branchSetup) document.getElementById('enemy-desc').textContent=currentEnemyTeam.filter(e=>e.restorationTactic).map(e=>`${e.name}: ${e.restorationTactic.counter}`).slice(0,3).join(' · ');
+    // 파일을 새로 불러온 전투와 저장된 적군을 동일하게 전장 전술에 재연결한다.
+    if (!isBonusBattle && storyRound<=20) v16BindPlan(currentEnemyTeam,storyRound,restorationSideKey());
+    if (!isBonusBattle && branchSetup) v16BindPlan(currentEnemyTeam,storyRound,restorationSideKey());
+    const tacticalPreview=document.getElementById('enemy-tactics-plan');
+    if(tacticalPreview)tacticalPreview.textContent=!isBonusBattle?v16EnemyPreview(currentEnemyTeam,storyRound):'추가 사건 전투에서는 별도 편성 규칙을 사용합니다.';
+    const tacticsDetails=document.getElementById('enemy-tactics-details');
+    if(tacticsDetails)tacticsDetails.open=!!(!isBonusBattle&&storyRound>=21);
+    const shortTactic=v16GetPlan(currentEnemyTeam);
+    document.getElementById('enemy-desc').textContent=shortTactic?`전술: ${shortTactic.label} · ${V16_BATTLE_MODES[shortTactic.style].strategy}`:'';
 
     document.getElementById('enemy-list').innerText =
         targetNode.enemyListStr;
@@ -2850,6 +2861,7 @@ battleSpeedMulti = battleSpeedLoad();
     applyClinicHerbAtBattleStart(playerTeam,currentEnemyTeam);
     branchOnBattleStart(currentEnemyTeam,playerTeam);
     restorationTacticStart(currentEnemyTeam,playerTeam);
+    v16Start(currentEnemyTeam,playerTeam);
     renderBattleUnits('player-battle-board', playerTeam, "내 배낭 진영"); 
     renderBattleUnits('enemy-battle-board', currentEnemyTeam, "적군 진영"); 
     updateDamageMeters(playerTeam, currentEnemyTeam);
@@ -3036,7 +3048,7 @@ function battleFXHeal(unit, amount) {
     try { battleFXPulse(unit,'fx-healing');battleFXPopup(battleFXPoint(unit),'+'+Math.floor(amount),'fx-heal'); }catch(e){}
 }
 
-function addLog(msg, typeClass = "") { const logArea = document.getElementById('battle-log-area'); const wasNearBottom=logArea.scrollHeight-logArea.scrollTop-logArea.clientHeight<32; const entry=document.createElement('div'); entry.className='log-entry '+typeClass; entry.innerHTML=msg; entry.title=entry.textContent; logArea.appendChild(entry); if(wasNearBottom)logArea.scrollTop=logArea.scrollHeight; }
+function addLog(msg, typeClass = "") { const logArea = document.getElementById('battle-log-area'); const wasNearBottom=logArea.scrollHeight-logArea.scrollTop-logArea.clientHeight<32; const entry=document.createElement('div'); entry.className='log-entry '+typeClass; if(/^\[(전장 전술|적군 연계|전술 발동|전술 반격|연계 타격|화공 연계|후방 보급|지휘 교란|기병의 빈틈|방진 붕괴|지휘 단절|보급 차단|최후의 전령|재도전 힌트|화선 준비 완료|보급 단절|군량 부족|견벽청야|성벽 붕괴|서량의 균열)\]/.test(String(msg)))entry.classList.add('v16-strategy'); entry.innerHTML=msg; entry.title=entry.textContent; logArea.appendChild(entry); if(wasNearBottom)logArea.scrollTop=logArea.scrollHeight; }
 
 function getStat(unit, statName, allAliveUnits, gameTime) { 
     let base = unit[statName] || 0; let flatUp = 0; let flatDown = 0; let pctUp = 0; let pctDown = 0;
@@ -3421,6 +3433,7 @@ async function runATBSimulation(playerTeam, enemyTeam) {
 
                     if (u.scenarioTrait) scenarioPeriodicTrait(u,gameTime,currentSec);
                     if(u.restorationTactic)restorationTacticTick(u,enemyTeam,playerTeam,gameTime,currentSec);
+                    if(u.id?.startsWith('e_'))v16Tick(enemyTeam,playerTeam,gameTime,currentSec);
                     triggerGuoHuaiPassive(u,gameTime);
                     if (isPlayableUnit(u)&&u.name==='요화'&&!u.yohwaAwakened&&gameTime>=15) {
                         u.yohwaAwakened=true;
@@ -3530,6 +3543,7 @@ if (enemies.length === 0) break;
                     let skill = {...availableSkills[Math.floor(Math.random() * availableSkills.length)]};
                     if(isPlayer&&!unit.scenarioSkill){const stat=battleStatFind(unit);if(stat)stat.skills++;}
                     if (unit.scenarioSkill) {
+                        if(unit.restorationTactic?.mode==='huangGai'&&gameTime<5){unit.currentCooldown=Math.max(.15,5-gameTime);continue;}
                         if(playableCooldownLock(unit,skill,gameTime)) { unit.currentCooldown=0.1;continue; }
                         if(isPlayer){const stat=battleStatFind(unit);if(stat)stat.skills++;}
                         earnedBounty += skill.isUnique===false
@@ -4249,7 +4263,9 @@ if (bozhiExpired) unit.buffs.push({stat: 'next_dmg_up', amount: 15, expireTime: 
     let deadNames = lastPlayerTeam.filter(u => u.hp <= 0).map(u => u.name);
     let deathMsg = deadNames.length > 0 ? `\n💀 사망자: ${deadNames.join(", ")} (영구 손실)` : `\n💪 전원 생존!`;
     resultMsg += deathMsg; 
-    addLog(resultMsg, isWin ? "log-kill" : ""); battleStatActor=null; battleStatLastResult=battleStatUnits.map(r=>({...r})); document.getElementById('battle-stats-open').style.display='block'; document.getElementById('battle-result-btn').style.display = 'block'; document.getElementById('battle-result-btn').onclick = () => returnToGame(isWin); document.getElementById('battle-result-btn').innerText = resultMsg + "\n(복귀)";
+    addLog(resultMsg, isWin ? "log-kill" : "");
+    if(!isWin&&v16GetPlan(enemyTeam))addLog(`[재도전 힌트] ${V16_BATTLE_MODES[v16GetPlan(enemyTeam).style].strategy} · 적 전술 발동·붕괴 기록을 확인하세요.`,'log-buff');
+    battleStatActor=null; battleStatLastResult=battleStatUnits.map(r=>({...r})); document.getElementById('battle-stats-open').style.display='block'; document.getElementById('battle-result-btn').style.display = 'block'; document.getElementById('battle-result-btn').onclick = () => returnToGame(isWin); document.getElementById('battle-result-btn').innerText = resultMsg + "\n(복귀)";
 }
 
 

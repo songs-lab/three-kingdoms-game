@@ -167,7 +167,7 @@ function branchGrantShield(target,pct,duration,time,source){
 // 위 전투 엔진과 일반 장수 엔진 모두 동일하게 보호막을 소모한다.
 function branchAbsorbShield(unit,damage,time){
  if(!unit||damage<=0)return damage;
-  let remaining=damage;
+  let remaining=v16Mitigate(unit,damage,time);
   const hadChencang=(unit.buffs||[]).some(b=>b.stat==='branch_shield'&&b.source==='v15:haozhao'&&b.amount>0);
   for(const buff of (unit.buffs||[])){
    if(buff.stat!=='branch_shield'||buff.expireTime<=time||remaining<=0)continue;

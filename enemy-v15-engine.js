@@ -55,6 +55,7 @@ function restorationApplyBranchTeam(team,round,side=restorationSideKey()){
    battleRow:rec.row,battleRowLocked:true,bounty:{D:0,C:0,B:1,A:2,S:3,SS:4,SSS:5}[rec.tier]||0});
   unit.scenarioTraitDescription=identity.desc;
  }
+ v16BindPlan(team,round,side);
  return team;
 }
 function restorationApplyScenarioTeam(team,round){
@@ -113,6 +114,7 @@ function restorationExecuteCommonSkill(unit,skill,allies,enemies,time,playerTeam
   if(name==='급습'&&!unit.restorationCommonFirstUse?.includes(name))power*=1.2;
   if(name==='절명'&&target.hp/target.maxHp<=.3)power*=1.5;
   if(name==='연화')power*=.82;
+  power*=v16AttackFactor(unit,target,allies,kind,time);
   if(wide)power*=.70;
   const def=kind==='physical'?target.cmd:kind==='strategy'?target.pol:0;
   let damage=kind==='fixed'?power:power*(kind==='physical'?unit.force:unit.intel)/(100+def);
@@ -130,6 +132,7 @@ function restorationExecuteCommonSkill(unit,skill,allies,enemies,time,playerTeam
   if(name==='허보')scenarioPutBuff(target,'hit',-15,5,time,'common:feint');
   if(name==='화계')branchApplyEffect({type:'burn_2sec',who:'target',damage:5,duration:5},unit,target,time,skill,[]);
   if(['매복','혼란'].includes(name))target.currentCooldown=Math.min(10,target.currentCooldown+1);
+  v16Hit(unit,target,allies,enemies,skill,time);
   if(target.hp<=0){reward+=processKillEvents(unit,target,enemyTeam,playerTeam,time);branchOnKill(unit,time);}
  }
  unit.restorationCommonFirstUse=unit.restorationCommonFirstUse||[];
