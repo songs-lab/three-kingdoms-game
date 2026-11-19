@@ -142,14 +142,14 @@ function restorationExecuteCommonSkill(unit,skill,allies,enemies,time,playerTeam
  return reward;
 }
 
-/* v12 저장 호환: 과거 1×3/3×1 유비·비의·미축을 2×2로 이동한다. */
+/* v17 저장 호환: 모든 과거 1×3/3×1 장수를 2×2로 재배치한다. */
 function restorationMigrateLegacyGeneralCards(){
- const changedNames=new Set(['유비','비의','미축']);
  let moved=0;
  for(const el of Array.from(document.querySelectorAll('#inventory-container .placed-item.type-general,#storage-container .placed-item.type-general'))){
   const d=el.itemData;
-  if(!d||!changedNames.has(d.name)||((d.w!==1||d.h!==3)&&(d.w!==3||d.h!==1)))continue;
+  if(!d || !(d._legacyThinGeneral || isThinGeneralFootprint(d.w,d.h)))continue;
   d.w=2;d.h=2;if(d.stats){d.stats.w=2;d.stats.h=2;}
+  delete d._legacyThinGeneral;
   const anchor=el.closest('#inventory-container .slot');
   if(!anchor){el.innerHTML=generalPlacedMarkup(d);continue;}
   const uid=el.dataset.uid;

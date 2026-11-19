@@ -1,5 +1,5 @@
 // Game PWA cache version. Online navigation and executable data use network-first.
-const CACHE_NAME = "tk-battle-v16-encounter-tactics";
+const CACHE_NAME = "tk-battle-v19-enemy-portraits";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -20,6 +20,9 @@ const CORE_ASSETS = [
   "./faces/wu.webp",
   "./faces/other.webp",
   "./faces/enemy.webp",
+  "./faces/enemy_extra_01.webp",
+  "./faces/enemy_extra_02.webp",
+  "./faces/enemy_extra_03.webp",
   "./faces/portraits.json",
   "./MAIN.png",
   "./MAP_BG.png",
